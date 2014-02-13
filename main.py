@@ -48,7 +48,12 @@ class MyPaintWidget(RelativeLayout):
 		return len(self.figures) == self.max_figures
 	
 	def undo(self):
-		self.figures.pop()
+		if len(self.figures) > 0:
+			self.canvas.remove(self.figures.pop())
+	
+	def clear(self):
+		self.canvas.clear()
+		self.figures = []
 
 
 class MyColorPalette(RelativeLayout):
@@ -66,7 +71,7 @@ class MyColorPalette(RelativeLayout):
 			pos_hint = {'center_x': 0.5*float(1)/len(colors) + float(i)/len(colors), 'center_y:': 0.5}
 			button = Button(text=str(i), size_hint=(0.9/len(colors), 0.7), pos_hint=pos_hint)
 			myhash[button] = c
-			button.bind(on_press=callback)
+			button.bind(on_release=callback)
 			self.add_widget(button)
 
 
@@ -88,7 +93,7 @@ class MyPaintApp(App):
 		layout.add_widget(clearbtn, 10)
 		
 		def clear_canvas(obj):
-			painter.canvas.clear()
+			painter.clear()
 		clearbtn.bind(on_release=clear_canvas)
 		
 		def undo_canvas(obj):
