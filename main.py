@@ -17,6 +17,7 @@ class MyPaintWidget(RelativeLayout):
 		super(MyPaintWidget, self).__init__(**args)
 		self.max_figures = 3
 		self.figures = []
+		self.pressing = False
 
 	def on_touch_down(self, touch):
 		if self.ignoring_touches():
@@ -25,7 +26,8 @@ class MyPaintWidget(RelativeLayout):
 		with self.canvas:
 			Color(*shared_data['color'])
 			touch.ud['line'] = Line(points=(touch.x, touch.y))
-		
+
+		self.pressing = True
 		return True
 
 	def on_touch_move(self, touch):
@@ -37,10 +39,11 @@ class MyPaintWidget(RelativeLayout):
 		return True
 
 	def on_touch_up(self, touch):
-		if self.ignoring_touches():
+		if self.ignoring_touches() or not self.pressing:
 			return
 
 		self.figures.append(touch.ud['line'])
+		self.pressing = False
 		
 		return True
 
@@ -62,7 +65,7 @@ class MyColorPalette(RelativeLayout):
 
 		myhash = {}
 
-		def callback(instance):
+		def the_callback(instance):
 			shared_data['color'] = myhash[instance]
 			return True
 
@@ -71,8 +74,10 @@ class MyColorPalette(RelativeLayout):
 			pos_hint = {'center_x': 0.5*float(1)/len(colors) + float(i)/len(colors), 'center_y:': 0.5}
 			button = Button(text=str(i), size_hint=(0.9/len(colors), 0.7), pos_hint=pos_hint)
 			myhash[button] = c
-			button.bind(on_release=callback)
 			self.add_widget(button)
+			button.bind(on_release=the_callback)
+			#button.bind(on_press=callback)
+
 
 
 class MyPaintApp(App):
@@ -88,9 +93,9 @@ class MyPaintApp(App):
 		clearbtn = Button(text='Clear', size_hint=(0.07, 0.07), pos_hint={'center_x': 0.9, 'center_y': 0.1})
 
 		layout.add_widget(palette, 10)
-		layout.add_widget(painter, 20)
 		layout.add_widget(undobtn, 10)
 		layout.add_widget(clearbtn, 10)
+		layout.add_widget(painter, 20)
 		
 		def clear_canvas(obj):
 			painter.clear()
