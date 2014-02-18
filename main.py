@@ -27,6 +27,7 @@ class MyPaintWidget(RelativeLayout):
 			Color(*shared_data['color'])
 			touch.ud['line'] = Line(points=(touch.x, touch.y))
 
+		# Button widget doesn't define on_touch_*, so they will be passed to canvas under them
 		self.pressing = True
 		return True
 
