@@ -1,12 +1,19 @@
-# Thesis Project
+# My thesis
 
 ## Introduction
 
-...
+Neuroscience experiments for my thesis project.
 
-## Installation
+## Python version
 
-The latest version of Kivy (1.8.0) supports Python 3.3, and we prefer it over 2.7. To ease portability, the following instructions use the `pyenv` Python version manager. It can coexist with any system Python installations without interference.
+This one uses a Python library that supports Windows, Linux, Mac and multitouch devices (Android, etc).
+See the [Kivy website](http://kivy.org/#home) and [these slides](http://slid.es/baptistelagarde/kivy-python-for-android/fullscreen#/).
+
+### Installation
+
+The latest version of Kivy (1.8.0) supports Python 3.3, and we prefer it over 2.7.
+To ease portability, the following instructions use the `pyenv` Python version manager.
+It can coexist with any system Python installations without interference.
 
 ```
 # Install pyenv from github
@@ -26,6 +33,23 @@ pip install cython
 # Install kivy
 pip install kivy
 ```
+### Android package
+
+...
+
+## Javascript version
+
+It should work on modern web browsers as well as mobile devices, but the primary target is the web.
+
+The idea is to use [KineticJS](http://kineticjs.com/) for graphics and [Meteor](https://www.meteor.com/) for the server.
+
+### Installation
+
+...
+
+### On-line prototype
+
+...
 
 ## TODO
 
@@ -39,5 +63,3 @@ pip install kivy
 
 - Add exit button or terminate when complete
 - Circle detection
-
-- Try web version with KineticJS
