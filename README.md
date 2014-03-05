@@ -29,13 +29,15 @@ pip install kivy
 
 ## TODO
 
+- Add popup messages for information
 - Color buttons
-- Convert super() calls to Python 3
 - Show popup if circle isn't closed
-- Add line width (or draw circles at each position)
-- Save positions to file
-- Add exit button or terminate when complete
 - Check that circle is closed or at least near
 - Workflow: 3 buttons (past, etc) then color picker, no undo
-- Add popup messages for information
+
+- Save positions to file
+
+- Add exit button or terminate when complete
+- Circle detection
+
 - Try web version with KineticJS

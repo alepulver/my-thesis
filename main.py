@@ -5,7 +5,10 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.popup import Popup
+from kivy.uix.label import Label
 from kivy.graphics import Color, Ellipse, Line
+import math
 
 shared_data = {'color': (1,0,0)}
 
@@ -40,11 +43,25 @@ class MyPaintWidget(RelativeLayout):
 		return True
 
 	def on_touch_up(self, touch):
+		def distance(a, b):
+			return math.sqrt((a[0] - b[0])**2 + (a[1] - b[1]))
+		
 		if self.ignoring_touches() or not self.pressing:
 			return
 
 		self.figures.append(touch.ud['line'])
 		self.pressing = False
+		
+		#print(type(touch.ud['line'].points))
+		#print(touch.ud['line'].points)
+		d = distance(touch.ud['line'].points[0:2], touch.ud['line'].points[-2:])
+		if d > 30:
+			print('distance %s' % d)
+			self.undo()
+			popup = Popup(title='Test popup', content=Label(text='Hello world'), size=(200,200))
+			popup.open()
+			#self.add_widget(popup)
+
 		
 		return True
 
