@@ -33,6 +33,7 @@ pip install cython
 # Install kivy
 pip install kivy
 ```
+
 ### Android package
 
 ...
@@ -58,8 +59,6 @@ The idea is to use [KineticJS](http://kineticjs.com/) for graphics and [Meteor](
 - Show popup if circle isn't closed
 - Check that circle is closed or at least near
 - Workflow: 3 buttons (past, etc) then color picker, no undo
-
 - Save positions to file
-
 - Add exit button or terminate when complete
 - Circle detection
