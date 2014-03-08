@@ -8,14 +8,6 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 
-def blah(x):
-	remaining = 3
-	words = []
-	while remaining > 0:
-		w = getWord()
-		words.append(w)
-		remaining -= 1
-
 class Workflow:
 	def __init__(self):
 		self.root = FloatLayout()
@@ -53,8 +45,10 @@ class WorkflowStep:
 	def storage(self):
 		return self.workflow.storage()
 
+# Screen 1
 class AskSomeNames(WorkflowStep):
 	def __init__(self, quantity):
+		# Workflow starter to screen 1 communication
 		self.remaining = quantity
 		self.names = []
 		
@@ -71,18 +65,18 @@ class AskSomeNames(WorkflowStep):
 		self.names.append(name)
 		self.remaining -= 1
 		if self.remaining == 0:
+			# Screen 1 to 2 communication
 			self.storage()['names'] = self.names
 			self.next_step()
 	
 	def widget(self):
 		return self.layout
 
+# Stage 2
 class ShowList(WorkflowStep):
-	def __init__(self, names):
-		self.names = names
-	
 	def run(self):
 		self.layout = BoxLayout(orientation='vertical')
+		#  Screen 1 to 2 communication
 		for n in self.storage()['names']:
 			label = Label(text=n)
 			self.layout.add_widget(label)
@@ -97,19 +91,26 @@ class ShowList(WorkflowStep):
 		self.run()
 		return self.layout
 
-# input/output dict for each step?
-# question: who/where decides to repeat/retry/whats next on each step
+# Stage 3
+class PromptForExit(WorkflowStep):
+	def widget(self):
+		button = Button(text='Click to exit')
+		button.bind(on_press=lambda x: exit())
+			
+		return button
 
 class TutorialApp(App):
 	def build(self):
 		workflow = Workflow()
 		
-		# XXX: should add input only to initial workflow dict?
 		ask_names = AskSomeNames(3)
 		workflow.add_step(ask_names)
 		
-		show_names = ShowList(['my', 'name', 'is'])
+		show_names = ShowList()
 		workflow.add_step(show_names)
+		
+		prompt_for_exit = PromptForExit()
+		workflow.add_step(prompt_for_exit)
 		
 		workflow.start()
 		return workflow.widget()
