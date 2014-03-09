@@ -1,8 +1,8 @@
-= Examples =
+# Examples
 
 These simple examples serve to try different ways to program workflow steps.
 
-== Case 1 ==
+## Case 1
 
 - Ask for 3 names
 - Display them
@@ -12,7 +12,7 @@ In the "simple" implementation, communication is done by shared variables among 
 But in the "workflow" version there are 2 choices: passing input as constructor arguments (only input), or using a dictionary shared among steps.
 The variable names in this case are constant for each step class, but should be configurable as well as other things (like title).
 
-== Case 2 ==
+## Case 2
 
 - Ask for 3 names, with a custom rejection function
 - Display them, allowing to enter them again if not satisfied
@@ -21,15 +21,17 @@ The variable names in this case are constant for each step class, but should be 
 Similar to the previous one, but added the ability to go to the previous step in the workflow.
 The decision of when to do so is still in the step's logic, not configurable.
 
-== Case 3 ==
+## Case 3
 
-Also show warning popup when name is invalid
-Add instructions on each step (use popup widgets for everything?)
+- Also show warning popup when name is invalid
+- Add instructions on each step (use popup widgets for everything?)
+
 ...
 
-== Case 4 ==
+## Case 4 ==
 
-Allow not only next/prev, but jumping to arbitrary parts?
-Model state with a stack, and popping actions; maybe one stack per widget?
-Better a stack of workflows, each one linear (or not?)
+- Allow not only next/prev, but jumping to arbitrary parts?
+- Model state with a stack, and popping actions; maybe one stack per widget?
+- Use a stack of workflows, each one sequential
+
 ...
