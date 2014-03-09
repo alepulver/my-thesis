@@ -28,7 +28,7 @@ The decision of when to do so is still in the step's logic, not configurable.
 
 ...
 
-## Case 4 ==
+## Case 4
 
 - Allow not only next/prev, but jumping to arbitrary parts?
 - Model state with a stack, and popping actions; maybe one stack per widget?
