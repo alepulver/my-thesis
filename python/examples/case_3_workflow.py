@@ -7,55 +7,59 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
+from kivy.uix.popup import Popup
 
 class Workflow:
 	def __init__(self):
 		self.root = FloatLayout()
-		self.steps = []
-		self.step_index = -1
+		self.states = {}
+		self.stack = []
 		self.data = {}
 	
-	def add_step(self, step):
-		step.register_workflow(self)
-		self.steps.append(step)
+	def add_state(self, step, name):
+		self.states[name] = step
 	
-	def widget(self):
-		return self.root
+	def push_state(self, name, parameters):
+		self.stack.append(name)
+	
+	def set_handler(self, handler):
+		self.handler = handler
 	
 	def storage(self):
 		return self.data
 		
 	def start(self):
-		assert(len(self.steps) > 0)
-		self.next_step()
+		assert(len(self.stack) > 0)
+		self.next_step(None)
+		return self.root
 	
-	def next_step(self):
-		assert(self.step_index < len(self.steps))
-		self.step_index += 1
-		step = self.steps[self.step_index]
-		step.workflow_init()
+	def ret(self, parameters):
+		self.handler(self, self.current_state, parameters)
+		self.next_step(None)
+	
+	def next_step(self, parameters):
+		assert(len(self.stack) > 0)
+		name = self.stack.pop()
+		self.current_state = name
+		step = self.states[name]
+		widget = step.called_with(self, parameters)
 		
 		self.root.clear_widgets()
-		self.root.add_widget(step.widget())
-	
-	def prev_step(self):
-		assert(self.step_index > 0)
-		self.step_index -= 1
-		step = self.steps[self.step_index]
-		step.workflow_init()
-		
-		self.root.clear_widgets()
-		self.root.add_widget(step.widget())
+		self.root.add_widget(widget)
 
 class WorkflowStep:
-	def __init__(self):
-		pass
+	# XXX: should this be replaced by __init__?
+	def called_with(self, workflow, parameters):
+		raise NotImplementedError()
 	
-	def register_workflow(self, workflow):
-		self.workflow = workflow
+	def ret(self, parameters):
+		self.workflow.ret(parameters)
 	
-	def workflow_init(self):
-		pass
+	def resumed_with(self, workflow, parameters):
+		raise NotImplementedError()
+	
+	def pause(self, parameters):
+		raise NotImplementedError()
 
 # Screen 1
 class AskSomeNames(WorkflowStep):
@@ -69,7 +73,8 @@ class AskSomeNames(WorkflowStep):
 		self.remaining = self.quantity
 		self.workflow.storage()['names'] = []
 	
-	def workflow_init(self):
+	def called_with(self, workflow, parameters):
+		self.workflow = workflow
 		self.reset()
 		
 		self.layout = BoxLayout(orientation='vertical')
@@ -80,25 +85,27 @@ class AskSomeNames(WorkflowStep):
 		self.layout.add_widget(self.text_input)
 		self.layout.add_widget(self.accept_button)
 		
+		return self.layout
+		
 	def on_name_entered(self, name):
 		assert(self.remaining > 0)
 		if not self.check_name(name):
+			popup = Popup(title='Invalid name', content=Label(text='It should have more than 3 characters, press "Esc" to continue'), size=(200,200))
+			popup.open()
 			return
 		# Screen 1 to 2 communication
 		self.workflow.storage()['names'].append(name)
 		self.remaining -= 1
 		if self.remaining == 0:
-			self.workflow.next_step()
+			self.ret('next')
 
 	def check_name(self, name):
 		return len(name) > 3
 
-	def widget(self):
-		return self.layout
-
 # Stage 2
 class ShowList(WorkflowStep):
-	def workflow_init(self):
+	def called_with(self, workflow, parameters):
+		self.workflow = workflow
 		self.layout = BoxLayout(orientation='vertical')
 		
 		#  Screen 1 to 2 communication
@@ -112,17 +119,15 @@ class ShowList(WorkflowStep):
 		inner_layout.add_widget(button_next)
 		inner_layout.add_widget(button_prev)
 		
-		button_next.bind(on_press=lambda x: self.workflow.next_step())
-		button_prev.bind(on_press=lambda x: self.workflow.prev_step())
+		button_next.bind(on_press=lambda x: self.ret('next'))
+		button_prev.bind(on_press=lambda x: self.ret('prev'))
 		
 		self.layout.add_widget(inner_layout)
-	
-	def widget(self):
 		return self.layout
 
 # Stage 3
 class PromptForExit(WorkflowStep):
-	def widget(self):
+	def called_with(self, workflow, parameters):
 		button = Button(text='Click to exit')
 		button.bind(on_press=lambda x: exit())
 			
@@ -130,19 +135,29 @@ class PromptForExit(WorkflowStep):
 
 class TutorialApp(App):
 	def build(self):
+		def handler(workflow, name, parameters):
+			if name == 'ask_names':
+				workflow.push_state('show_names', '')
+			elif name == 'show_names':
+				if parameters == 'prev':
+					workflow.push_state('ask_names', '')
+				elif parameters == 'next':
+					workflow.push_state('prompt_for_exit', '')
+
 		workflow = Workflow()
 		
 		ask_names = AskSomeNames(3, lambda x: len(x) > 3)
-		workflow.add_step(ask_names)
+		workflow.add_state(ask_names, 'ask_names')
 		
 		show_names = ShowList()
-		workflow.add_step(show_names)
+		workflow.add_state(show_names, 'show_names')
 		
 		prompt_for_exit = PromptForExit()
-		workflow.add_step(prompt_for_exit)
+		workflow.add_state(prompt_for_exit, 'prompt_for_exit')
 		
-		workflow.start()
-		return workflow.widget()
+		workflow.push_state('ask_names', None)
+		workflow.set_handler(handler)
+		return workflow.start()
 
 if __name__ == "__main__":
 	TutorialApp().run()

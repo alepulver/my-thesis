@@ -44,7 +44,7 @@ class TutorialApp(App):
 		
 		# Step 1 custom action
 		def check_name(name):
-			return len(name > 3)
+			return len(name) > 3
 		
 		# Screen 2 setup
 		def second_step():

@@ -25,13 +25,16 @@ The decision of when to do so is still in the step's logic, not configurable.
 
 - Also show warning popup when name is invalid
 - Add instructions on each step (use popup widgets for everything?)
+- call/return semantics
+- pause/resume too?
+- Allow not only next/prev, but jumping to arbitrary parts?
+- Model state with a stack, and popping actions; maybe one stack per widget?
+- Allow composing workflows, using them as states of another workflows
 
 ...
 
 ## Case 4
 
-- Allow not only next/prev, but jumping to arbitrary parts?
-- Model state with a stack, and popping actions; maybe one stack per widget?
-- Use a stack of workflows, each one sequential
+- Use generators or macros for syntactic sugar
 
 ...
