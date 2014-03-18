@@ -1,4 +1,4 @@
-# Examples
+# Workflow examples
 
 These simple examples serve to try different ways to program workflow steps.
 
