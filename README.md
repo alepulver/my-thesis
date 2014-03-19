@@ -9,7 +9,7 @@ Neuroscience experiments for my thesis project.
 This one uses a Python library that supports Windows, Linux, Mac and multitouch devices (Android, etc).
 See the [Kivy website](http://kivy.org/#home) and [these slides](http://slid.es/baptistelagarde/kivy-python-for-android/fullscreen#/).
 
-### Installation
+### Install
 
 The latest version of Kivy (1.8.0) supports Python 3.3, and we prefer it over 2.7.
 To ease portability, the following instructions use the `pyenv` Python version manager.
@@ -28,10 +28,18 @@ pyenv shell 3.3.4
 pip install cython
 
 # Install latest pygame from their repository
+# (ignoring python3* packages, as we've built a custom version)
 # http://www.pygame.org/wiki/CompileUbuntu?parent=index
 
 # Install kivy
 pip install kivy
+```
+
+### Run
+
+```
+cd python-circles
+python main.py
 ```
 
 ### Android package
@@ -44,9 +52,32 @@ It should work on modern web browsers as well as mobile devices, but the primary
 
 The idea is to use [KineticJS](http://kineticjs.com/) for graphics and [Meteor](https://www.meteor.com/) for the server.
 
-### Installation
+### Install
 
-...
+```
+# Install NVM (Node Version Manager)
+curl https://raw.github.com/creationix/nvm/master/install.sh | sh
+
+# Install Node.js
+nvm install v0.11.9
+
+# Install meteor
+curl https://install.meteor.com/ | sh
+
+# Install meteorite (package manager)
+npm install -g meteorite
+```
+
+### Run locally
+
+```
+cd myapp
+meteor
+```
+
+And enter the following url: http://localhost:3000/
+
+Source modifications are reloaded automatically.
 
 ### On-line prototype
 
