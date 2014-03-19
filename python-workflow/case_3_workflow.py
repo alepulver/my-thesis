@@ -19,27 +19,27 @@ class Workflow:
 	def add_state(self, step, name):
 		self.states[name] = step
 	
-	def push_state(self, name, parameters):
-		self.stack.append(name)
-	
 	def set_handler(self, handler):
 		self.handler = handler
+
+	def call_state(self, name, parameters=None):
+		self.stack.append([name, parameters])
+	
+	def return_state(self, parameters):
+		self.handler(self, self.current_state, parameters)
+		self.next_step()
 	
 	def storage(self):
 		return self.data
 		
 	def start(self):
 		assert(len(self.stack) > 0)
-		self.next_step(None)
+		self.next_step()
 		return self.root
 	
-	def ret(self, parameters):
-		self.handler(self, self.current_state, parameters)
-		self.next_step(None)
-	
-	def next_step(self, parameters):
+	def next_step(self):
 		assert(len(self.stack) > 0)
-		name = self.stack.pop()
+		name, parameters = self.stack.pop()
 		self.current_state = name
 		step = self.states[name]
 		widget = step.called_with(self, parameters)
@@ -53,7 +53,7 @@ class WorkflowStep:
 		raise NotImplementedError()
 	
 	def ret(self, parameters):
-		self.workflow.ret(parameters)
+		self.workflow.return_state(parameters)
 	
 	def resumed_with(self, workflow, parameters):
 		raise NotImplementedError()
@@ -62,18 +62,17 @@ class WorkflowStep:
 		raise NotImplementedError()
 
 # Screen 1
-class AskSomeNames(WorkflowStep):
-	def __init__(self, quantity, check_name):
-		# Starter to screen 1 communication
-		self.quantity = quantity
-		self.check_name = check_name
-	
+class AskSomeNames(WorkflowStep):	
 	def reset(self):
 		# Screen 1 to 2 communication
 		self.remaining = self.quantity
-		self.workflow.storage()['names'] = []
+		self.names = []
 	
 	def called_with(self, workflow, parameters):
+		# Starter to screen 1 communication
+		self.quantity = parameters['quantity']
+		self.check_name = parameters['check_name']
+		
 		self.workflow = workflow
 		self.reset()
 		
@@ -94,10 +93,10 @@ class AskSomeNames(WorkflowStep):
 			popup.open()
 			return
 		# Screen 1 to 2 communication
-		self.workflow.storage()['names'].append(name)
+		self.names.append(name)
 		self.remaining -= 1
 		if self.remaining == 0:
-			self.ret('next')
+			self.ret({'names': self.names})
 
 	def check_name(self, name):
 		return len(name) > 3
@@ -109,7 +108,7 @@ class ShowList(WorkflowStep):
 		self.layout = BoxLayout(orientation='vertical')
 		
 		#  Screen 1 to 2 communication
-		for n in self.workflow.storage()['names']:
+		for n in parameters['names']:
 			label = Label(text=n)
 			self.layout.add_widget(label)
 		
@@ -137,16 +136,16 @@ class TutorialApp(App):
 	def build(self):
 		def handler(workflow, name, parameters):
 			if name == 'ask_names':
-				workflow.push_state('show_names', '')
+				workflow.call_state('show_names', parameters)
 			elif name == 'show_names':
 				if parameters == 'prev':
-					workflow.push_state('ask_names', '')
+					workflow.call_state('ask_names', {'quantity': 3, 'check_name': lambda x: len(x) > 3})
 				elif parameters == 'next':
-					workflow.push_state('prompt_for_exit', '')
+					workflow.call_state('prompt_for_exit')
 
 		workflow = Workflow()
 		
-		ask_names = AskSomeNames(3, lambda x: len(x) > 3)
+		ask_names = AskSomeNames()
 		workflow.add_state(ask_names, 'ask_names')
 		
 		show_names = ShowList()
@@ -155,7 +154,7 @@ class TutorialApp(App):
 		prompt_for_exit = PromptForExit()
 		workflow.add_state(prompt_for_exit, 'prompt_for_exit')
 		
-		workflow.push_state('ask_names', None)
+		workflow.call_state('ask_names', {'quantity': 3, 'check_name': lambda x: len(x) > 3})
 		workflow.set_handler(handler)
 		return workflow.start()
 
