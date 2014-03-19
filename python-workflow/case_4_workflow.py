@@ -13,8 +13,6 @@ class Workflow:
 	def __init__(self):
 		self.root = FloatLayout()
 		self.states = {}
-		# XXX: stack is unused, as only one call_state is pending at a time
-		self.stack = []
 	
 	def add_state(self, step, name):
 		self.states[name] = step
@@ -22,23 +20,16 @@ class Workflow:
 	def set_handler(self, handler):
 		self.handler = handler
 
-	def call_state(self, name, parameters=None):
-		assert(len(self.stack) == 0)
-		self.stack.append([name, parameters])
-	
 	def return_state(self, parameters):
-		self.handler(self, self.current_state, parameters)
-		self.next_step()
+		name, parameters = self.handler.send(parameters)
+		self.next_step(name, parameters)
 		
 	def start(self):
-		assert(len(self.stack) > 0)
-		self.next_step()
+		name, parameters = self.handler.send(None)
+		self.next_step(name, parameters)
 		return self.root
 	
-	def next_step(self):
-		assert(len(self.stack) > 0)
-		name, parameters = self.stack.pop()
-		self.current_state = name
+	def next_step(self, name, parameters):
 		step = self.states[name]
 		widget = step.called_with(self, parameters)
 		
@@ -132,14 +123,17 @@ class PromptForExit(WorkflowStep):
 
 class TutorialApp(App):
 	def build(self):
-		def handler(workflow, name, parameters):
-			if name == 'ask_names':
-				workflow.call_state('show_names', parameters)
-			elif name == 'show_names':
-				if parameters == 'prev':
-					workflow.call_state('ask_names', {'quantity': 3, 'check_name': lambda x: len(x) > 3})
-				elif parameters == 'next':
-					workflow.call_state('prompt_for_exit')
+		# XXX: workflow is unused
+		def handler(workflow):		
+			while True:	
+				result = yield 'ask_names', {'quantity': 3, 'check_name': lambda x: len(x) > 3}
+				action = yield 'show_names', {'names': result['names']}
+				if action == 'prev':
+					continue
+				elif action == 'next':
+					break
+			
+			yield 'prompt_for_exit', {}
 
 		workflow = Workflow()
 		
@@ -152,8 +146,7 @@ class TutorialApp(App):
 		prompt_for_exit = PromptForExit()
 		workflow.add_state(prompt_for_exit, 'prompt_for_exit')
 		
-		workflow.call_state('ask_names', {'quantity': 3, 'check_name': lambda x: len(x) > 3})
-		workflow.set_handler(handler)
+		workflow.set_handler(handler(workflow))
 		return workflow.start()
 
 if __name__ == "__main__":

@@ -27,6 +27,8 @@ The decision of when to do so is still in the step's logic, not configurable.
 - pause/resume too?
 - Allow composing workflows, using them as states of another workflows
 
+Storage was removed from workflow, as it's kept inside the steps and returned to the handler, which in turn passes it to the next steps.
+
 ...
 
 ## Case 4
