@@ -2,6 +2,8 @@
 
 These simple examples serve to try different ways to program workflow steps.
 
+They use the same libraries as the Python version, so see [python-circles](../python-circles) for installation instructions.
+
 ## Case 1
 
 - Ask for 3 names
