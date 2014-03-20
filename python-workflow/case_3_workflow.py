@@ -61,18 +61,8 @@ class WorkflowStep:
 
 # Screen 1
 class AskSomeNames(WorkflowStep):	
-	def reset(self):
-		# Screen 1 to 2 communication
-		self.remaining = self.quantity
-		self.names = []
-	
 	def called_with(self, workflow, parameters):
-		# Starter to screen 1 communication
-		self.quantity = parameters['quantity']
-		self.check_name = parameters['check_name']
-		
 		self.workflow = workflow
-		self.reset()
 		
 		self.layout = BoxLayout(orientation='vertical')
 		self.text_input = TextInput(font_size=100, size_hint_y=None, height=150)
@@ -85,19 +75,7 @@ class AskSomeNames(WorkflowStep):
 		return self.layout
 		
 	def on_name_entered(self, name):
-		assert(self.remaining > 0)
-		if not self.check_name(name):
-			popup = Popup(title='Invalid name', content=Label(text='It should have more than 3 characters, press "Esc" to continue'), size=(200,200))
-			popup.open()
-			return
-		# Screen 1 to 2 communication
-		self.names.append(name)
-		self.remaining -= 1
-		if self.remaining == 0:
-			self.ret({'names': self.names})
-
-	def check_name(self, name):
-		return len(name) > 3
+		self.ret({'name': name})
 
 # Stage 2
 class ShowList(WorkflowStep):
@@ -132,12 +110,25 @@ class PromptForExit(WorkflowStep):
 
 class TutorialApp(App):
 	def build(self):
+		my_names = []
 		def handler(workflow, name, parameters):
+			nonlocal my_names
+			
 			if name == 'ask_names':
-				workflow.call_state('show_names', parameters)
+				if len(parameters['name']) > 3:
+					my_names.append(parameters['name'])
+				else:
+					popup = Popup(title='Invalid name', content=Label(text='It should have more than 3 characters, press "Esc" to continue'), size=(200,200))
+					popup.open()
+					workflow.call_state('ask_names', {})
+				if len(my_names) == 3:
+					workflow.call_state('show_names', {'names': my_names})
+				else:
+					workflow.call_state('ask_names', {})
 			elif name == 'show_names':
 				if parameters == 'prev':
-					workflow.call_state('ask_names', {'quantity': 3, 'check_name': lambda x: len(x) > 3})
+					my_names = []
+					workflow.call_state('ask_names', {})
 				elif parameters == 'next':
 					workflow.call_state('prompt_for_exit')
 
@@ -152,7 +143,7 @@ class TutorialApp(App):
 		prompt_for_exit = PromptForExit()
 		workflow.add_state(prompt_for_exit, 'prompt_for_exit')
 		
-		workflow.call_state('ask_names', {'quantity': 3, 'check_name': lambda x: len(x) > 3})
+		workflow.call_state('ask_names', {})
 		workflow.set_handler(handler)
 		return workflow.start()
 

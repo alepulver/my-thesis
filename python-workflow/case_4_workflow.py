@@ -51,19 +51,10 @@ class WorkflowStep:
 		raise NotImplementedError()
 
 # Screen 1
-class AskSomeNames(WorkflowStep):	
-	def reset(self):
-		# Screen 1 to 2 communication
-		self.remaining = self.quantity
-		self.names = []
-	
+class AskSomeNames(WorkflowStep):
 	def called_with(self, workflow, parameters):
 		# Starter to screen 1 communication
-		self.quantity = parameters['quantity']
-		self.check_name = parameters['check_name']
-		
 		self.workflow = workflow
-		self.reset()
 		
 		self.layout = BoxLayout(orientation='vertical')
 		self.text_input = TextInput(font_size=100, size_hint_y=None, height=150)
@@ -76,19 +67,7 @@ class AskSomeNames(WorkflowStep):
 		return self.layout
 		
 	def on_name_entered(self, name):
-		assert(self.remaining > 0)
-		if not self.check_name(name):
-			popup = Popup(title='Invalid name', content=Label(text='It should have more than 3 characters, press "Esc" to continue'), size=(200,200))
-			popup.open()
-			return
-		# Screen 1 to 2 communication
-		self.names.append(name)
-		self.remaining -= 1
-		if self.remaining == 0:
-			self.ret({'names': self.names})
-
-	def check_name(self, name):
-		return len(name) > 3
+		self.ret({'name': name})
 
 # Stage 2
 class ShowList(WorkflowStep):
@@ -125,9 +104,17 @@ class TutorialApp(App):
 	def build(self):
 		# XXX: workflow is unused
 		def handler(workflow):		
-			while True:	
-				result = yield 'ask_names', {'quantity': 3, 'check_name': lambda x: len(x) > 3}
-				action = yield 'show_names', {'names': result['names']}
+			while True:
+				my_names = []
+				while len(my_names) < 3:	
+					result = yield 'ask_names', {}
+					if len(result['name']) > 3:
+						my_names.append(result['name'])
+					else:
+						popup = Popup(title='Invalid name', content=Label(text='It should have more than 3 characters, press "Esc" to continue'), size=(200,200))
+						popup.open()
+				
+				action = yield 'show_names', {'names': my_names}
 				if action == 'prev':
 					continue
 				elif action == 'next':

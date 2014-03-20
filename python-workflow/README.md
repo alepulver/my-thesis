@@ -25,16 +25,26 @@ The decision of when to do so is still in the step's logic, not configurable.
 
 ## Case 3
 
-- Add instructions on each step (use popup widgets for everything?)
-- pause/resume too?
-- Allow composing workflows, using them as states of another workflows
+- Move the logic to a handler
 
 Storage was removed from workflow, as it's kept inside the steps and returned to the handler, which in turn passes it to the next steps.
-
-...
+Control flow is managed from a handler function, and it's hard to follow because there is a single entry point.
 
 ## Case 4
 
-- Use generators or macros for syntactic sugar
+- Use generators to pause and resume the handler
+
+Generators make the handler function easier to read and modify, as we can use if/while constructs as in normal code.
+This is because of the multiple entry points (one for each `yield` statement).
+
+## Case 5
+
+- Use coroutines (stackless) to avoid `yield from` in previous
 
 ...
+
+## TODO
+
+- Add instructions on each step (use popup widgets for everything?)
+- pause/resume too?
+- Allow composing workflows, using them as states of another workflows
