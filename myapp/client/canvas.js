@@ -1,4 +1,10 @@
+//var RSVP = Meteor.require('rsvp');
+
+
+
 setupCanvas = function() {
+  blah = new RSVP.Promise();
+
   var stage = new Kinetic.Stage({
     container: 'container',
     width: 578,
@@ -24,7 +30,7 @@ setupCanvas = function() {
   stage.add(layer);
 }
 
-function update(activeAnchor) {
+function updateAnchorMoved(activeAnchor) {
   var group = activeAnchor.getParent();
 
   var topLeft = group.find('.topLeft')[0];
@@ -61,7 +67,7 @@ function update(activeAnchor) {
   var width = topRight.x() - topLeft.x();
   var height = bottomLeft.y() - topLeft.y();
   if(width && height) {
-    image.setSize({width:width, height: height});
+    image.setSize({width: width, height: height});
   }
 }
 
@@ -82,7 +88,7 @@ function addAnchor(group, x, y, name) {
   });
 
   anchor.on('dragmove', function() {
-    update(this);
+    updateAnchorMoved(this);
     layer.draw();
   });
   anchor.on('mousedown touchstart', function() {
@@ -133,16 +139,13 @@ function initStage(images) {
     width: 578,
     height: 400
   });
+
   var darthVaderGroup = new Kinetic.Group({
     x: 270,
     y: 100,
     draggable: true
   });
-  var yodaGroup = new Kinetic.Group({
-    x: 100,
-    y: 110,
-    draggable: true
-  });
+
   var layer = new Kinetic.Layer();
 
   /*
@@ -152,7 +155,6 @@ function initStage(images) {
    * of its layer and stage
    */
   layer.add(darthVaderGroup);
-  layer.add(yodaGroup);
   stage.add(layer);
 
   // darth vader
@@ -174,31 +176,11 @@ function initStage(images) {
   darthVaderGroup.on('dragstart', function() {
     this.moveToTop();
   });
-  // yoda
-  var yodaImg = new Kinetic.Image({
-    x: 0,
-    y: 0,
-    image: images.yoda,
-    width: 93,
-    height: 104,
-    name: 'image'
-  });
-
-  yodaGroup.add(yodaImg);
-  addAnchor(yodaGroup, 0, 0, 'topLeft');
-  addAnchor(yodaGroup, 93, 0, 'topRight');
-  addAnchor(yodaGroup, 93, 104, 'bottomRight');
-  addAnchor(yodaGroup, 0, 104, 'bottomLeft');
-
-  yodaGroup.on('dragstart', function() {
-    this.moveToTop();
-  });
 
   stage.draw();
 }
 
 var sources = {
   darthVader: 'http://www.html5canvastutorials.com/demos/assets/darth-vader.jpg',
-  yoda: 'http://www.html5canvastutorials.com/demos/assets/yoda.jpg'
 };
 loadImages(sources, initStage);

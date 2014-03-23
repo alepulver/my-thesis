@@ -1,5 +1,9 @@
 {
   "packages": {
-    "kinetic.js": {}
+    "kinetic.js": {},
+    "bower": {}
+  },
+  "bower": {
+  	"rsvp": "3.0.6"
   }
 }

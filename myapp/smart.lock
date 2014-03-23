@@ -2,13 +2,19 @@
   "meteor": {},
   "dependencies": {
     "basePackages": {
-      "kinetic.js": {}
+      "kinetic.js": {},
+      "bower": {}
     },
     "packages": {
       "kinetic.js": {
         "git": "https://github.com/brentjanderson/meteor-kinetic.git",
         "tag": "v5.0.1",
         "commit": "3c29f5bcbcdc9687081b336e59e8387dc02236a5"
+      },
+      "bower": {
+        "git": "https://github.com/mquandalle/meteor-bower.git",
+        "tag": "v0.1.5",
+        "commit": "4e96fa0365414371e412c8c5b79e7b4c2e6cefbf"
       }
     }
   }

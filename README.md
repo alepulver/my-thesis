@@ -45,4 +45,10 @@ Source modifications are reloaded automatically.
 
 ### TODO
 
-...
+- Save experiment session graphically
+  - [Stage data URL](http://www.html5canvastutorials.com/kineticjs/html5-canvas-stage-data-url-with-kineticjs/)
+  - [Replay system for KineticJS](http://nightlycoding.com/index.php/2014/01/replay-system-for-kineticjs-and-html5-canvas/)
+- [Dynamic canvas resizing](http://stackoverflow.com/questions/20770247/dynamic-canvas-re-sizing-in-kineticjs)
+- [Drag and Drop, resize, move example](http://www.html5canvastutorials.com/labs/html5-canvas-drag-and-drop-resize-and-invert-images/)
+- [Rotate example](http://codepen.io/ArtemGr/pen/ociAD)
+- [Javascript promises](http://www.html5rocks.com/en/tutorials/es6/promises/)
