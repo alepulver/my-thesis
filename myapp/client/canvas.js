@@ -1,33 +1,115 @@
-//var RSVP = Meteor.require('rsvp');
+function MyButton(parameters) {
+  var group = new Kinetic.Group({
+    x: parameters.x,
+    y: parameters.y,
+  });
 
+  var complexText = new Kinetic.Text({
+    text: parameters.text,
+    fontSize: 15,
+    fontFamily: 'Calibri',
+    fill: '#555',
+    width: parameters.width,
+    padding: 10,
+    align: 'center'
+  });
 
+  var rect = new Kinetic.Rect({
+    stroke: '#555',
+    strokeWidth: 5,
+    fill: '#ddd',
+    width: parameters.width,
+    height: complexText.height(),
+    /*
+    shadowColor: 'black',
+    shadowBlur: 10,
+    shadowOffset: {x:10,y:10},
+    shadowOpacity: 0.2,
+    */
+    cornerRadius: 10
+  });
+
+  group.add(rect);
+  group.add(complexText);
+
+  return group;
+}
+
+function MyChoiceMenu(stage, choices) {
+  var p = 0.1;
+  var layer = new Kinetic.Layer();
+
+  //alert(_.size(choices));
+  for (var key in choices) {
+    button = new MyButton({
+      text: choices[key],
+      x: 30,
+      y: stage.getHeight()*p,
+      width: 200
+    });
+    layer.add(button);
+    p += 0.8/Object.keys(choices).length;
+  }
+  return layer;
+}
 
 setupCanvas = function() {
-  blah = new RSVP.Promise();
+  //blah = new RSVP.Promise();
 
   var stage = new Kinetic.Stage({
     container: 'container',
-    width: 578,
-    height: 200
+    width: window.innerWidth * 0.7,
+    height: window.innerHeight * 0.9
   });
+
+  window.onresize = function() {
+    var width = window.innerWidth * 0.7;
+    var height = window.innerHeight * 0.9;
+    var scalex = width/stage.getWidth();
+    var scaley = height/stage.getHeight();
+
+    stage.setWidth(width);
+    stage.setHeight(height);
+    stage.scaleX(stage.scaleX()*scalex);
+    stage.scaleY(stage.scaleY()*scaley);
+    stage.draw();
+  }
 
   var layer = new Kinetic.Layer();
 
-  var rect = new Kinetic.Rect({
-    x: 239,
-    y: 75,
-    width: 100,
-    height: 50,
-    fill: 'green',
-    stroke: 'black',
-    strokeWidth: 4
+  /*
+  var button = MyButton({
+    text: 'blah blah blah',
+    x: 50,
+    y: 50,
+    width: 200
+  });
+    var button2 = MyButton({
+    text: 'some text',
+    x: 50,
+    y: 150,
+    width: 100
   });
 
+  layer.add(button);
+  layer.add(button2);
+  */
+
   // add the shape to the layer
-  layer.add(rect);
+  layer.add(new Kinetic.Rect({
+    fill: '#eeffee',
+    width: stage.getWidth(),
+    height: stage.getHeight()
+  }));
 
   // add the layer to the stage
   stage.add(layer);
+
+  stage.add(MyChoiceMenu(stage, {
+    one: 'first button',
+    two: 'second button',
+    third: 'another button'
+  }))
 }
 
 function updateAnchorMoved(activeAnchor) {
@@ -183,4 +265,4 @@ function initStage(images) {
 var sources = {
   darthVader: 'http://www.html5canvastutorials.com/demos/assets/darth-vader.jpg',
 };
-loadImages(sources, initStage);
+//loadImages(sources, initStage);

@@ -1,6 +1,7 @@
 # Python version
 
-This one uses a Python library that supports Windows, Linux, Mac and multitouch devices (Android, etc).
+This one uses a Python library that supports Windows, Linux, Mac and multitouch devices (Android, etc). It natively support Wacom tablets and widgets with layouts.
+
 See the [Kivy website](http://kivy.org/#home) and [these slides](http://slid.es/baptistelagarde/kivy-python-for-android/fullscreen#/).
 
 ## Install
@@ -39,6 +40,12 @@ python main.py
 ## Android package
 
 ...
+
+## Wacom tablet
+
+...
+
+See [here](http://kivy.org/docs/api-kivy.input.providers.linuxwacom.html).
 
 ## TODO
 

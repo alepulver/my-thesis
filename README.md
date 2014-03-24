@@ -12,6 +12,13 @@ It should work on modern web browsers as well as mobile devices, but the primary
 
 The idea is to use [KineticJS](http://kineticjs.com/) for graphics and [Meteor](https://www.meteor.com/) for the server.
 
+One drawback is that widgets and layouts must be either written from scratch, or use additional libraries like:
+- [bootstrap](http://getbootstrap.com/) (for HTML+CSS)
+- [zebra](http://www.zebkit.com/) (for Canvas)
+- [jLayout](http://www.bramstein.com/projects/jlayout/) (generic).
+
+And even if Wacom tablets aren't natively supported in Javascript, there is an official [Windows/Mac browser plugin](http://www.wacomeng.com/web/WebPluginReleaseNotes.htm), and an unofficial [Linux version](https://github.com/ZaneA/WacomWebPlugin) with partial support.
+
 ### Install
 
 ```
@@ -52,3 +59,4 @@ Source modifications are reloaded automatically.
 - [Drag and Drop, resize, move example](http://www.html5canvastutorials.com/labs/html5-canvas-drag-and-drop-resize-and-invert-images/)
 - [Rotate example](http://codepen.io/ArtemGr/pen/ociAD)
 - [Javascript promises](http://www.html5rocks.com/en/tutorials/es6/promises/)
+- Check this: https://github.com/HarvardEconCS/turkserver-meteor
