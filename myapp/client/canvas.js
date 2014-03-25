@@ -1,58 +1,3 @@
-function MyButton(parameters) {
-  var group = new Kinetic.Group({
-    x: parameters.x,
-    y: parameters.y,
-  });
-
-  var complexText = new Kinetic.Text({
-    text: parameters.text,
-    fontSize: 15,
-    fontFamily: 'Calibri',
-    fill: '#555',
-    width: parameters.width,
-    padding: 10,
-    align: 'center'
-  });
-
-  var rect = new Kinetic.Rect({
-    stroke: '#555',
-    strokeWidth: 5,
-    fill: '#ddd',
-    width: parameters.width,
-    height: complexText.height(),
-    /*
-    shadowColor: 'black',
-    shadowBlur: 10,
-    shadowOffset: {x:10,y:10},
-    shadowOpacity: 0.2,
-    */
-    cornerRadius: 10
-  });
-
-  group.add(rect);
-  group.add(complexText);
-
-  return group;
-}
-
-function MyChoiceMenu(stage, choices) {
-  var p = 0.1;
-  var layer = new Kinetic.Layer();
-
-  //alert(_.size(choices));
-  for (var key in choices) {
-    button = new MyButton({
-      text: choices[key],
-      x: 30,
-      y: stage.getHeight()*p,
-      width: 200
-    });
-    layer.add(button);
-    p += 0.8/Object.keys(choices).length;
-  }
-  return layer;
-}
-
 setupCanvas = function() {
   //blah = new RSVP.Promise();
 
@@ -102,14 +47,48 @@ setupCanvas = function() {
     height: stage.getHeight()
   }));
 
-  // add the layer to the stage
-  stage.add(layer);
-
-  stage.add(MyChoiceMenu(stage, {
+  menu = MyChoiceMenu(stage, {
     one: 'first button',
     two: 'second button',
     third: 'another button'
-  }))
+  });
+
+  menu.promise.then(function(key) {
+    alert(key);
+  });
+
+  layer.add(new MyResizableWrapper(
+    new Kinetic.Circle({
+      x: 0,
+      y: 0,
+      radius: 70,
+      fill: 'red',
+      name: 'image'
+    })));
+
+  /*
+  Pseudocode
+  while choices_remaining > 0
+    c = choicemenu(choices_remaining)
+    color = choosecolor
+    circle = drawcircle(c, color)
+  */
+
+    // add the layer to the stage
+  /*
+  layer.add(new Kinetic.Circle({
+      x: stage.getWidth() / 2,
+      y: stage.getHeight() / 2,
+      radius: 70,
+      fill: 'red',
+      opacity: 0.5
+    }));
+  */
+  stage.add(layer);
+  stage.add(menu.layer)
+
+
+
 }
 
 function updateAnchorMoved(activeAnchor) {
@@ -150,10 +129,14 @@ function updateAnchorMoved(activeAnchor) {
   var height = bottomLeft.y() - topLeft.y();
   if(width && height) {
     image.setSize({width: width, height: height});
+    image.setAttrs({
+      x: image.getOffsetX(),
+      y: image.getOffsetY()
+    });
   }
 }
 
-function addAnchor(group, x, y, name) {
+addAnchor = function(group, x, y, name) {
   var stage = group.getStage();
   var layer = group.getLayer();
 
@@ -196,7 +179,8 @@ function addAnchor(group, x, y, name) {
   });
 
   group.add(anchor);
-}
+};
+
 function loadImages(sources, callback) {
   var images = {};
   var loadedImages = 0;
