@@ -1,131 +1,64 @@
-MyButton = function(parameters) {
-  var group = new Kinetic.Group({
-    x: parameters.x,
-    y: parameters.y,
-  });
-
-  var complexText = new Kinetic.Text({
-    text: parameters.text,
-    fontSize: 15,
-    fontFamily: 'Calibri',
-    fill: '#555',
-    width: parameters.width,
-    padding: 10,
-    align: 'center'
-  });
-
-  var rect = new Kinetic.Rect({
-    stroke: '#555',
-    strokeWidth: 5,
-    fill: '#ddd',
-    width: parameters.width,
-    height: complexText.height(),
-    /*
-    shadowColor: 'black',
-    shadowBlur: 10,
-    shadowOffset: {x:10,y:10},
-    shadowOpacity: 0.2,
-    */
-    cornerRadius: 10
-  });
-
-  group.add(rect);
-  group.add(complexText);
-
-  return group;
-};
-
-MyChoiceMenu = function(stage, choices) {
-  var p = 0.1;
-  var layer = new Kinetic.Layer();
-  var promise = new RSVP.Promise(function(resolve, reject) {
-    // XXX: Javascript "for (var key in ...)" bindings for "key" don't work, we need a function argument
-    _.each(choices, function(value, key) {
-      var button = new MyButton({
-        text: value,
-        x: 30,
-        y: stage.getHeight()*p,
-        width: 200
-      });
-      layer.add(button);
-
-      button.on('mousedown', function() {
-        resolve(key);
-      });
-
-      p += 0.8/Object.keys(choices).length;
-    });
-  });
-  return {layer: layer, promise: promise};
-};
-
-MyResizableWrapper = function(shape) {
-  var group = new Kinetic.Group({
-  	x: 100,
-  	y: 100,
-  	draggable: true
-  });
-
-  group.add(shape);
-  addAnchor(group, 0, 0, 'topLeft');
-  addAnchor(group, shape.getWidth(), 0, 'topRight');
-  addAnchor(group, shape.getWidth(), shape.getHeight(), 'bottomRight');
-  addAnchor(group, 0, shape.getHeight(), 'bottomLeft');
-
-  return group;
-};
-
-function Workflow() {
-
+function assert(condition, message) {
+    if (!condition) {
+    	console.log(message || "Assertion failed");
+        throw message || "Assertion failed";
+    }
 }
 
-Workflow.prototype.run = function() {
-	//this.step = new EmptyStep();
+Workflow = function(kineticStage) {
+	this.stage = kineticStage;
+	this.current_step = null;
+	this.current_layer = null;
+};
+
+Workflow.prototype.run = function(returnHandler) {
+	this.handler = returnHandler;
+	this.handler({step: 'start', results: 'none'});
 };
 
 Workflow.prototype.step_call = function(step, parameters) {
-
+	assert(this.current_step == null, "wrong call");
+	this.current_step = step;
+	var layer = step.setup_operation(parameters);
+	this.current_layer = layer;
+	this.stage.add(layer);
 };
 
-Workflow.prototype.step_return = function(parameters) {
-
+Workflow.prototype.step_return = function(step, results) {
+	assert(step == this.current_step, "wrong return")
+	this.current_step = null;
+	this.current_layer.remove();
+	this.current_layer = null;
+	this.handler({step: step, results: results});
 };
 
-function WorkflowStep(workflow) {
+WorkflowStep = function(workflow) {
 	this.workflow = workflow;
 }
 
-WorkflowStep.prototype.ret = function(result) {
-	this.workflow.step_return(result);
+WorkflowStep.prototype.call_with = function(parameters) {
+	this.workflow.step_call(this, parameters);
+}
+
+WorkflowStep.prototype.setup_operation = function(parameters) {
+	throw 'subclass responsability';
 };
 
-function ChooseElement(workflow) {
+WorkflowStep.prototype.return_value = function(result) {
+	this.workflow.step_return(this, result);
+};
+
+ChooseElement = function(workflow) {
 	WorkflowStep.call(this, workflow);
 }
 
 ChooseElement.prototype = Object.create(WorkflowStep.prototype);
 
-ChooseElement.prototype.start = function(choices) {
-	var rect = new Kinetic.Rect({
-		x: 239,
-		y: 75,
-		width: 100,
-		height: 50,
-		fill: 'green',
-		stroke: 'black',
-		strokeWidth: 4
+ChooseElement.prototype.setup_operation = function(choices) {
+	var menu = MyChoiceMenu(this.workflow.stage, choices);
+	var self = this;
+	menu.promise.then(function(result) {
+		self.return_value(result);
 	});
-
-	var simpleText = new Kinetic.Text({
-		x: stage.width() / 2,
-		y: 15,
-		text: 'Simple Text',
-		fontSize: 30,
-		fontFamily: 'Calibri',
-		fill: 'green'
-	});
-};
-
-ChooseElement.prototype.finish = function(result) {
-	
+	return menu.layer;
 };

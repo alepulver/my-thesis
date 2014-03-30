@@ -20,25 +20,27 @@ setupCanvas = function() {
     stage.draw();
   }
 
-  var layer = new Kinetic.Layer();
+  var workflow = new Workflow(stage);
+
+  var choice_menu = new ChooseElement(workflow);
+  var my_choices = {
+    one: 'first button',
+    two: 'second button',
+    third: 'another button'
+  };
+
+  workflow.run(function(result) {
+    if (result.step == 'start') {
+      choice_menu.call_with(my_choices);
+    } else if (result.step == choice_menu) {
+      delete my_choices[result.results];
+      alert(result.results);
+      choice_menu.call_with(my_choices);
+    }
+  });
 
   /*
-  var button = MyButton({
-    text: 'blah blah blah',
-    x: 50,
-    y: 50,
-    width: 200
-  });
-    var button2 = MyButton({
-    text: 'some text',
-    x: 50,
-    y: 150,
-    width: 100
-  });
-
-  layer.add(button);
-  layer.add(button2);
-  */
+  var layer = new Kinetic.Layer();
 
   // add the shape to the layer
   layer.add(new Kinetic.Rect({
@@ -46,16 +48,6 @@ setupCanvas = function() {
     width: stage.getWidth(),
     height: stage.getHeight()
   }));
-
-  menu = MyChoiceMenu(stage, {
-    one: 'first button',
-    two: 'second button',
-    third: 'another button'
-  });
-
-  menu.promise.then(function(key) {
-    alert(key);
-  });
 
   layer.add(new MyResizableWrapper(
     new Kinetic.Circle({
@@ -65,6 +57,7 @@ setupCanvas = function() {
       fill: 'red',
       name: 'image'
     })));
+  */
 
   /*
   Pseudocode
@@ -84,11 +77,6 @@ setupCanvas = function() {
       opacity: 0.5
     }));
   */
-  stage.add(layer);
-  stage.add(menu.layer)
-
-
-
 }
 
 function updateAnchorMoved(activeAnchor) {
