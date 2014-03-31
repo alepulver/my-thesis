@@ -24,59 +24,32 @@ setupCanvas = function() {
 
   var choice_menu = new ChooseElement(workflow);
   var my_choices = {
-    one: 'first button',
-    two: 'second button',
-    third: 'another button'
+    one: 'Present',
+    two: 'Past',
+    third: 'Future'
   };
+  var remaining = 3;
+  var canvas_circles = new CanvasForCircles(workflow);
 
   workflow.run(function(result) {
     if (result.step == 'start') {
       choice_menu.call_with(my_choices);
+    
     } else if (result.step == choice_menu) {
       delete my_choices[result.results];
-      alert(result.results);
-      choice_menu.call_with(my_choices);
+      remaining -= 1;
+      canvas_circles.call_with(result.results);
+    
+    } else if (result.step == canvas_circles) {
+      if (remaining > 0) {
+        choice_menu.call_with(my_choices);
+      } else {
+        alert('end');
+      }
     }
   });
 
-  /*
-  var layer = new Kinetic.Layer();
-
-  // add the shape to the layer
-  layer.add(new Kinetic.Rect({
-    fill: '#eeffee',
-    width: stage.getWidth(),
-    height: stage.getHeight()
-  }));
-
-  layer.add(new MyResizableWrapper(
-    new Kinetic.Circle({
-      x: 0,
-      y: 0,
-      radius: 70,
-      fill: 'red',
-      name: 'image'
-    })));
-  */
-
-  /*
-  Pseudocode
-  while choices_remaining > 0
-    c = choicemenu(choices_remaining)
-    color = choosecolor
-    circle = drawcircle(c, color)
-  */
-
-    // add the layer to the stage
-  /*
-  layer.add(new Kinetic.Circle({
-      x: stage.getWidth() / 2,
-      y: stage.getHeight() / 2,
-      radius: 70,
-      fill: 'red',
-      opacity: 0.5
-    }));
-  */
+  //myFuncTest();
 }
 
 function updateAnchorMoved(activeAnchor) {
@@ -111,16 +84,21 @@ function updateAnchorMoved(activeAnchor) {
       break;
   }
 
-  image.setPosition(topLeft.getPosition());
-
   var width = topRight.x() - topLeft.x();
   var height = bottomLeft.y() - topLeft.y();
+
+  image.setPosition(topLeft.getPosition());
+
   if(width && height) {
     image.setSize({width: width, height: height});
+    image.setOffsetX(- width / 2);
+    image.setOffsetY(- height / 2);
+    /*
     image.setAttrs({
       x: image.getOffsetX(),
       y: image.getOffsetY()
     });
+    */
   }
 }
 
@@ -142,7 +120,7 @@ addAnchor = function(group, x, y, name) {
 
   anchor.on('dragmove', function() {
     updateAnchorMoved(this);
-    layer.draw();
+    //layer.draw();
   });
   anchor.on('mousedown touchstart', function() {
     group.setDraggable(false);
@@ -150,91 +128,21 @@ addAnchor = function(group, x, y, name) {
   });
   anchor.on('dragend', function() {
     group.setDraggable(true);
-    layer.draw();
+    //layer.draw();
   });
   // add hover styling
   anchor.on('mouseover', function() {
     var layer = this.getLayer();
     document.body.style.cursor = 'pointer';
     this.setStrokeWidth(4);
-    layer.draw();
+    //layer.draw();
   });
   anchor.on('mouseout', function() {
     var layer = this.getLayer();
     document.body.style.cursor = 'default';
     this.strokeWidth(2);
-    layer.draw();
+    //layer.draw();
   });
 
   group.add(anchor);
 };
-
-function loadImages(sources, callback) {
-  var images = {};
-  var loadedImages = 0;
-  var numImages = 0;
-  for(var src in sources) {
-    numImages++;
-  }
-  for(var src in sources) {
-    images[src] = new Image();
-    images[src].onload = function() {
-      if(++loadedImages >= numImages) {
-        callback(images);
-      }
-    };
-    images[src].src = sources[src];
-  }
-}
-
-function initStage(images) {
-  var stage = new Kinetic.Stage({
-    container: 'container',
-    width: 578,
-    height: 400
-  });
-
-  var darthVaderGroup = new Kinetic.Group({
-    x: 270,
-    y: 100,
-    draggable: true
-  });
-
-  var layer = new Kinetic.Layer();
-
-  /*
-   * go ahead and add the groups
-   * to the layer and the layer to the
-   * stage so that the groups have knowledge
-   * of its layer and stage
-   */
-  layer.add(darthVaderGroup);
-  stage.add(layer);
-
-  // darth vader
-  var darthVaderImg = new Kinetic.Image({
-    x: 0,
-    y: 0,
-    image: images.darthVader,
-    width: 200,
-    height: 138,
-    name: 'image'
-  });
-
-  darthVaderGroup.add(darthVaderImg);
-  addAnchor(darthVaderGroup, 0, 0, 'topLeft');
-  addAnchor(darthVaderGroup, 200, 0, 'topRight');
-  addAnchor(darthVaderGroup, 200, 138, 'bottomRight');
-  addAnchor(darthVaderGroup, 0, 138, 'bottomLeft');
-
-  darthVaderGroup.on('dragstart', function() {
-    this.moveToTop();
-  });
-
-  stage.draw();
-}
-
-var sources = {
-  darthVader: 'http://www.html5canvastutorials.com/demos/assets/darth-vader.jpg',
-};
-//loadImages(sources, initStage);

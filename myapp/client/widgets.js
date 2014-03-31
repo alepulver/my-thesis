@@ -61,8 +61,8 @@ MyChoiceMenu = function(stage, choices) {
 
 MyResizableWrapper = function(shape) {
   var group = new Kinetic.Group({
-  	x: 100,
-  	y: 100,
+  	x: 0,
+  	y: 0,
   	draggable: true
   });
 
