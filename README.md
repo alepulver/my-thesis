@@ -39,7 +39,7 @@ npm install -g meteorite
 
 ```
 cd myapp
-meteor
+mrt
 ```
 
 And enter the following url: http://localhost:3000/
@@ -52,6 +52,14 @@ Source modifications are reloaded automatically.
 
 ### TODO
 
+- Fix circle positions when saving
+- Add color selection
+- Save results and allow downloading as CSV, etc
+- Ask participant data, use bootstrap and/or views
+- Check this? https://github.com/HarvardEconCS/turkserver-meteor
+
+### References
+
 - Save experiment session graphically
   - [Stage data URL](http://www.html5canvastutorials.com/kineticjs/html5-canvas-stage-data-url-with-kineticjs/)
   - [Replay system for KineticJS](http://nightlycoding.com/index.php/2014/01/replay-system-for-kineticjs-and-html5-canvas/)
@@ -59,4 +67,3 @@ Source modifications are reloaded automatically.
 - [Drag and Drop, resize, move example](http://www.html5canvastutorials.com/labs/html5-canvas-drag-and-drop-resize-and-invert-images/)
 - [Rotate example](http://codepen.io/ArtemGr/pen/ociAD)
 - [Javascript promises](http://www.html5rocks.com/en/tutorials/es6/promises/)
-- Check this: https://github.com/HarvardEconCS/turkserver-meteor

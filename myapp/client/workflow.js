@@ -69,35 +69,42 @@ ChooseElement.prototype.setup_operation = function(choices) {
 CanvasForCircles = function(workflow) {
 	WorkflowStep.call(this, workflow);
 	this.layer = new Kinetic.Layer();
-};
 
-CanvasForCircles.prototype = Object.create(WorkflowStep.prototype);
-
-CanvasForCircles.prototype.setup_operation = function() {
 	var background = new Kinetic.Rect({
     	fill: '#eeffee',
     	width: this.workflow.stage.getWidth(),
     	height: this.workflow.stage.getHeight()
   	});
+  	this.layer.add(background);
+};
+
+CanvasForCircles.prototype = Object.create(WorkflowStep.prototype);
+
+CanvasForCircles.prototype.setup_operation = function() {
+
 	var circle = new Kinetic.Circle({
     	x: 0,
     	y: 0,
     	radius: 70,
+    	stroke: 'black',
     	offsetX: -70,
     	offsetY: -70,
-    	fill: 'red',
+    	fill: 'transparent',
     	name: 'image'
     });
     var button = new MyButton({x: 100, y: this.workflow.stage.getHeight()-100, width: 100, text: 'Accept'});
+    var wrapper = new MyResizableWrapper(circle);
 
     var self = this;
     button.on('mousedown', function() {
+    	button.remove();
+    	wrapper.remove();
+    	self.layer.add(circle);
     	self.return_value(circle.getPosition());
     });
 
-  	this.layer.add(background);
   	this.layer.add(button);
-  	this.layer.add(new MyResizableWrapper(circle));
+  	this.layer.add(wrapper);
 
   	return this.layer;
 };
