@@ -59,18 +59,18 @@ MyChoiceMenu = function(stage, choices) {
   return {layer: layer, promise: promise};
 };
 
-MyResizableWrapper = function(shape) {
+MyResizableWrapper = function(shape, stage) {
   var group = new Kinetic.Group({
-  	x: 0,
-  	y: 0,
+  	x: stage.getWidth()/2,
+  	y: stage.getHeight()/2,
   	draggable: true
   });
 
   group.add(shape);
-  addAnchor(group, 0, 0, 'topLeft');
-  addAnchor(group, shape.getWidth(), 0, 'topRight');
-  addAnchor(group, shape.getWidth(), shape.getHeight(), 'bottomRight');
-  addAnchor(group, 0, shape.getHeight(), 'bottomLeft');
+  addAnchor(group, -shape.getWidth()/2, -shape.getHeight()/2, 'topLeft');
+  addAnchor(group, shape.getWidth()/2, -shape.getHeight()/2, 'topRight');
+  addAnchor(group, shape.getWidth()/2, shape.getHeight()/2, 'bottomRight');
+  addAnchor(group, -shape.getWidth()/2, shape.getHeight()/2, 'bottomLeft');
 
   return group;
 };

@@ -44,7 +44,15 @@ mrt
 
 And enter the following url: http://localhost:3000/
 
-Source modifications are reloaded automatically.
+Source modifications are reloaded automatically, except for `client/handler.jsrg` for which this should be run:
+
+```
+# Only the first time
+npm install -g regenerator
+
+# Every time
+regenerator client/handler.jsrg > client/handler.js
+```
 
 ### On-line prototype
 
@@ -53,6 +61,7 @@ Source modifications are reloaded automatically.
 ### TODO
 
 - Fix circle positions when saving
+- Remove "hello world" text and use message div outside canvas, or switch canvas away when displaying buttons as HTML+CSS.
 - Add color selection
 - Save results and allow downloading as CSV, etc
 - Ask participant data, use bootstrap and/or views
@@ -67,3 +76,4 @@ Source modifications are reloaded automatically.
 - [Drag and Drop, resize, move example](http://www.html5canvastutorials.com/labs/html5-canvas-drag-and-drop-resize-and-invert-images/)
 - [Rotate example](http://codepen.io/ArtemGr/pen/ociAD)
 - [Javascript promises](http://www.html5rocks.com/en/tutorials/es6/promises/)
+- [regenerator](http://facebook.github.io/regenerator/) (generator functions for current Javascript)

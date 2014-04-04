@@ -21,35 +21,7 @@ setupCanvas = function() {
   }
 
   var workflow = new Workflow(stage);
-
-  var choice_menu = new ChooseElement(workflow);
-  var my_choices = {
-    one: 'Present',
-    two: 'Past',
-    third: 'Future'
-  };
-  var remaining = 3;
-  var canvas_circles = new CanvasForCircles(workflow);
-
-  workflow.run(function(result) {
-    if (result.step == 'start') {
-      choice_menu.call_with(my_choices);
-    
-    } else if (result.step == choice_menu) {
-      delete my_choices[result.results];
-      remaining -= 1;
-      canvas_circles.call_with(result.results);
-    
-    } else if (result.step == canvas_circles) {
-      if (remaining > 0) {
-        choice_menu.call_with(my_choices);
-      } else {
-        alert('end');
-      }
-    }
-  });
-
-  //myFuncTest();
+  workflow.run(workflowHandler(workflow));
 }
 
 function updateAnchorMoved(activeAnchor) {
@@ -87,12 +59,16 @@ function updateAnchorMoved(activeAnchor) {
   var width = topRight.x() - topLeft.x();
   var height = bottomLeft.y() - topLeft.y();
 
-  image.setPosition(topLeft.getPosition());
+  var center = {
+    x: (topLeft.x() + bottomRight.x())/2,
+    y: (topLeft.y() + bottomRight.y())/2
+  };
+  image.setPosition(center);
 
   if(width && height) {
     image.setSize({width: width, height: height});
-    image.setOffsetX(- width / 2);
-    image.setOffsetY(- height / 2);
+    //image.setOffsetX(- width / 2);
+    //image.setOffsetY(- height / 2);
     /*
     image.setAttrs({
       x: image.getOffsetX(),

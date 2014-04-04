@@ -14,7 +14,13 @@ Workflow = function(kineticStage) {
 
 Workflow.prototype.run = function(returnHandler) {
 	this.handler = returnHandler;
-	this.handler({step: 'start', results: 'none'});
+	var info = this.handler.next();
+	if (info.done) {
+		this.finish();
+	} else {
+		var data = info.value;
+		this.step_call(data.step, data.parameters);
+	}
 };
 
 Workflow.prototype.step_call = function(step, parameters) {
@@ -32,16 +38,29 @@ Workflow.prototype.step_return = function(step, results) {
 	this.current_step = null;
 	this.current_layer.remove();
 	this.current_layer = null;
-	this.handler({step: step, results: results});
+	
+	var info = this.handler.next(results);
+	if (info.done) {
+		this.finish();
+	} else {
+		var data = info.value;
+		this.step_call(data.step, data.parameters);
+	}
+};
+
+Workflow.prototype.finish = function() {
+
 };
 
 WorkflowStep = function(workflow) {
 	this.workflow = workflow;
 }
 
+/*
 WorkflowStep.prototype.call_with = function(parameters) {
 	this.workflow.step_call(this, parameters);
 }
+*/
 
 WorkflowStep.prototype.setup_operation = function(parameters) {
 	throw 'subclass responsability';
@@ -87,20 +106,21 @@ CanvasForCircles.prototype.setup_operation = function() {
     	y: 0,
     	radius: 70,
     	stroke: 'black',
-    	offsetX: -70,
-    	offsetY: -70,
+    	offsetX: 0,
+    	offsetY: 0,
     	fill: 'transparent',
     	name: 'image'
     });
     var button = new MyButton({x: 100, y: this.workflow.stage.getHeight()-100, width: 100, text: 'Accept'});
-    var wrapper = new MyResizableWrapper(circle);
+    var wrapper = new MyResizableWrapper(circle, this.workflow.stage);
 
     var self = this;
     button.on('mousedown', function() {
     	button.remove();
     	wrapper.remove();
+    	circle.setPosition(wrapper.getPosition());
     	self.layer.add(circle);
-    	self.return_value(circle.getPosition());
+    	self.return_value(wrapper.getPosition());
     });
 
   	this.layer.add(button);
