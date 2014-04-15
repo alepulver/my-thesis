@@ -1,18 +1,84 @@
-workflowHandler = function* (workflow) {
-	var choice_menu = new ChooseElement(workflow);
-	var my_choices = {
-		one: 'Present',
-		two: 'Past',
-		third: 'Future'
-	};
-	var remaining = 3;
- 	var canvas_circles = new CanvasForCircles(workflow);
+workflowHandler = function(stage) {
+	return function*() {
+		var choose_layer = new Kinetic.Layer({
+			x: 0,
+			y: 0,
+			width: 400,
+			height: 300
+		});
+		choose_layer.add(new Kinetic.Rect({
+			x: 0,
+			y: 0,
+			width: 380,
+			height: 290,
+			fill: 'transparent',
+			stroke: 'red',
+			strokeWidth: 5
+		}));
+		var my_choices = [
+			{name: 'one', text: 'Present'},
+			{name: 'two', text: 'Past'},
+			{name: 'three', text: 'Future'}
+		];
 
- 	while (remaining > 0) {
- 		var choice = yield {step: choice_menu, parameters: my_choices};
- 		delete my_choices[choice];
-      	remaining -= 1;
-      	var circle = yield {step: canvas_circles, parameters: choice};
- 	}
- 	alert("end");
+		var color_layer = new Kinetic.Layer({
+			x: 400,
+			y: 0,
+			width: 400,
+			height: 300
+		});
+
+		var circles_layer = new Kinetic.Layer({
+			x: 0,
+			y: 300,
+			width: 800,
+			height: 500
+		});
+
+		circles_layer.add(new Kinetic.Rect({
+			x: 500,
+			y: 500,
+			width: 790,
+			height: 290,
+			fill: 'red'
+		}));
+
+		stage.add(choose_layer);
+
+		var choice_menu = new ChooseElement(my_choices, choose_layer);
+		var circle_canvas = new CanvasForCircles(circles_layer);
+		var color_menu = new ColorChooser(['#ff0000', '#00ff00', '#0000ff'], color_layer);
+		color_menu.setNotifier(function(color) {
+			circle_canvas.setColor(color);
+		});
+		choose_layer.draw();
+		stage.add(color_layer);
+
+	 	stage.add(circles_layer);
+	 	circles_layer.draw();
+
+	 	var remaining = 3;
+	 	while (remaining > 0) {
+	 		var val = yield choice_menu.get_click();
+	 		//alert(val);
+
+	 		stage.draw();
+	 		var circle = yield circle_canvas.new_circle();
+	 		circles_layer.add(circle);
+	 		circles_layer.draw();
+			//alert(circle);
+			remaining--;
+		}
+	 	/*
+	 	var canvas_circles = new CanvasForCircles(workflow);
+
+	 	while (remaining > 0) {
+	 		var choice = yield {step: choice_menu, parameters: my_choices};
+	 		delete my_choices[choice];
+	      	remaining -= 1;
+	      	var circle = yield {step: canvas_circles, parameters: choice};
+	 	}
+	 	alert("end");
+	 	*/
+	 };
 };

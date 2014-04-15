@@ -1,11 +1,3 @@
-function assert(condition, message) {
-    if (!condition) {
-    	str = message || "Assertion failed";
-    	console.log(str);
-        throw str;
-    }
-}
-
 Workflow = function(kineticStage) {
 	this.stage = kineticStage;
 	this.current_step = null;
@@ -13,54 +5,12 @@ Workflow = function(kineticStage) {
 };
 
 Workflow.prototype.run = function(returnHandler) {
-	this.handler = returnHandler;
-	var info = this.handler.next();
-	if (info.done) {
-		this.finish();
-	} else {
-		var data = info.value;
-		this.step_call(data.step, data.parameters);
-	}
-};
-
-Workflow.prototype.step_call = function(step, parameters) {
-	assert(this.current_step == null, "wrong call");
-	
-	this.current_step = step;
-	var layer = step.setup_operation(parameters);
-	this.current_layer = layer;
-	this.stage.add(layer);
-};
-
-Workflow.prototype.step_return = function(step, results) {
-	assert(step == this.current_step, "wrong return")
-	
-	this.current_step = null;
-	this.current_layer.remove();
-	this.current_layer = null;
-	
-	var info = this.handler.next(results);
-	if (info.done) {
-		this.finish();
-	} else {
-		var data = info.value;
-		this.step_call(data.step, data.parameters);
-	}
-};
-
-Workflow.prototype.finish = function() {
 
 };
 
 WorkflowStep = function(workflow) {
 	this.workflow = workflow;
 }
-
-/*
-WorkflowStep.prototype.call_with = function(parameters) {
-	this.workflow.step_call(this, parameters);
-}
-*/
 
 WorkflowStep.prototype.setup_operation = function(parameters) {
 	throw 'subclass responsability';
@@ -70,61 +20,128 @@ WorkflowStep.prototype.return_value = function(result) {
 	this.workflow.step_return(this, result);
 };
 
-ChooseElement = function(workflow) {
-	WorkflowStep.call(this, workflow);
-}
-
-ChooseElement.prototype = Object.create(WorkflowStep.prototype);
-
-ChooseElement.prototype.setup_operation = function(choices) {
-	var menu = MyChoiceMenu(this.workflow.stage, choices);
+ChooseElement = function(choices, layer) {
+	this.choices = choices;
+	this.layer = layer;
+	this.deferred = null;
 	var self = this;
-	menu.promise.then(function(result) {
-		self.return_value(result);
+	var p = 0.1;
+
+	_.each(this.choices, function(element) {
+		var button = new MyButton({
+			text: element['text'],
+			x: 30,
+			y: self.layer.getHeight()*p,
+			width: 100
+		});
+		self.layer.add(button);
+
+		button.on('mousedown', function() {
+			self.button_pressed(element['name']);
+		});
+
+		p += 0.8/self.choices.length;
 	});
-	return menu.layer;
 };
 
-CanvasForCircles = function(workflow) {
-	WorkflowStep.call(this, workflow);
-	this.layer = new Kinetic.Layer();
+//ChooseElement.prototype = Object.create(WorkflowStep.prototype);
+
+ChooseElement.prototype.get_click = function() {
+	this.deferred = RSVP.defer();
+	return this.deferred.promise;
+};
+
+ChooseElement.prototype.button_pressed = function(name) {
+	if (this.deferred != null) {
+		this.deferred.resolve(name);
+	}
+};
+
+CanvasForCircles = function(layer) {
+	this.layer = layer;
+	this.circles = [];
 
 	var background = new Kinetic.Rect({
     	fill: '#eeffee',
-    	width: this.workflow.stage.getWidth(),
-    	height: this.workflow.stage.getHeight()
+    	width: this.layer.getWidth(),
+    	height: this.layer.getHeight()
   	});
   	this.layer.add(background);
 };
 
-CanvasForCircles.prototype = Object.create(WorkflowStep.prototype);
+//CanvasForCircles.prototype = Object.create(WorkflowStep.prototype);
 
-CanvasForCircles.prototype.setup_operation = function() {
+CanvasForCircles.prototype.new_circle = function() {
+	this.deferred = RSVP.defer();
 
 	var circle = new Kinetic.Circle({
     	x: 0,
     	y: 0,
     	radius: 70,
     	stroke: 'black',
+    	strokeWidth: 10,
     	offsetX: 0,
     	offsetY: 0,
     	fill: 'transparent',
     	name: 'image'
     });
-    var button = new MyButton({x: 100, y: this.workflow.stage.getHeight()-100, width: 100, text: 'Accept'});
-    var wrapper = new MyResizableWrapper(circle, this.workflow.stage);
+    this.circle = circle;
+    var button = new MyButton({x: 100, y: this.layer.getHeight()-100, width: 100, text: 'Accept'});
+    var wrapper = new MyResizableWrapper(circle, this.layer);
 
     var self = this;
     button.on('mousedown', function() {
     	button.remove();
     	wrapper.remove();
     	circle.setPosition(wrapper.getPosition());
-    	self.layer.add(circle);
-    	self.return_value(wrapper.getPosition());
+    	//self.layer.add(circle);
+    	self.layer.draw();
+    	self.deferred.resolve(circle);
     });
 
   	this.layer.add(button);
   	this.layer.add(wrapper);
+  	this.layer.draw();
 
-  	return this.layer;
+  	return this.deferred.promise;
+};
+
+CanvasForCircles.prototype.setColor = function(color) {
+	this.circle.setStroke(color);
+	this.circle.draw();
+};
+
+ColorChooser = function(colors, layer) {
+	this.layer = layer;
+	this.colors = colors;
+	this.notifier = null;
+
+	var position = 0;
+	var self = this;
+	_.each(this.colors, function(color) {
+		var rect = new Kinetic.Rect({
+			x: position,
+			y: 0,
+			width: 20,
+			height: 20,
+			fill: color
+		});
+		rect.on('mousedown', function() {
+			self.notify(color);
+		});
+		self.layer.add(rect);
+		position += 25;
+	});
+
+	this.layer.draw();
+};
+
+ColorChooser.prototype.notify = function(color) {
+	if (this.notifier != null) {
+		this.notifier(color);
+	}
+};
+
+ColorChooser.prototype.setNotifier = function(notifier) {
+	this.notifier = notifier;
 };

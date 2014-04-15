@@ -35,6 +35,8 @@ curl https://install.meteor.com/ | sh
 npm install -g meteorite
 ```
 
+Finally, clone my `meteor-regenerator` repository and symlink it to `myapp/packages/regenerator`.
+
 ### Run locally
 
 ```
@@ -44,15 +46,7 @@ mrt
 
 And enter the following url: http://localhost:3000/
 
-Source modifications are reloaded automatically, except for `client/handler.jsrg` for which this should be run:
-
-```
-# Only the first time
-npm install -g regenerator
-
-# Every time
-regenerator client/handler.jsrg > client/handler.js
-```
+Source modifications are reloaded automatically.
 
 ### On-line prototype
 
@@ -60,7 +54,6 @@ regenerator client/handler.jsrg > client/handler.js
 
 ### TODO
 
-- Fix circle positions when saving
 - Remove "hello world" text and use message div outside canvas, or switch canvas away when displaying buttons as HTML+CSS.
 - Add color selection
 - Save results and allow downloading as CSV, etc

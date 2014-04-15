@@ -35,34 +35,10 @@ MyButton = function(parameters) {
   return group;
 };
 
-MyChoiceMenu = function(stage, choices) {
-  var p = 0.1;
-  var layer = new Kinetic.Layer();
-  var promise = new RSVP.Promise(function(resolve, reject) {
-    // XXX: Javascript "for (var key in ...)" bindings for "key" don't work, we need a function argument
-    _.each(choices, function(value, key) {
-      var button = new MyButton({
-        text: value,
-        x: 30,
-        y: stage.getHeight()*p,
-        width: 200
-      });
-      layer.add(button);
-
-      button.on('mousedown', function() {
-        resolve(key);
-      });
-
-      p += 0.8/Object.keys(choices).length;
-    });
-  });
-  return {layer: layer, promise: promise};
-};
-
-MyResizableWrapper = function(shape, stage) {
+MyResizableWrapper = function(shape, layer) {
   var group = new Kinetic.Group({
-  	x: stage.getWidth()/2,
-  	y: stage.getHeight()/2,
+  	x: layer.getWidth()/2,
+  	y: layer.getHeight()/2,
   	draggable: true
   });
 

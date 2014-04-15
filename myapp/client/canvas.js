@@ -3,6 +3,13 @@ setupCanvas = function() {
 
   var stage = new Kinetic.Stage({
     container: 'container',
+    width: 800,
+    height: 800
+  });
+
+  /*
+  var stage = new Kinetic.Stage({
+    container: 'container',
     width: window.innerWidth * 0.7,
     height: window.innerHeight * 0.9
   });
@@ -19,9 +26,36 @@ setupCanvas = function() {
     stage.scaleY(stage.scaleY()*scaley);
     stage.draw();
   }
+  */
 
-  var workflow = new Workflow(stage);
-  workflow.run(workflowHandler(workflow));
+  //var workflow = new Workflow(stage);
+  //workflow.run(workflowHandler(workflow));
+  spawnGenerator(workflowHandler(stage));
+}
+
+spawnGenerator = function(generatorFunc) {
+  function continuer(verb, arg) {
+    var result;
+    /*
+    try {
+      result = generator[verb](arg);
+    } catch (err) {
+      return RSVP.Promise.reject(err);
+    }
+    */
+    result = generator[verb](arg);
+    if (result.done) {
+      return result.value;
+    } else {
+      return RSVP.Promise.resolve(result.value).then(onFulfilled, onRejected);
+    }
+  }
+  
+  var generator = generatorFunc();
+  var onFulfilled = continuer.bind(continuer, "next");
+  var onRejected = continuer.bind(continuer, "throw");
+  
+  return onFulfilled();
 }
 
 function updateAnchorMoved(activeAnchor) {
@@ -122,3 +156,11 @@ addAnchor = function(group, x, y, name) {
 
   group.add(anchor);
 };
+
+assert = function(condition, message) {
+    if (!condition) {
+      str = message || "Assertion failed";
+      console.log(str);
+        throw str;
+    }
+}
