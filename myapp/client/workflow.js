@@ -121,13 +121,23 @@ ColorChooser = function(colors, layer) {
 	_.each(this.colors, function(color) {
 		var rect = new Kinetic.Rect({
 			x: position,
-			y: 0,
+			y: 5,
 			width: 20,
 			height: 20,
 			fill: color
 		});
 		rect.on('mousedown', function() {
 			self.notify(color);
+		});
+		rect.on('mouseover', function() {
+			rect.setStroke('black');
+			rect.setStrokeWidth(3);
+			rect.draw();
+		});
+		rect.on('mouseout', function() {
+			rect.setStroke('transparent');
+			rect.setStrokeWidth(0);
+			rect.getParent().draw();
 		});
 		self.layer.add(rect);
 		position += 25;

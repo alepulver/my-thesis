@@ -54,10 +54,10 @@ Source modifications are reloaded automatically.
 
 ### TODO
 
-- Remove "hello world" text and use message div outside canvas, or switch canvas away when displaying buttons as HTML+CSS.
-- Add color selection
-- Save results and allow downloading as CSV, etc
+- Refactor "layout" class for positioning elements
+- Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
 - Ask participant data, use bootstrap and/or views
+- Save results and allow downloading as CSV, etc
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
 
 ### References
