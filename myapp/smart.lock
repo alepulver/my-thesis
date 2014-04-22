@@ -3,7 +3,8 @@
   "dependencies": {
     "basePackages": {
       "kinetic.js": {},
-      "bower": {}
+      "bower": {},
+      "lodash": {}
     },
     "packages": {
       "kinetic.js": {
@@ -13,8 +14,13 @@
       },
       "bower": {
         "git": "https://github.com/mquandalle/meteor-bower.git",
-        "tag": "v0.1.5",
-        "commit": "4e96fa0365414371e412c8c5b79e7b4c2e6cefbf"
+        "tag": "v0.1.7",
+        "commit": "017d0b0a0b30e37ffaa9bc7026ee09ee7c94ebe1"
+      },
+      "lodash": {
+        "git": "https://github.com/alethes/meteor-lodash.git",
+        "tag": "v0.7.1",
+        "commit": "57bbeb3e21c31b64641f9885bb2f390b84f8b925"
       }
     }
   }

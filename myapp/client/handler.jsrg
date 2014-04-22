@@ -1,84 +1,75 @@
 workflowHandler = function(stage) {
-	return function*() {
-		var choose_layer = new Kinetic.Layer({
-			x: 0,
-			y: 0,
-			width: 400,
-			height: 300
-		});
-		choose_layer.add(new Kinetic.Rect({
-			x: 0,
-			y: 0,
-			width: 380,
-			height: 290,
-			fill: 'transparent',
-			stroke: 'red',
-			strokeWidth: 5
-		}));
-		var my_choices = [
-			{name: 'one', text: 'Present'},
-			{name: 'two', text: 'Past'},
-			{name: 'three', text: 'Future'}
-		];
+  return function*() {
+    var choose_layer = new Kinetic.Layer({
+      x: 0,
+      y: 0,
+      width: 400,
+      height: 200
+    });
+    var my_choices = [
+    {name: 'one', text: 'Present'},
+    {name: 'two', text: 'Past'},
+    {name: 'three', text: 'Future'}
+    ];
 
-		var color_layer = new Kinetic.Layer({
-			x: 400,
-			y: 0,
-			width: 400,
-			height: 300
-		});
+    var color_layer = new Kinetic.Layer({
+      x: 400,
+      y: 0,
+      width: 400,
+      height: 200
+    });
 
-		var circles_layer = new Kinetic.Layer({
-			x: 0,
-			y: 300,
-			width: 800,
-			height: 500
-		});
+    var circles_layer = new Kinetic.Layer({
+      x: 0,
+      y: 300,
+      width: 800,
+      height: 500
+    });
 
-		circles_layer.add(new Kinetic.Rect({
-			x: 500,
-			y: 500,
-			width: 790,
-			height: 290,
-			fill: 'red'
-		}));
+    var text_layer = new Kinetic.Layer({
+      x: 0,
+      y: 200,
+      width: 800,
+      height: 100
+    });
 
-		stage.add(choose_layer);
+    var spec = {
+      type: 'vertical',
+      sizes: [0.3, 0,2, 0,5],
+      contents: [
+      {
+        type: 'horizontal',
+        contents: ['choose', 'colors'],
+      },
+      'text',
+      'canvas'
+      ]   
+    }
 
-		var choice_menu = new ChooseElement(my_choices, choose_layer);
-		var circle_canvas = new CanvasForCircles(circles_layer);
-		var color_menu = new ColorChooser(['#ff0000', '#00ff00', '#0000ff'], color_layer);
-		color_menu.setNotifier(function(color) {
-			circle_canvas.setColor(color);
-		});
-		choose_layer.draw();
-		stage.add(color_layer);
+    stage.add(choose_layer);
+    stage.add(text_layer);
 
-	 	stage.add(circles_layer);
-	 	circles_layer.draw();
+    var choice_menu = new ChooseElement(my_choices, choose_layer);
+    var circle_canvas = new CanvasForCircles(circles_layer);
+    var color_menu = new ColorChooser(['#ff0000', '#00ff00', '#0000ff'], color_layer);
+    var text_canvas = new TextCanvas(text_layer);
+    color_menu.setNotifier(function(color) {
+      circle_canvas.setColor(color);
+    });
+    choose_layer.draw();
+    stage.add(color_layer);
 
-	 	var remaining = 3;
-	 	while (remaining > 0) {
-	 		var val = yield choice_menu.get_click();
-	 		//alert(val);
+    stage.add(circles_layer);
+    circles_layer.draw();
 
-	 		stage.draw();
-	 		var circle = yield circle_canvas.new_circle();
-	 		circles_layer.add(circle);
-	 		circles_layer.draw();
-			//alert(circle);
-			remaining--;
-		}
-	 	/*
-	 	var canvas_circles = new CanvasForCircles(workflow);
-
-	 	while (remaining > 0) {
-	 		var choice = yield {step: choice_menu, parameters: my_choices};
-	 		delete my_choices[choice];
-	      	remaining -= 1;
-	      	var circle = yield {step: canvas_circles, parameters: choice};
-	 	}
-	 	alert("end");
-	 	*/
-	 };
+    var remaining = 3;
+    while (remaining > 0) {
+      var val = yield choice_menu.get_click();
+      stage.draw();
+      var circle = yield circle_canvas.new_circle();
+      circles_layer.add(circle);
+      circles_layer.draw();
+      remaining--;
+    }
+  };
 };

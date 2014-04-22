@@ -54,11 +54,19 @@ Source modifications are reloaded automatically.
 
 ### TODO
 
-- Refactor "layout" class for positioning elements
+- Fix circle positions
+- Add color to buttons, and mark as disabled when can't choose
+- Canvas bounds
+- Add tooltip to each circle indicating which one it is
 - Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
+- Save mouse positions and timestamps
 - Ask participant data, use bootstrap and/or views
 - Save results and allow downloading as CSV, etc
+
+- Refactor "layout" class for positioning elements
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
+- Use lodash/lazy.js instead of underscore, livescript instead of coffeescript (in both, global @vars work with Meteor package scoping), mimosa instead of meteor packages
+- Try sparkler (pattern matching)
 
 ### References
 
