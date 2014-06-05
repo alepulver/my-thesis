@@ -47,8 +47,8 @@ MyButton = function(parameters) {
 function checkBounds(absPos, object, container) {
   var objectPos = object.getAbsolutePosition();
   var objectTopLeft = {
-    x: (absPos.x - 2*object.offsetX()),
-    y: (absPos.y - 2*object.offsetY())
+    x: (absPos.x - object.width()/2),
+    y: (absPos.y - object.width()/2)
   };
   
   var containerPos = container.getAbsolutePosition();
@@ -83,8 +83,8 @@ MyResizableWrapper = function(shape, layer) {
       return this.getAbsolutePosition();
   });
 
-  group.offsetX(shape.offsetX());
-  group.offsetY(shape.offsetY());
+  //group.offsetX(shape.radius());
+  //group.offsetY(shape.radius());
   group.width(shape.width());
   group.height(shape.height());
   group.add(shape);
@@ -151,13 +151,11 @@ CanvasForCircles.prototype.new_circle = function() {
   this.deferred = RSVP.defer();
 
   var circle = new Kinetic.Circle({
-    x: 70,
-    y: 70,
+    x: 0,
+    y: 0,
     radius: 70,
     stroke: 'black',
     strokeWidth: 10,
-    offsetX: 70,
-    offsetY: 70,
     fill: 'transparent',
     name: 'image'
   });
