@@ -45,10 +45,9 @@ MyButton = function(parameters) {
 };
 
 function checkBounds(absPos, object, container) {
-  var objectPos = object.getAbsolutePosition();
   var objectTopLeft = {
     x: (absPos.x - object.width()/2),
-    y: (absPos.y - object.width()/2)
+    y: (absPos.y - object.height()/2)
   };
   
   var containerPos = container.getAbsolutePosition();
@@ -57,16 +56,18 @@ function checkBounds(absPos, object, container) {
     y: (containerPos.y - container.offsetY())
   };
 
-  if (objectTopLeft.x < containerTopLeft.x)
-    return false;
-  if (objectTopLeft.y < containerTopLeft.y)
-    return false;
-  if (objectTopLeft.x + object.getWidth() > containerTopLeft.x + container.getWidth())
-    return false;
-  if (objectTopLeft.y + object.getHeight() > containerTopLeft.y + container.getHeight())
-    return false;
+  var ignoreX = false, ignoreY = false;
 
-  return true;
+  if (objectTopLeft.x < containerTopLeft.x)
+    ignoreX = true;
+  if (objectTopLeft.y < containerTopLeft.y)
+    ignoreY = true;
+  if (objectTopLeft.x + object.getWidth() > containerTopLeft.x + container.getWidth())
+    ignoreX = true;
+  if (objectTopLeft.y + object.getHeight() > containerTopLeft.y + container.getHeight())
+    ignoreY = true;
+
+  return {x: ignoreX, y: ignoreY};
 }
 
 MyResizableWrapper = function(shape, layer) {
@@ -77,10 +78,12 @@ MyResizableWrapper = function(shape, layer) {
   });
 
   group.dragBoundFunc(function(pos) {
-    if (checkBounds(pos, this, this.getLayer()))
-      return pos;
-    else
-      return this.getAbsolutePosition();
+    var oldPos = this.getAbsolutePosition();
+    var ignore = checkBounds(pos, this, this.getLayer());
+    return {
+      x: (ignore.x ? oldPos.x : pos.x),
+      y: (ignore.y ? oldPos.y : pos.y)
+    };
   });
 
   //group.offsetX(shape.radius());
@@ -165,6 +168,9 @@ CanvasForCircles.prototype.new_circle = function() {
 
   var self = this;
   button.on('mousedown', function() {
+    // XXX: avoid error when mouseout arrives later
+    button.off('mouseover');
+    button.off('mouseout');
     button.remove();
     wrapper.remove();
     circle.setPosition(wrapper.getPosition());
@@ -273,7 +279,7 @@ function updateAnchorMoved(activeAnchor) {
       x: (topLeft.x() + bottomRight.x())/2,
       y: (topLeft.y() + bottomRight.y())/2
     };
-    image.setPosition(center);
+    //image.setPosition(center);
 
     if(width && height) {
       image.setSize({width: width, height: height});
