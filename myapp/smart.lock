@@ -9,13 +9,13 @@
     "packages": {
       "kinetic.js": {
         "git": "https://github.com/brentjanderson/meteor-kinetic.git",
-        "tag": "v5.0.1",
-        "commit": "3c29f5bcbcdc9687081b336e59e8387dc02236a5"
+        "tag": "v5.1.0",
+        "commit": "0657c2faa36afadfb4405a8c9f6201710f7984b1"
       },
       "bower": {
         "git": "https://github.com/mquandalle/meteor-bower.git",
-        "tag": "v0.1.7",
-        "commit": "017d0b0a0b30e37ffaa9bc7026ee09ee7c94ebe1"
+        "tag": "v0.1.8",
+        "commit": "5699c3f29a936dcb2aa1221a9febd4669764fc91"
       },
       "lodash": {
         "git": "https://github.com/alethes/meteor-lodash.git",

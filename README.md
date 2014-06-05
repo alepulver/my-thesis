@@ -56,7 +56,6 @@ Source modifications are reloaded automatically.
 
 - Fix circle positions
 - Add color to buttons, and mark as disabled when can't choose
-- Canvas bounds
 - Add tooltip to each circle indicating which one it is
 - Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
 - Save mouse positions and timestamps

@@ -44,6 +44,31 @@ MyButton = function(parameters) {
   return group;
 };
 
+function checkBounds(absPos, object, container) {
+  var objectPos = object.getAbsolutePosition();
+  var objectTopLeft = {
+    x: (absPos.x - 2*object.offsetX()),
+    y: (absPos.y - 2*object.offsetY())
+  };
+  
+  var containerPos = container.getAbsolutePosition();
+  var containerTopLeft = {
+    x: (containerPos.x - container.offsetX()),
+    y: (containerPos.y - container.offsetY())
+  };
+
+  if (objectTopLeft.x < containerTopLeft.x)
+    return false;
+  if (objectTopLeft.y < containerTopLeft.y)
+    return false;
+  if (objectTopLeft.x + object.getWidth() > containerTopLeft.x + container.getWidth())
+    return false;
+  if (objectTopLeft.y + object.getHeight() > containerTopLeft.y + container.getHeight())
+    return false;
+
+  return true;
+}
+
 MyResizableWrapper = function(shape, layer) {
   var group = new Kinetic.Group({
     x: layer.getWidth()/2,
@@ -52,13 +77,16 @@ MyResizableWrapper = function(shape, layer) {
   });
 
   group.dragBoundFunc(function(pos) {
-    console.log(this.getWidth());
-    return {
-      x: this.getAbsolutePosition().x,
-      y: pos.y
-    };
+    if (checkBounds(pos, this, this.getLayer()))
+      return pos;
+    else
+      return this.getAbsolutePosition();
   });
 
+  group.offsetX(shape.offsetX());
+  group.offsetY(shape.offsetY());
+  group.width(shape.width());
+  group.height(shape.height());
   group.add(shape);
   addAnchor(group, -shape.getWidth()/2, -shape.getHeight()/2, 'topLeft');
   addAnchor(group, shape.getWidth()/2, -shape.getHeight()/2, 'topRight');
@@ -123,13 +151,13 @@ CanvasForCircles.prototype.new_circle = function() {
   this.deferred = RSVP.defer();
 
   var circle = new Kinetic.Circle({
-    x: 0,
-    y: 0,
+    x: 70,
+    y: 70,
     radius: 70,
     stroke: 'black',
     strokeWidth: 10,
-    offsetX: 0,
-    offsetY: 0,
+    offsetX: 70,
+    offsetY: 70,
     fill: 'transparent',
     name: 'image'
   });
