@@ -33,6 +33,7 @@ workflowHandler = function(stage) {
       height: 100
     });
 
+    /*
     var spec = {
       type: 'vertical',
       sizes: [0.3, 0,2, 0,5],
@@ -44,7 +45,8 @@ workflowHandler = function(stage) {
       'text',
       'canvas'
       ]   
-    }
+    };
+    */
 
     stage.add(choose_layer);
     stage.add(text_layer);
@@ -66,7 +68,7 @@ workflowHandler = function(stage) {
     while (remaining > 0) {
       var val = yield choice_menu.get_click();
       stage.draw();
-      var circle = yield circle_canvas.new_circle();
+      var circle = yield circle_canvas.new_circle(val);
       circles_layer.add(circle);
       circles_layer.draw();
       remaining--;

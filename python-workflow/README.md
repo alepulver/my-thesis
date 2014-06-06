@@ -23,6 +23,12 @@ The variable names in this case are constant for each step class, but should be 
 Similar to the previous one, but added the ability to go to the previous step in the workflow.
 The decision of when to do so is still in the step's logic, not configurable.
 
+## Case 2.5
+
+- Encapsulate the logic with the State Pattern
+
+Each method represents a different entry point, using instance variables for communication. Note that branching and looping constructs have to be simulated by setting the next state (using native language constructs inside the entry points). Also states have a start method, but they can only return by starting another one.
+
 ## Case 3
 
 - Move the logic to a handler
@@ -37,14 +43,10 @@ Control flow is managed from a handler function, and it's hard to follow because
 Generators make the handler function easier to read and modify, as we can use if/while constructs as in normal code.
 This is because of the multiple entry points (one for each `yield` statement).
 
+# Composing workflows
+
 ## Case 5
 
 - Use coroutines (stackless) to avoid `yield from` in previous
 
 ...
-
-## TODO
-
-- Add instructions on each step (use popup widgets for everything?)
-- pause/resume too?
-- Allow composing workflows, using them as states of another workflows

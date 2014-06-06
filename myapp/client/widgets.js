@@ -150,7 +150,7 @@ CanvasForCircles = function(layer) {
 
 //CanvasForCircles.prototype = Object.create(WorkflowStep.prototype);
 
-CanvasForCircles.prototype.new_circle = function() {
+CanvasForCircles.prototype.new_circle = function(which) {
   this.deferred = RSVP.defer();
 
   var circle = new Kinetic.Circle({

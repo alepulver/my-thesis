@@ -53,13 +53,16 @@ Source modifications are reloaded automatically.
 ...
 
 ### TODO
-- Add color to buttons, and mark as disabled when can't choose
-- Add tooltip to each circle indicating which one it is
-- Fix marker positions when resizing
-- Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
 - Save mouse positions and timestamps
 - Ask participant data, use bootstrap and/or views
 - Save results and allow downloading as CSV, etc
+
+- Add color to buttons, and mark as disabled when can't choose
+- Add tooltip to each circle indicating which one it is
+- Fix marker positions when resizing, and circle centering in group
+- Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
+
+#### Maybe later
 
 - Refactor "layout" class for positioning elements
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
