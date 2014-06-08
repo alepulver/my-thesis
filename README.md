@@ -35,8 +35,6 @@ curl https://install.meteor.com/ | sh
 npm install -g meteorite
 ```
 
-Finally, clone my `meteor-regenerator` repository and symlink it to `myapp/packages/regenerator`.
-
 ### Run locally
 
 ```
@@ -54,7 +52,7 @@ Source modifications are reloaded automatically.
 
 ### TODO
 - Save mouse positions and timestamps
-- Ask participant data, use bootstrap and/or views
+- Ask participant data, use meteor template to switch page
 - Save results and allow downloading as CSV, etc
 
 - Add color to buttons, and mark as disabled when can't choose
@@ -66,8 +64,9 @@ Source modifications are reloaded automatically.
 
 - Refactor "layout" class for positioning elements
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
-- Use lodash/lazy.js instead of underscore, livescript instead of coffeescript (in both, global @vars work with Meteor package scoping), mimosa instead of meteor packages
-- Try sparkler (pattern matching)
+- Use lodash/lazy.js instead of underscore, other languages (see gdoc)
+- Integrate with mimosa for compilation/require/bower/browserify instead of writing meteorite packages
+- Try layout framework like boostrap or gumby for the rest of the page (not canvas)
 
 ### References
 

@@ -7,87 +7,108 @@ setupCanvas = function() {
 	height: 800
   });
 
-  /*
-  var stage = new Kinetic.Stage({
-	container: 'container',
-	width: window.innerWidth * 0.7,
-	height: window.innerHeight * 0.9
+  var cfHandler = new csExport.HandleCF(stage);
+}
+
+
+CanvasForCircles = function(layer) {
+  this.layer = layer;
+  this.circles = [];
+
+  var background = new Kinetic.Rect({
+    fill: '#eeffee',
+    width: this.layer.getWidth(),
+    height: this.layer.getHeight()
+  });
+  this.layer.add(background);
+};
+
+//CanvasForCircles.prototype = Object.create(WorkflowStep.prototype);
+
+CanvasForCircles.prototype.new_circle = function(which, notifier) {
+  this.notifier = notifier;
+
+  var circle = new Kinetic.Circle({
+    x: 0,
+    y: 0,
+    radius: 70,
+    stroke: 'black',
+    strokeWidth: 10,
+    fill: 'transparent',
+    name: 'image'
+  });
+  this.circle = circle;
+  var button = new MyButton({x: 100, y: this.layer.getHeight()-100, width: 100, text: 'Accept'});
+  var wrapper = new MyResizableWrapper(circle, this.layer);
+
+  var self = this;
+  button.on('mousedown', function() {
+    // XXX: avoid error when mouseout arrives later
+    button.off('mouseover');
+    button.off('mouseout');
+    button.remove();
+    wrapper.remove();
+    circle.setPosition(wrapper.getPosition());
+    //self.layer.add(circle);
+    self.layer.draw();
+    self.notifier(circle);
+    });
+
+  this.layer.add(button);
+  this.layer.add(wrapper);
+  this.layer.draw();
+};
+
+CanvasForCircles.prototype.setColor = function(color) {
+  this.circle.setStroke(color);
+  this.circle.draw();
+};
+
+ColorChooser = function(colors, layer) {
+  this.layer = layer;
+  this.colors = colors;
+  this.notifier = null;
+
+  var position = 0;
+  var self = this;
+  _.each(this.colors, function(color) {
+    var rect = new Kinetic.Rect({
+      x: position,
+      y: 5,
+      width: 20,
+      height: 20,
+      fill: color
+    });
+    rect.on('mousedown', function() {
+      self.notify(color);
+    });
+    rect.on('mouseover', function() {
+      rect.setStroke('black');
+      rect.setStrokeWidth(3);
+      rect.draw();
+    });
+    rect.on('mouseout', function() {
+      rect.setStroke('transparent');
+      rect.setStrokeWidth(0);
+      rect.getParent().draw();
+    });
+    self.layer.add(rect);
+    position += 25;
   });
 
-  window.onresize = function() {
-	var width = window.innerWidth * 0.7;
-	var height = window.innerHeight * 0.9;
-	var scalex = width/stage.getWidth();
-	var scaley = height/stage.getHeight();
+  this.layer.draw();
+};
 
-	stage.setWidth(width);
-	stage.setHeight(height);
-	stage.scaleX(stage.scaleX()*scalex);
-	stage.scaleY(stage.scaleY()*scaley);
-	stage.draw();
+ColorChooser.prototype.notify = function(color) {
+  if (this.notifier != null) {
+    this.notifier(color);
   }
-  */
+};
 
-  //var workflow = new Workflow(stage);
-  //workflow.run(workflowHandler(workflow));
-  //alert(MyTEXT);
-  spawnGenerator(workflowHandler(stage));
-}
+ColorChooser.prototype.setNotifier = function(notifier) {
+  this.notifier = notifier;
+};
 
-spawnGenerator = function(generatorFunc) {
-  function continuer(verb, arg) {
-	var result;
-	/*
-	try {
-	  result = generator[verb](arg);
-	} catch (err) {
-	  return RSVP.Promise.reject(err);
-	}
-	*/
-	result = generator[verb](arg);
-	if (result.done) {
-	  return result.value;
-	} else {
-	  return RSVP.Promise.resolve(result.value).then(onFulfilled, onRejected);
-	}
-  }
-  
-  var generator = generatorFunc();
-  var onFulfilled = continuer.bind(continuer, "next");
-  var onRejected = continuer.bind(continuer, "throw");
-  
-  return onFulfilled();
-}
-
-assert = function(condition, message) {
-	if (!condition) {
-		str = message || "Assertion failed";
-		console.log(str);
-		throw str;
-	}
-}
-
-LayoutUtils = function() { };
-LayoutUtils.generate = function(spec, dimensions) {
-	switch (spec.type) {
-		case 'horizontal':
-			if (spec.sizes) {
-				assert(spec.sizes.length == spec.sizes.length, 'sizes mismatch')
-				var result = {};
-				var position = 0;
-				_.each(_.zip(spec.sizes, spec.contents), function(elem) {
-					if (_.isObject(elem[1])) {
-						// recursion
-						var other = LayoutUtils.generate(elem[1].contents);
-						_.extend(result, other);
-					} else {
-						result[elem[1]] = position;
-					}
-					position += elem[0]*dimensions.width;
-				});
-			}
-			break;
-		case 'vertical':
-			break;
-	}
-}
+TextCanvas = function(layer) {
+  this.layer = layer;
+};

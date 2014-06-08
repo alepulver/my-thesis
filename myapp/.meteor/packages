@@ -8,6 +8,5 @@ autopublish
 insecure
 kinetic.js
 bower
-regenerator
 coffeescript
 lodash
