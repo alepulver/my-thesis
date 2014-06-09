@@ -39,7 +39,7 @@ class HandleCF
 
 	modifyCircle_changeColor: (color) ->
 		@panels.circles.setColor color
-		@panels.choose.setColor color
+		@panels.choose.colorSelected color
 
 	askData_inputDone: (input) ->
 		0

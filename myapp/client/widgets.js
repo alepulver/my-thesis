@@ -40,6 +40,7 @@ MyButton = function(parameters) {
 
   group.add(rect);
   group.add(complexText);
+  group.height(rect.height());
 
   return group;
 };

@@ -1,35 +1,58 @@
 _ = lodash
 
 class ChoosePanel
-	constructor: (@choices, @layer) ->
+	constructor: (choices, @layer) ->
 		self = this
-		@selected_choices = []
+		@choices = _.mapValues(choices, (text) ->
+			{text: text, button: null, dot: null, enabled: true}
+		)
 		@remaining = _.size(@choices)
-		this.notifier = null
+		@current = null
+		@notifier = null
 		
 		p = 0.1
-		_.forOwn(@choices, (text, key) ->
+		_.forOwn(@choices, (data, key) ->
 			button = new MyButton({
-      			text: text,
+      			text: data.text,
       			x: 30,
       			y: self.layer.getHeight()*p,
       			width: 100
 			})
 			button.on('mousedown', ->
-				self.button_pressed(key)
+				self.itemStarted(key) if data.enabled
 			)
+			data.button = button
 			self.layer.add button
+
+			dot = new Kinetic.Circle(
+				x: 15
+				y: self.layer.height()*p + button.height()/2
+				radius: 5
+				stroke: 'black'
+			)
+			data.dot = dot
+			self.layer.add dot
+
 			p += 0.8/_.size(self.choices)
 		)
 
 	setNotifier: (notifier) ->
 		@notifier = notifier
 
-	button_pressed: (name) ->
-		@notifier(name) if @notifier != null
+	itemStarted: (key) ->
+		@active_item = key
+		@choices[key].enabled = false
+		@remaining--
+		@notifier(key) if @notifier != null
 
-	setColor: (color) ->
-		0
+	itemEnded: ->
+		@active_item = null
+
+
+	colorSelected: (color) ->
+		shape = @choices[@active_item].dot
+		shape.fill(color)
+		shape.getParent().draw()
 
 
 class CirclesPanel
