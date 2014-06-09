@@ -56,7 +56,6 @@ Source modifications are reloaded automatically.
 - Save results and allow downloading as CSV, etc
 
 - Add color to buttons, and mark as disabled when can't choose
-- Add tooltip to each circle indicating which one it is
 - Fix marker positions when resizing, and circle centering in group
 - Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
 

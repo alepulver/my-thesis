@@ -17,19 +17,20 @@ class HandleCF
 		@panels = createPanels @stage, @epochs
 
 		@state = new CFStateChooseTime this
-		@panels.choose.setNotifier((x) -> self.state.selectPeriod x)
+		@panels.choose.setNotifier((epoch) -> self.state.selectPeriod epoch)
+		@panels.circles.setNotifier((name, circle) -> self.state.acceptCurrent(name, circle))
 
 	chooseTime_selectPeriod: (epoch) ->
 		self = this
 		@panels.choose.setNotifier(null)
 		@panels.color.setNotifier((x) -> self.state.changeColor x)
-		@panels.circles.new_circle(null, (x) -> self.state.acceptCurrent x)
+		@panels.circles.addCircle(epoch, @epochs[epoch])
 		@state = new CFStateModifyCircle this
 
-	modifyCircle_acceptCurrent: (circle) ->
+	modifyCircle_acceptCurrent: (name, circle) ->
 		self = this
-		@panels.circles.layer.add(circle)
-		@stage.draw()
+		#@panels.circles.layer.add(circle)
+		#@stage.draw()
 		#@panels.circles.layer.draw
 		
 		if @panels.choose.remaining > 0
@@ -98,7 +99,7 @@ createPanels = (stage, choices) ->
 		width: 800,
 		height: 500
 	})
-	circles_canvas = new CanvasForCircles(circles_layer)
+	circles_panel = new csExport.CirclesPanel(circles_layer)
 	stage.add(circles_layer)
 
 	text_layer = new Kinetic.Layer({
@@ -112,4 +113,4 @@ createPanels = (stage, choices) ->
 
 	stage.draw()
 
-	{choose: choose_panel, color: color_menu, circles: circles_canvas, text: text_canvas}
+	{choose: choose_panel, color: color_menu, circles: circles_panel, text: text_canvas}

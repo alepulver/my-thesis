@@ -44,6 +44,31 @@ MyButton = function(parameters) {
   return group;
 };
 
+AddTooltip = function(shape, text) {
+  var widget = new Kinetic.Text({
+    text: text,
+    fontSize: 17, fontFamily: 'Calibri',
+    width: 100,
+    align: 'center'
+  });
+  
+  shape.on('mouseover', function() {
+    var parent = this.getParent();
+    widget.setPosition({
+      x: this.getPosition().x - widget.getWidth()/2,
+      y: this.getPosition().y - (this.getHeight()/2 + 30)
+    });
+    widget.fill(this.stroke());
+    parent.add(widget);
+    parent.draw();
+  });
+  
+  shape.on('mouseout', function() {
+    widget.remove();
+    this.getParent().getParent().draw();
+  });
+};
+
 function checkBounds(absPos, object, container) {
   var objectTopLeft = {
     x: (absPos.x - object.width()/2),
