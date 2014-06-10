@@ -71,10 +71,10 @@ AddTooltip = function(shape, text) {
   });
 };
 
-function checkBounds(absPos, object, container) {
+function checkBounds(absPos, size, container) {
   var objectTopLeft = {
-    x: (absPos.x - object.width()/2),
-    y: (absPos.y - object.height()/2)
+    x: (absPos.x - size.width/2),
+    y: (absPos.y - size.height/2)
   };
   
   var containerPos = container.getAbsolutePosition();
@@ -89,9 +89,9 @@ function checkBounds(absPos, object, container) {
     ignoreX = true;
   if (objectTopLeft.y < containerTopLeft.y)
     ignoreY = true;
-  if (objectTopLeft.x + object.getWidth() > containerTopLeft.x + container.getWidth())
+  if (objectTopLeft.x + size.width > containerTopLeft.x + container.getWidth())
     ignoreX = true;
-  if (objectTopLeft.y + object.getHeight() > containerTopLeft.y + container.getHeight())
+  if (objectTopLeft.y + size.height > containerTopLeft.y + container.getHeight())
     ignoreY = true;
 
   return {x: ignoreX, y: ignoreY};
@@ -106,7 +106,7 @@ MyResizableWrapper = function(shape, layer) {
 
   group.dragBoundFunc(function(pos) {
     var oldPos = this.getAbsolutePosition();
-    var ignore = checkBounds(pos, this, this.getLayer());
+    var ignore = checkBounds(pos, this.size(), this.getLayer());
     return {
       x: (ignore.x ? oldPos.x : pos.x),
       y: (ignore.y ? oldPos.y : pos.y)
@@ -172,11 +172,17 @@ addAnchor = function(group, x, y, name) {
 
   anchor.dragBoundFunc(function(pos) {
     var oldPos = this.getAbsolutePosition();
-    var ignore = checkBounds(pos, this, this.getLayer());
+    var ignore = checkBounds(pos, this.size(), this.getLayer());
       
     var center = group.getAbsolutePosition();
     var tooSmall = Math.pow(pos.x - center.x, 2) + Math.pow(pos.y - center.y, 2) < Math.pow(25, 2);
     if (tooSmall)
+      return oldPos;
+
+    var radius = _.max([Math.abs(center.x - pos.x), Math.abs(center.y - pos.y)]);
+    var size = {width: radius*2, height: radius*2};
+    var tooBig = checkBounds(center, size, this.getLayer());
+    if (tooBig.x || tooBig.y)
       return oldPos;
 
     return {

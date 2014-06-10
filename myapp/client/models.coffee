@@ -97,7 +97,7 @@ createPanels = (stage, choices) ->
 
 	circles_layer = new Kinetic.Layer({
 		x: 0,
-		y: 300,
+		y: 200,
 		width: 800,
 		height: 500
 	})
@@ -111,7 +111,7 @@ createPanels = (stage, choices) ->
 		height: 100
 	})
 	text_canvas = new TextCanvas(text_layer)
-	stage.add(text_layer)
+	#stage.add(text_layer)
 
 	stage.draw()
 

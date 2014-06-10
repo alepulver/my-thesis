@@ -51,18 +51,16 @@ Source modifications are reloaded automatically.
 ...
 
 ### TODO
-- Save mouse positions and timestamps
+
 - Ask participant data, use meteor template to switch page
 - Save results and allow downloading as CSV, etc
 
-- Fix resizing outside of allowed area
-- Use white background, and dotted lines separating panels
-
-
-#### Maybe later
-
-- Make buttons and color bar horizontal
+- Save mouse positions and timestamps
+- Make buttons and color bar horizontal to save space
 - Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
+
+#### Maybe
+
 - Refactor "layout" class for positioning elements
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
 - Use lodash/lazy.js instead of underscore, other languages (see gdoc)

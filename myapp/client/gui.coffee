@@ -1,5 +1,16 @@
 _ = lodash
 
+addBorder = (layer) ->
+	border = new Kinetic.Line({
+		points: [0, 0, layer.width(), 0, layer.width(), layer.height(), 0, layer.height(), 0, 0],
+		dash: [20, 5],
+		stroke: 'black',
+		strokeWidth: 5
+	})
+	layer.add border
+	layer.draw()
+
+
 class ChoosePanel
 	constructor: (choices, @layer) ->
 		self = this
@@ -38,6 +49,7 @@ class ChoosePanel
 
 	setNotifier: (@notifier) ->
 		@layer.listening(@notifier != null)
+		@layer.draw()
 
 	itemStarted: (key) ->
 		@active_item = key
@@ -69,7 +81,8 @@ class CirclesPanel
 			width: @layer.getWidth(),
 			height: @layer.getHeight()
 		})
-		@layer.add(background)
+		#@layer.add(background)
+		addBorder @layer
 
 	addCircle: (@name, @tooltip) ->
 		self = this
@@ -77,7 +90,7 @@ class CirclesPanel
 		@circle = new Kinetic.Circle({
 			x: 0, y: 0,
 			radius: 70,
-			stroke: 'black', strokeWidth: 10,
+			stroke: 'black', strokeWidth: 6,
 			fill: 'transparent',
 			name: 'image'
 		})
@@ -85,8 +98,10 @@ class CirclesPanel
 		@wrapper = new MyResizableWrapper(@circle, @layer)
 		
 		@button = new MyButton({
-			x: 100,
-			y: @layer.getHeight()-100,
+			#x: 100,
+			#y: @layer.getHeight()-100,
+			x: 200,
+			y: -100,
 			width: 100,
 			text: 'Accept'
 		})

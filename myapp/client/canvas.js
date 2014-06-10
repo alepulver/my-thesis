@@ -54,7 +54,12 @@ ColorChooser.prototype.notify = function(color) {
 };
 
 ColorChooser.prototype.setNotifier = function(notifier) {
-  this.layer.listening(notifier != null);
+  //this.layer.listening(notifier != null);
+  if (notifier != null)
+  	this.layer.show();
+  else
+  	this.layer.hide();
+  this.layer.draw();
   this.notifier = notifier;
 };
 
