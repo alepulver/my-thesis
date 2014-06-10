@@ -113,11 +113,10 @@ MyResizableWrapper = function(shape, layer) {
     };
   });
 
-  //group.offsetX(shape.radius());
-  //group.offsetY(shape.radius());
   group.width(shape.width());
   group.height(shape.height());
   group.add(shape);
+
   addAnchor(group, -shape.getWidth()/2, -shape.getHeight()/2, 'topLeft');
   addAnchor(group, shape.getWidth()/2, -shape.getHeight()/2, 'topRight');
   addAnchor(group, shape.getWidth()/2, shape.getHeight()/2, 'bottomRight');
@@ -128,91 +127,88 @@ MyResizableWrapper = function(shape, layer) {
 
 function updateAnchorMoved(activeAnchor) {
   var group = activeAnchor.getParent();
-
   var topLeft = group.find('.topLeft')[0];
   var topRight = group.find('.topRight')[0];
-  var bottomRight = group.find('.bottomRight')[0];
   var bottomLeft = group.find('.bottomLeft')[0];
-  var image = group.find('.image')[0];
+  var bottomRight = group.find('.bottomRight')[0];
+  var shape = group.find('.image')[0];
 
-  var anchorX = activeAnchor.x();
-  var anchorY = activeAnchor.y();
+  var center = group.getAbsolutePosition();
+  var other = activeAnchor.getAbsolutePosition();
 
-    // update anchor positions
-    switch (activeAnchor.name()) {
-      case 'topLeft':
-      topRight.y(anchorY);
-      bottomLeft.x(anchorX);
-      break;
-      case 'topRight':
-      topLeft.y(anchorY);
-      bottomRight.x(anchorX);
-      break;
-      case 'bottomRight':
-      bottomLeft.y(anchorY);
-      topRight.x(anchorX); 
-      break;
-      case 'bottomLeft':
-      bottomRight.y(anchorY);
-      topLeft.x(anchorX); 
-      break;
-    }
+  var radius = _.max([Math.abs(center.x - other.x), Math.abs(center.y - other.y)]);
+  shape.radius(radius);
+  shape.width(radius*2);
+  shape.height(radius*2);
 
-    var width = topRight.x() - topLeft.x();
-    var height = bottomLeft.y() - topLeft.y();
+  group.width(shape.width());
+  group.height(shape.height());
 
-    var center = {
-      x: (topLeft.x() + bottomRight.x())/2,
-      y: (topLeft.y() + bottomRight.y())/2
+  topLeft.x(-shape.getWidth()/2);
+  topLeft.y(-shape.getHeight()/2);
+  topRight.x(shape.getWidth()/2);
+  topRight.y(-shape.getHeight()/2);
+  bottomLeft.x(-shape.getWidth()/2);
+  bottomLeft.y(shape.getHeight()/2);
+  bottomRight.x(shape.getWidth()/2);
+  bottomRight.y(shape.getHeight()/2);
+}
+
+addAnchor = function(group, x, y, name) {
+  var stage = group.getStage();
+  var layer = group.getLayer();
+
+  var anchor = new Kinetic.Circle({
+    x: x,
+    y: y,
+    stroke: '#666',
+    fill: '#ddd',
+    strokeWidth: 2,
+    radius: 8,
+    name: name,
+    draggable: true,
+    dragOnTop: false
+  });
+
+  anchor.dragBoundFunc(function(pos) {
+    var oldPos = this.getAbsolutePosition();
+    var ignore = checkBounds(pos, this, this.getLayer());
+      
+    var center = group.getAbsolutePosition();
+    var tooSmall = Math.pow(pos.x - center.x, 2) + Math.pow(pos.y - center.y, 2) < Math.pow(25, 2);
+    if (tooSmall)
+      return oldPos;
+
+    return {
+      x: (ignore.x ? oldPos.x : pos.x),
+      y: (ignore.y ? oldPos.y : pos.y)
     };
-    //image.setPosition(center);
-
-    if(width && height) {
-      image.setSize({width: width, height: height});
-    }
-  }
-
-  addAnchor = function(group, x, y, name) {
-    var stage = group.getStage();
-    var layer = group.getLayer();
-
-    var anchor = new Kinetic.Circle({
-      x: x,
-      y: y,
-      stroke: '#666',
-      fill: '#ddd',
-      strokeWidth: 2,
-      radius: 8,
-      name: name,
-      draggable: true,
-      dragOnTop: false
+  });
+  anchor.on('dragmove', function() {
+    updateAnchorMoved(this);
+    //layer.draw();
+  });
+  anchor.on('mousedown touchstart', function() {
+    group.setDraggable(false);
+    this.moveToTop();
+  });
+  anchor.on('dragend', function() {
+    group.setDraggable(true);
+    //layer.draw();
+  });
+  // add hover styling
+  anchor.on('mouseover', function() {
+    var layer = this.getLayer();
+    document.body.style.cursor = 'pointer';
+    this.setStrokeWidth(4);
+      //layer.draw();
     });
-
-    anchor.on('dragmove', function() {
-      updateAnchorMoved(this);
-    //layer.draw();
-  });
-    anchor.on('mousedown touchstart', function() {
-      group.setDraggable(false);
-      this.moveToTop();
-    });
-    anchor.on('dragend', function() {
-      group.setDraggable(true);
-    //layer.draw();
-  });
-    // add hover styling
-    anchor.on('mouseover', function() {
-      var layer = this.getLayer();
-      document.body.style.cursor = 'pointer';
-      this.setStrokeWidth(4);
-        //layer.draw();
-      });
-    anchor.on('mouseout', function() {
-      var layer = this.getLayer();
-      document.body.style.cursor = 'default';
-      this.strokeWidth(2);
+  anchor.on('mouseout', function() {
+    var layer = this.getLayer();
+    document.body.style.cursor = 'default';
+    this.strokeWidth(2);
     //layer.draw();
   });
 
-    group.add(anchor);
-  };
+  group.add(anchor);
+};
