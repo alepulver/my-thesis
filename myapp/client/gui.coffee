@@ -4,7 +4,7 @@ class ChoosePanel
 	constructor: (choices, @layer) ->
 		self = this
 		@choices = _.mapValues(choices, (text) ->
-			{text: text, button: null, dot: null, enabled: true}
+			{text: text, button: null, dot: null}
 		)
 		@remaining = _.size(@choices)
 		@current = null
@@ -19,7 +19,7 @@ class ChoosePanel
       			width: 100
 			})
 			button.on('mousedown', ->
-				self.itemStarted(key) if data.enabled
+				self.itemStarted(key)
 			)
 			data.button = button
 			self.layer.add button
@@ -36,17 +36,21 @@ class ChoosePanel
 			p += 0.8/_.size(self.choices)
 		)
 
-	setNotifier: (notifier) ->
-		@notifier = notifier
+	setNotifier: (@notifier) ->
+		@layer.listening(@notifier != null)
 
 	itemStarted: (key) ->
 		@active_item = key
-		@choices[key].enabled = false
 		@remaining--
+
+		@choices[key].dot.fill('black')
+		@choices[key].button.listening(false)
+		@choices[key].button.find('.background')[0].fill('#bbb')
+		@layer.draw()
+
 		@notifier(key) if @notifier != null
 
 	itemEnded: ->
-		@active_item = null
 
 
 	colorSelected: (color) ->

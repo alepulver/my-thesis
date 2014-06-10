@@ -14,6 +14,7 @@ ColorChooser = function(colors, layer) {
   this.layer = layer;
   this.colors = colors;
   this.notifier = null;
+  this.buttons = [];
 
   var position = 0;
   var self = this;
@@ -38,6 +39,7 @@ ColorChooser = function(colors, layer) {
       rect.setStrokeWidth(0);
       rect.getParent().draw();
     });
+    self.buttons.push(rect);
     self.layer.add(rect);
     position += 25;
   });
@@ -52,6 +54,7 @@ ColorChooser.prototype.notify = function(color) {
 };
 
 ColorChooser.prototype.setNotifier = function(notifier) {
+  this.layer.listening(notifier != null);
   this.notifier = notifier;
 };
 

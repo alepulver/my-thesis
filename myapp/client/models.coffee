@@ -18,6 +18,7 @@ class HandleCF
 
 		@state = new CFStateChooseTime this
 		@panels.choose.setNotifier((epoch) -> self.state.selectPeriod epoch)
+		@panels.color.setNotifier(null)
 		@panels.circles.setNotifier((name, circle) -> self.state.acceptCurrent(name, circle))
 
 	chooseTime_selectPeriod: (epoch) ->
@@ -36,6 +37,7 @@ class HandleCF
 		if @panels.choose.remaining > 0
 			@state = new CFStateChooseTime this
 			@panels.choose.setNotifier((x) -> self.state.selectPeriod x)
+			@panels.color.setNotifier(null)
 
 	modifyCircle_changeColor: (color) ->
 		@panels.circles.setColor color

@@ -26,6 +26,7 @@ MyButton = function(parameters) {
     shadowOffset: {x:10,y:10},
     shadowOpacity: 0.2,
     */
+    name: 'background',
     cornerRadius: 10
   });
 

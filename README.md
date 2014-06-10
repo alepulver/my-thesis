@@ -55,7 +55,6 @@ Source modifications are reloaded automatically.
 - Ask participant data, use meteor template to switch page
 - Save results and allow downloading as CSV, etc
 
-- Mark buttons as disabled when can't choose
 - Fix marker positions when resizing, and circle centering in group
 - Make buttons and color bar horizontal
 - Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
