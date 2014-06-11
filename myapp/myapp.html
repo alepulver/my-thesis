@@ -3,6 +3,30 @@
 </head>
 
 <body>
-  <h1>Circles experiment</h1>
-  <div id="container"></div>
+  {{> active_stage}}
 </body>
+
+<template name="experiment">
+  <h1>Experiment</h1>
+  <p>...</p>
+  <div id="container"></div>
+</template>
+
+<template name="questions">
+  <p>questions</p>
+  <form id="myform">
+  	<input type="text" name="firstname"/>
+  	<input type="text" name="lastname"/>
+  	<input type="text" name="email"/>
+  	<input type="submit" id="submit"/>
+  </form>
+</template>
+
+<template name="results">
+  <p>results</p>
+  <!--
+  {{#each results}}
+    {{> result}}
+  {{/each}}
+  -->
+</template>

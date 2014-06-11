@@ -7,7 +7,7 @@ setupCanvas = function() {
 	height: 800
   });
 
-  var cfHandler = new csExport.HandleCF(stage);
+  cfHandler = new csExport.HandleCF(stage);
 };
 
 ColorChooser = function(colors, layer) {

@@ -38,13 +38,17 @@ class HandleCF
 			@state = new CFStateChooseTime this
 			@panels.choose.setNotifier((x) -> self.state.selectPeriod x)
 			@panels.color.setNotifier(null)
+		else
+			@state = new CFStateAskData this
+			Session.set('active_stage', 'questions')
 
 	modifyCircle_changeColor: (color) ->
 		@panels.circles.setColor color
 		@panels.choose.colorSelected color
 
-	askData_inputDone: (input) ->
-		0
+	askData_inputDone: (inputs) ->
+		Results.insert(inputs)
+		Session.set('active_stage', 'results')
 
 
 class CFState
