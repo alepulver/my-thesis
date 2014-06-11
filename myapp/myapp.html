@@ -15,18 +15,16 @@
 <template name="questions">
   <p>questions</p>
   <form id="myform">
-  	<input type="text" name="firstname"/>
-  	<input type="text" name="lastname"/>
-  	<input type="text" name="email"/>
-  	<input type="submit" id="submit"/>
+  	<input type="text" name="firstname"/><br/>
+  	<input type="text" name="lastname"/><br/>
+  	<input type="text" name="email"/><br/>
+  	<input type="submit" id="submit"/><br/>
   </form>
 </template>
 
 <template name="results">
   <p>results</p>
-  <!--
-  {{#each results}}
-    {{> result}}
+  {{#each items}}
+    <p>{{firstname}}, {{lastname}}, {{email}}</p>
   {{/each}}
-  -->
 </template>

@@ -6,10 +6,6 @@ assert = function(condition, message) {
 	}
 }
 
-submitAnswers = function() {
-	cfHandler.state.inputDone({a: 1, b: 2});
-};
-
 LayoutUtils = function() { };
 LayoutUtils.generate = function(spec, dimensions) {
 	switch (spec.type) {

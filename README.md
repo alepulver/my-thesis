@@ -48,13 +48,12 @@ Source modifications are reloaded automatically.
 
 ### On-line prototype
 
-...
+http://circles-experiment.meteor.com/
 
 ### TODO
-
-- Ask participant data, use meteor template to switch page
+- Ask correct participant data
 - Save results and allow downloading as CSV, etc
-
+- Randomize button order
 - Save mouse positions and timestamps
 - Make buttons and color bar horizontal to save space
 - Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
