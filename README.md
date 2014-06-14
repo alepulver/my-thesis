@@ -51,10 +51,12 @@ Source modifications are reloaded automatically.
 http://circles-experiment.meteor.com/
 
 ### TODO
-- Ask correct participant data
-- Save results and allow downloading as CSV, etc
-- Randomize button order
+- Allow smaller circles (external anchors should be farther)
+- Save circle color/pos/size
+- Save final questions
+
 - Save mouse positions and timestamps
+- Allow downloading (not the subject) as CSV, etc
 - Make buttons and color bar horizontal to save space
 - Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
 

@@ -175,7 +175,7 @@ addAnchor = function(group, x, y, name) {
     var ignore = checkBounds(pos, this.size(), this.getLayer());
       
     var center = group.getAbsolutePosition();
-    var tooSmall = Math.pow(pos.x - center.x, 2) + Math.pow(pos.y - center.y, 2) < Math.pow(25, 2);
+    var tooSmall = Math.pow(pos.x - center.x, 2) + Math.pow(pos.y - center.y, 2) < 1;
     if (tooSmall)
       return oldPos;
 

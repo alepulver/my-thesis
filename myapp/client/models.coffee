@@ -10,9 +10,9 @@ class HandleCF
 	constructor: (@stage) ->
 		self = this
 		@epochs = {
-			present: "Present",
-			past: "Past",
-			future: "Future"
+			present: "Presente",
+			past: "Pasado",
+			future: "Futuro"
 		}
 		@panels = createPanels @stage, @epochs
 
@@ -96,7 +96,9 @@ createPanels = (stage, choices) ->
 		width: 400,
 		height: 200
 	})
-	color_menu = new ColorChooser(['#ff0000', '#00ff00', '#0000ff'], color_layer)
+	colors = ['black', 'yellow', 'brown', 'violet', 'grey', 'red', 'green', 'blue']
+	colors = _.shuffle(colors)
+	color_menu = new ColorChooser(colors, color_layer)
 	stage.add(color_layer)
 
 	circles_layer = new Kinetic.Layer({

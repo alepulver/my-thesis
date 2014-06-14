@@ -22,7 +22,10 @@ class ChoosePanel
 		@notifier = null
 		
 		p = 0.1
-		_.forOwn(@choices, (data, key) ->
+		keys = _.keys(@choices)
+		keys = _.shuffle(keys)
+		_.forEach(keys, (key) ->
+			data = self.choices[key]
 			button = new MyButton({
       			text: data.text,
       			x: 30,
@@ -48,7 +51,8 @@ class ChoosePanel
 		)
 
 	setNotifier: (@notifier) ->
-		@layer.listening(@notifier != null)
+		#@layer.listening(@notifier != null)
+		@layer.visible(@notifier != null)
 		@layer.draw()
 
 	itemStarted: (key) ->
@@ -103,7 +107,7 @@ class CirclesPanel
 			x: 200,
 			y: -100,
 			width: 100,
-			text: 'Accept'
+			text: 'Aceptar'
 		})
 		@button.on('mousedown', -> self.acceptedCircle())
 

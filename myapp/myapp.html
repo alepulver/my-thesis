@@ -13,12 +13,41 @@
 </template>
 
 <template name="questions">
-  <p>questions</p>
+  <p>Por favor ingrese los siguientes datos (no es necesario el nombre completo).</p>
   <form id="myform">
-  	<input type="text" name="firstname"/><br/>
-  	<input type="text" name="lastname"/><br/>
-  	<input type="text" name="email"/><br/>
-  	<input type="submit" id="submit"/><br/>
+    <p>
+      Nombre
+      <input type="text" name="name"/>
+    </p>
+    <p>
+      Edad
+      <input type="number" name="quantity" min="1" max="100">
+    </p>
+    <p>Sexo
+      <input type="radio" name="sex" value="male">Masculino
+      <input type="radio" name="sex" value="female">Femenino
+    </p>
+    <p>Actividades actuales</p>
+    <p>
+      Estudia
+      <input type="radio" name="studying" value="yes">Sí
+      <input type="radio" name="studying" value="no">No
+    </p>
+    <p>
+      Trabaja
+      <input type="radio" name="working" value="yes">Sí
+      <input type="radio" name="working" value="no">No
+    </p>
+    <p>Si tuviera que definirse como un tipo de persona "matutina" o "vespertina", cómo se definiría?</p>
+    <p>
+      <input type="radio" name="daynight" value="5">Definitivamente matutina<br/>
+      <input type="radio" name="daynight" value="4">Moderadamente matutina<br/>
+      <input type="radio" name="daynight" value="3">Neutral<br/>
+      <input type="radio" name="daynight" value="2">Moderadamente vespertina<br/>
+      <input type="radio" name="daynight" value="1">Definitivamente vespertina<br/>
+    </p>
+    <br/>
+    <input type="submit" id="submit"/><br/>
   </form>
 </template>
 
