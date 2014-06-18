@@ -1,11 +1,5 @@
 _ = lodash
 
-class TimeRep
-	constructor: (@name) ->
-		@color = 'black'
-		@shape = null
-
-
 class HandleCF
 	constructor: (@stage) ->
 		self = this
@@ -15,11 +9,18 @@ class HandleCF
 			future: "Futuro"
 		}
 		@panels = createPanels @stage, @epochs
+		@results = []
+		@randomSeqs = {
+			colors: @panels.color.colors,
+			choices: @panels.choose.keys
+		}
 
 		@state = new CFStateChooseTime this
 		@panels.choose.setNotifier((epoch) -> self.state.selectPeriod epoch)
 		@panels.color.setNotifier(null)
 		@panels.circles.setNotifier((name, circle) -> self.state.acceptCurrent(name, circle))
+
+
 
 	chooseTime_selectPeriod: (epoch) ->
 		self = this
@@ -30,6 +31,12 @@ class HandleCF
 
 	modifyCircle_acceptCurrent: (name, circle) ->
 		self = this
+		@results.push({
+			position: circle.getPosition(),
+			color: circle.stroke(),
+			radius: circle.radius(),
+			name: name
+		})
 		#@panels.circles.layer.add(circle)
 		#@stage.draw()
 		#@panels.circles.layer.draw
@@ -47,7 +54,11 @@ class HandleCF
 		@panels.choose.colorSelected color
 
 	askData_inputDone: (inputs) ->
-		Results.insert(inputs)
+		Results.insert({
+			questions: inputs,
+			results: @results,
+			randomSeqs: @randomSeqs
+		})
 		Session.set('active_stage', 'results')
 
 
@@ -65,8 +76,8 @@ class CFStateModifyCircle extends CFState
 	changeColor: (color) ->
 		@handler.modifyCircle_changeColor color
 	
-	acceptCurrent: (circle) ->
-		@handler.modifyCircle_acceptCurrent circle
+	acceptCurrent: (name, circle) ->
+		@handler.modifyCircle_acceptCurrent name, circle
 
 
 class CFStateAskData extends CFState
@@ -75,7 +86,6 @@ class CFStateAskData extends CFState
 
 @csExport ?= {}
 _.merge(@csExport, {
-	TimeRep: TimeRep,
 	HandleCF: HandleCF
 })
 

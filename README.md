@@ -51,10 +51,12 @@ Source modifications are reloaded automatically.
 http://circles-experiment.meteor.com/
 
 ### TODO
-- Allow smaller circles (external anchors should be farther)
-- Save circle color/pos/size
-- Save final questions
+- Add the rest of the experiments
 
+- Allow smaller circles (external anchors should be farther)
+- Preguntar sobre la nota "te resultó forzado?" en la encuesta final
+
+- Save IP, browser data, etc
 - Save mouse positions and timestamps
 - Allow downloading (not the subject) as CSV, etc
 - Make buttons and color bar horizontal to save space

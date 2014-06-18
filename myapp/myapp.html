@@ -21,7 +21,7 @@
     </p>
     <p>
       Edad
-      <input type="number" name="quantity" min="1" max="100">
+      <input type="number" name="age" min="1" max="100">
     </p>
     <p>Sexo
       <input type="radio" name="sex" value="male">Masculino
@@ -46,6 +46,10 @@
       <input type="radio" name="daynight" value="2">Moderadamente vespertina<br/>
       <input type="radio" name="daynight" value="1">Definitivamente vespertina<br/>
     </p>
+    <p>
+      Comentarios<br/>
+      <textarea name="comments"></textarea>
+    </p>
     <br/>
     <input type="submit" id="submit"/><br/>
   </form>
@@ -53,7 +57,5 @@
 
 <template name="results">
   <p>results</p>
-  {{#each items}}
-    <p>{{firstname}}, {{lastname}}, {{email}}</p>
-  {{/each}}
+  {{items}}
 </template>

@@ -10,19 +10,27 @@ if (Meteor.isClient) {
   Template.questions.events({'submit form' : function(event, template) {
     event.preventDefault();
 
-    var firstname = template.find("input[name=firstname]");
-    var lastname = template.find("input[name=lastname]");   
-    var email = template.find("input[name=email]");
+    var name = template.find("input[name=name]");
+    var age = template.find("input[name=age]");   
+    var sex = template.find("input[name=sex]");
+    var studying = template.find("input[name=studying]");
+    var working = template.find("input[name=working]");
+    var daynight = template.find("input[name=daynight]");
+    var comments = template.find("textarea[name=comments]");
     
     cfHandler.state.inputDone({
-      firstname: firstname.value,
-      lastname: lastname.value,
-      email: email.value
+      name: name.value,
+      age: age.value,
+      sex: sex.value,
+      studying: studying.value,
+      working: working.value,
+      daynight: daynight.value,
+      comments: comments.value,
     });
   }});
 
   Template.results.items = function() {
-    return Results.find();
+    return JSON.stringify(Results.find());
   };
 
   Meteor.startup(function() {

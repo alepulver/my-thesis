@@ -22,9 +22,9 @@ class ChoosePanel
 		@notifier = null
 		
 		p = 0.1
-		keys = _.keys(@choices)
-		keys = _.shuffle(keys)
-		_.forEach(keys, (key) ->
+		@keys = _.keys(@choices)
+		@keys = _.shuffle(@keys)
+		_.forEach(@keys, (key) ->
 			data = self.choices[key]
 			button = new MyButton({
       			text: data.text,
