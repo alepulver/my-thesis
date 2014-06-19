@@ -1,8 +1,17 @@
 _ = lodash
 
 class HandleCF
-	constructor: (@stage) ->
+	constructor: ->
+		@name = "present-past-future"
+
+	start: (@workflow) ->
 		self = this
+
+		@stage = new Kinetic.Stage({
+			container: 'container',
+			width: 800,	height: 800
+		})
+
 		@epochs = {
 			present: "Presente",
 			past: "Pasado",
@@ -19,7 +28,6 @@ class HandleCF
 		@panels.choose.setNotifier((epoch) -> self.state.selectPeriod epoch)
 		@panels.color.setNotifier(null)
 		@panels.circles.setNotifier((name, circle) -> self.state.acceptCurrent(name, circle))
-
 
 
 	chooseTime_selectPeriod: (epoch) ->
@@ -46,20 +54,14 @@ class HandleCF
 			@panels.choose.setNotifier((x) -> self.state.selectPeriod x)
 			@panels.color.setNotifier(null)
 		else
-			@state = new CFStateAskData this
-			Session.set('active_stage', 'questions')
+			@workflow.stepFinished({
+				results: @results,
+				randomSeqs: @randomSeqs
+			})
 
 	modifyCircle_changeColor: (color) ->
 		@panels.circles.setColor color
 		@panels.choose.colorSelected color
-
-	askData_inputDone: (inputs) ->
-		Results.insert({
-			questions: inputs,
-			results: @results,
-			randomSeqs: @randomSeqs
-		})
-		Session.set('active_stage', 'results')
 
 
 class CFState
@@ -80,13 +82,10 @@ class CFStateModifyCircle extends CFState
 		@handler.modifyCircle_acceptCurrent name, circle
 
 
-class CFStateAskData extends CFState
-	inputDone: (input) ->
-		@handler.askData_inputDone input
 
-@csExport ?= {}
-_.merge(@csExport, {
-	HandleCF: HandleCF
+@Steps ?= {}
+_.merge(@Steps, {
+	PresentPastFuture: HandleCF
 })
 
 
@@ -97,7 +96,7 @@ createPanels = (stage, choices) ->
 		width: 400,
 		height: 200
 	})
-	choose_panel = new csExport.ChoosePanel(choices, choose_layer)
+	choose_panel = new Panels.Choose(choices, choose_layer)
 	stage.add(choose_layer)
 
 	color_layer = new Kinetic.Layer({
@@ -108,7 +107,7 @@ createPanels = (stage, choices) ->
 	})
 	colors = ['black', 'yellow', 'brown', 'violet', 'grey', 'red', 'green', 'blue']
 	colors = _.shuffle(colors)
-	color_menu = new ColorChooser(colors, color_layer)
+	color_menu = new Panels.Colors(colors, color_layer)
 	stage.add(color_layer)
 
 	circles_layer = new Kinetic.Layer({
@@ -117,7 +116,7 @@ createPanels = (stage, choices) ->
 		width: 800,
 		height: 500
 	})
-	circles_panel = new csExport.CirclesPanel(circles_layer)
+	circles_panel = new Panels.Circles(circles_layer)
 	stage.add(circles_layer)
 
 	text_layer = new Kinetic.Layer({
@@ -126,7 +125,7 @@ createPanels = (stage, choices) ->
 		width: 800,
 		height: 100
 	})
-	text_canvas = new TextCanvas(text_layer)
+	text_canvas = new Panels.Text(text_layer)
 	#stage.add(text_layer)
 
 	stage.draw()

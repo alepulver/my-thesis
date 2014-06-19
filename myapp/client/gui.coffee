@@ -137,9 +137,58 @@ class CirclesPanel
 	setNotifier: (@notifier) ->
 
 
+class ColorsPanel
+	constructor: (@colors, @layer) ->
+		@notifier = null;
+		@buttons = [];
 
-@csExport ?= {}
-_.merge(@csExport,
-	ChoosePanel: ChoosePanel
-	CirclesPanel: CirclesPanel
+		position = 0;
+		self = this;
+		_.each(@colors, (color) ->
+			rect = new Kinetic.Rect({
+				x: position, y: 5,
+				width: 20, height: 20,
+				fill: color
+			})
+			rect.on('mousedown', -> self.notify(color))
+			rect.on('mouseover', ->
+				rect.setStroke('black')
+				rect.setStrokeWidth(3)
+				rect.draw()
+			)
+			rect.on('mouseout', ->
+				rect.setStroke('transparent')
+				rect.setStrokeWidth(0)
+				rect.getParent().draw()
+			)
+			self.buttons.push(rect);
+			self.layer.add(rect);
+			position += 25;
+		)
+
+		@layer.draw()
+
+	notify: (color) ->
+		if (@notifier != null)
+			@notifier(color)
+
+	setNotifier: (@notifier) ->
+		if (@notifier != null)
+			@layer.show()
+		else
+			@layer.hide()
+		@layer.draw()
+
+
+class TextPanel
+	constructor: (@layer) ->
+
+
+
+@Panels ?= {}
+_.merge(@Panels,
+	Choose: ChoosePanel
+	Circles: CirclesPanel
+	Colors: ColorsPanel
+	Text: TextPanel
 )

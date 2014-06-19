@@ -1,14 +1,31 @@
 <head>
-  <title>Circles experiment</title>
+  <title>Experimentos sobre la representación del tiempo en el espacio</title>
 </head>
 
 <body>
   {{> active_stage}}
 </body>
 
-<template name="experiment">
-  <h1>Experiment</h1>
+<template name="loading">
+  <h1>loading...</h1>
+</template>
+
+<template name="introduction">
+  <h1>Experimentos sobre la representación del tiempo en el espacio</h1>
   <p>...</p>
+  <br/>
+  <a href="#" id="start">Empezar</a>
+</template>
+
+<template name="present-past-future">
+  <h1>Presente, pasado y futuro</h1>
+  <p>Dibuja tres círculos que representen el pasado, el presente y el futuro. Podés ubicarlos donde quieras en la región siguiente, y pueden tener distintos tamaños si así lo preferís. Elegí el color que quieras para cada uno. No hay respuestas correctas o incorrectas.</p>
+  <div id="container"></div>
+</template>
+
+<template name="seasons-of-year">
+  <h1>Meses del año</h1>
+  <p>Dibujá 4 rectángulos que representen las estaciones. Podés ubicarlos donde quieras dentro de la región siguiente, y pueden tener distintos tamaños si así lo preferís. Elegí el color que quieras para cada uno. No hay respuestas correctas o incorrectas.</p>
   <div id="container"></div>
 </template>
 
@@ -53,6 +70,10 @@
     <br/>
     <input type="submit" id="submit"/><br/>
   </form>
+</template>
+
+<template name="thanks">
+  <p>Gracias por participar!</p>
 </template>
 
 <template name="results">
