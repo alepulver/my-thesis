@@ -127,7 +127,7 @@ class CirclesPanel
 		@circle.setPosition(@wrapper.getPosition())
 		@layer.add(@circle)
 		@layer.draw();
-		@notifier(@name, @circle)
+		@notifier(@name, @circle) if @notifier != null
 
 
 	setColor: (color) ->
@@ -135,6 +135,8 @@ class CirclesPanel
 		@circle.draw()
 
 	setNotifier: (@notifier) ->
+		@layer.listening(@notifier != null)
+		@layer.draw()
 
 
 class ColorsPanel

@@ -17,9 +17,9 @@ class Questions
 		variables = ['name', 'age', 'sex', 'studying', 'working', 'daynight']
 		results = {}
 		_.each(variables, (field) ->
-			results[field] = template.find("input[name=#{field}]")
+			results[field] = template.find("input[name=#{field}]").value
 		)
-		results['comments'] = template.find("textarea[name=comments]")
+		results['comments'] = template.find("textarea[name=comments]").value
     
 		@workflow.stepFinished(results)
 

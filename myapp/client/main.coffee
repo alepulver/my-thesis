@@ -1,18 +1,26 @@
 _ = lodash
 
 startMainApp = ->
+	# TODO: record date, step permutation order, etc
 	steps = [
 		new Steps.Introduction(),
-		new Steps.PresentPastFuture(),
-		#Steps.SeasonsOfYear,
-		new Steps.Questions(),
-		new Steps.Thanks()
+		Steps.presentPastFuture(),
+		Steps.seasonsOfYear(),
+		new Steps.Questions()
 	]
 
-	workflow = new Workflow(steps, () -> true)
+	workflow = new Workflow(steps, finishedMainApp)
 	workflow.start()
 
+
+finishedMainApp = (results) ->
+	# TODO: add IP, date, etc
+	Results.insert(results)
+	Session.set("active_stage", "thanks")
+
+
 @startMainApp = startMainApp
+#@finishedMainApp = finishedMainApp
 
 # TODO: time each stage
 class Workflow
@@ -32,17 +40,16 @@ class Workflow
 			assert(@current_index < _.size(@steps), "Workflow: nextStep index")
 			@current_step = @steps[@current_index]
 
-			#@current_step.start(this)
-			alert(@current_step.name)
+			#alert(@current_step.name)
 			Template[@current_step.name].rendered = () ->
-				alert(self.current_step.name)
+				#alert(self.current_step.name)
 				self.current_step.start(self)
 
 			Session.set("active_stage", @current_step.name)
 
 	stepFinished: (results) ->
 		@results[@current_step.name] = results
-		if @current_index >= _.size(@steps)
+		if @current_index >= _.size(@steps)-1
 			this.finish()
 		else
 			this.nextStep()
