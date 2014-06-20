@@ -1,12 +1,13 @@
 _ = lodash
 
 presentPastFuture = () ->
-	epochs = {
+	choices = {
 		present: "Presente",
 		past: "Pasado",
 		future: "Futuro"
 	}
-	create_panels = () -> Steps.createPanels epochs
+	colors = ['black', 'yellow', 'brown', 'violet', 'grey', 'red', 'green', 'blue']
+	create_panels = () -> Steps.createPanels choices, colors, Panels.Circles
 	step = new Steps.HandleControlFlow(create_panels, "present-past-future")
 	step
 

@@ -87,7 +87,7 @@ class CFStateModify extends CFState
 		@handler.modify_acceptCurrent name, circle
 
 
-createPanels = (choices) ->
+createPanels = (choices, colors, drawingPanelClass) ->
 	stage = new Kinetic.Stage({
 		container: 'container',
 		width: 800,	height: 800
@@ -108,7 +108,7 @@ createPanels = (choices) ->
 		width: 400,
 		height: 200
 	})
-	colors = ['black', 'yellow', 'brown', 'violet', 'grey', 'red', 'green', 'blue']
+
 	colors = _.shuffle(colors)
 	color_menu = new Panels.Colors(colors, color_layer)
 	stage.add(color_layer)
@@ -119,7 +119,7 @@ createPanels = (choices) ->
 		width: 800,
 		height: 500
 	})
-	circles_panel = new Panels.Circles(circles_layer)
+	circles_panel = new drawingPanelClass(circles_layer)
 	stage.add(circles_layer)
 
 	text_layer = new Kinetic.Layer({
