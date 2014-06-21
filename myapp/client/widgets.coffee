@@ -86,142 +86,158 @@ createInteractiveFor = (shape, layer) ->
 		draggable: true
 	})
 
-	group.dragBoundFunc((pos) ->
+	group.dragBoundFunc((newPos) ->
 		oldPos = this.getAbsolutePosition()
-		ignore = checkBounds(pos, this.size(), this.getLayer())
-		return {
-			x: (if ignore.x then oldPos.x else pos.x),
-			y: (if ignore.y then oldPos.y else pos.y)
-		}
+		constrainPosition(newPos, oldPos, this, null)
 	)
 
-	group.width(shape.width())
-	group.height(shape.height())
+	shape.name('figure')
 	group.add(shape)
 
-	addAnchor(group, -shape.getWidth()/2, -shape.getHeight()/2, 'topLeft')
-	addAnchor(group, shape.getWidth()/2, -shape.getHeight()/2, 'topRight')
-	addAnchor(group, shape.getWidth()/2, shape.getHeight()/2, 'bottomRight')
-	addAnchor(group, -shape.getWidth()/2, shape.getHeight()/2, 'bottomLeft')
+	addAnchor(group, 'topLeft')
+	addAnchor(group, 'topRight')
+	addAnchor(group, 'bottomLeft')
+	addAnchor(group, 'bottomRight')
+
+	updateAllAnchors(group)
 
 	return group
 
 
-checkBounds = (absPos, size, container) ->
+constrainPosition = (newPos, oldPos, group, blah) ->
+	#size = group.find('.figure')[0].size()
+	radius = group.find('.figure')[0].radius()
+	size = null
+	if (blah == null)
+		size = {width: radius*2, height: radius*2}
+	else
+		size = blah
+	container = group.find('.figure')[0].getLayer()
+
 	objectTopLeft = {
-		x: (absPos.x - size.width/2),
-		y: (absPos.y - size.height/2)
-	}
-  
+		x: (newPos.x - size.width/2),
+		y: (newPos.y - size.height/2)
+	}  
+
 	containerPos = container.getAbsolutePosition()
 	containerTopLeft = {
 		x: (containerPos.x - container.offsetX()),
 		y: (containerPos.y - container.offsetY())
 	}
 
-	ignoreX = false
-	ignoreY = false
+	result = {x: newPos.x, y: newPos.y, changed: false}
 
-	if (objectTopLeft.x < containerTopLeft.x)
-		ignoreX = true
-	if (objectTopLeft.y < containerTopLeft.y)
-		ignoreY = true
-	if (objectTopLeft.x + size.width > containerTopLeft.x + container.getWidth())
-		ignoreX = true
-	if (objectTopLeft.y + size.height > containerTopLeft.y + container.getHeight())
-		ignoreY = true
+	beforeFirst = objectTopLeft.x < containerTopLeft.x
+	afterLast = objectTopLeft.x + size.width > containerTopLeft.x + container.getWidth()
+	ignoreX = beforeFirst || afterLast
+	if (ignoreX)
+		result.x = oldPos.x
+		result.changed = true
 
-	return {x: ignoreX, y: ignoreY}
+	aboveFirst = objectTopLeft.y < containerTopLeft.y
+	belowLast = objectTopLeft.y + size.height > containerTopLeft.y + container.getHeight()
+	ignoreY = aboveFirst || belowLast
+	if (ignoreY)
+		result.y = oldPos.y
+		result.changed = true
 
-
-updateAnchorMoved = (activeAnchor) ->
-	group = activeAnchor.getParent();
-	topLeft = group.find('.topLeft')[0];
-	topRight = group.find('.topRight')[0];
-	bottomLeft = group.find('.bottomLeft')[0];
-	bottomRight = group.find('.bottomRight')[0];
-	shape = group.find('.image')[0];
-
-	center = group.getAbsolutePosition();
-	other = activeAnchor.getAbsolutePosition();
-
-	radius = _.max([Math.abs(center.x - other.x), Math.abs(center.y - other.y)]);
-	shape.radius(radius);
-	shape.width(radius*2);
-	shape.height(radius*2);
-
-	group.width(shape.width());
-	group.height(shape.height());
-
-	topLeft.x(-shape.getWidth()/2);
-	topLeft.y(-shape.getHeight()/2);
-	topRight.x(shape.getWidth()/2);
-	topRight.y(-shape.getHeight()/2);
-	bottomLeft.x(-shape.getWidth()/2);
-	bottomLeft.y(shape.getHeight()/2);
-	bottomRight.x(shape.getWidth()/2);
-	bottomRight.y(shape.getHeight()/2);
+	result
 
 
-addAnchor = (group, x, y, name) ->
+anchorPositionsFor = (center, size) ->
+	{
+		topLeft: {
+			x: center.x - size.width/2,
+			y: center.y - size.height/2
+		},
+		topRight: {
+			x: center.x + size.width/2,
+			y: center.y - size.height/2
+		},
+		bottomLeft: {
+			x: center.x - size.width/2,
+			y: center.y + size.height/2
+		},
+		bottomRight: {
+			x: center.x + size.width/2,
+			y: center.y + size.height/2
+		}
+	}
+
+
+updateAllAnchors = (group) ->
+	anchorNames = ['topLeft', 'topRight', 'bottomLeft', 'bottomRight']
+	figure = group.find('.figure')[0]
+	newPositions = anchorPositionsFor(figure.getPosition(), figure.size())
+	
+	_.forEach(anchorNames, (name) ->
+		pos = newPositions[name]
+		anchor = group.find(".#{name}")[0].setPosition(pos)
+	)
+
+addAnchor = (group, name) ->
 	stage = group.getStage()
 	layer = group.getLayer()
 
 	anchor = new Kinetic.Circle({
-		x: x,
-		y: y,
 		stroke: '#666',
 		fill: '#ddd',
 		strokeWidth: 2,
 		radius: 8,
 		name: name,
-		draggable: true,
-		dragOnTop: false
+		draggable: true
 	})
 
-	anchor.dragBoundFunc((pos) ->
+	anchor.dragBoundFunc((newPos) ->
 		oldPos = this.getAbsolutePosition()
-		ignore = checkBounds(pos, this.size(), this.getLayer())
+		result = constrainPosition(newPos, oldPos, group, null)
 
 		center = group.getAbsolutePosition()
-		tooSmall = Math.pow(pos.x - center.x, 2) + Math.pow(pos.y - center.y, 2) < 1
-		if (tooSmall)
-			return oldPos
-
-		radius = _.max([Math.abs(center.x - pos.x), Math.abs(center.y - pos.y)])
+		radius = _.max([Math.abs(center.x - newPos.x), Math.abs(center.y - newPos.y)])
 		size = {width: radius*2, height: radius*2}
-		tooBig = checkBounds(center, size, this.getLayer())
-		if (tooBig.x || tooBig.y)
+		if (radius < 5)
 			return oldPos
 
-		return {
-			x: (if ignore.x then oldPos.x else pos.x),
-			y: (if ignore.y then oldPos.y else pos.y)
-		}
+		positions = anchorPositionsFor(center, size)
+		allInside = _.every(positions, (pos) ->
+			console.log(pos)
+			!constrainPosition(pos, pos, group, {width: 10, height: 10}).changed
+		)
+		if (allInside)
+			#group.find('.figure')[0].size(size)
+			group.find('.figure')[0].radius(radius)
+			newPos
+		else
+			oldPos
 	)
 	anchor.on('dragmove', ->
-		updateAnchorMoved(this);
+		updateAllAnchors(group)
+		layer.draw()
 	)
 	anchor.on('mousedown touchstart', ->
 		group.setDraggable(false)
-		this.moveToTop()
 	)
 	anchor.on('dragend', ->
 		group.setDraggable(true)
 	)
+
+
 	# add hover styling
 	anchor.on('mouseover', ->
 		layer = this.getLayer()
 		document.body.style.cursor = 'pointer'
 		this.setStrokeWidth(4)
+		this.getParent().draw()
 	)
 	anchor.on('mouseout', ->
 		layer = this.getLayer()
 		document.body.style.cursor = 'default'
 		this.strokeWidth(2)
+		this.getParent().draw()
 	)
 
 	group.add(anchor)
+	anchor
 
 
 @Widgets ?= {}
