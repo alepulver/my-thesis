@@ -1,16 +1,5 @@
 _ = lodash
 
-addBorder = (layer) ->
-	border = new Kinetic.Line({
-		points: [0, 0, layer.width(), 0, layer.width(), layer.height(), 0, layer.height(), 0, 0],
-		dash: [20, 5],
-		stroke: 'black',
-		strokeWidth: 5
-	})
-	layer.add border
-	layer.draw()
-
-
 class ChoosePanel
 	constructor: (choices, @layer) ->
 		self = this
@@ -26,7 +15,7 @@ class ChoosePanel
 		@keys = _.shuffle(@keys)
 		_.forEach(@keys, (key) ->
 			data = self.choices[key]
-			button = new MyButton({
+			button = Widgets.createButton({
       			text: data.text,
       			x: 30,
       			y: self.layer.getHeight()*p,
@@ -86,7 +75,7 @@ class CirclesPanel
 			height: @layer.getHeight()
 		})
 		#@layer.add(background)
-		addBorder @layer
+		Widgets.addBorder @layer
 
 	addCircle: (@name, @tooltip) ->
 		self = this
@@ -98,10 +87,10 @@ class CirclesPanel
 			fill: 'transparent',
 			name: 'image'
 		})
-		AddTooltip(@circle, tooltip)
-		@wrapper = new MyResizableWrapper(@circle, @layer)
+		Widgets.addTooltip(@circle, tooltip)
+		@wrapper = Widgets.createInteractiveFor(@circle, @layer)
 		
-		@button = new MyButton({
+		@button = Widgets.createButton({
 			#x: 100,
 			#y: @layer.getHeight()-100,
 			x: 200,

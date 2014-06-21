@@ -4,7 +4,7 @@ assert = function(condition, message) {
 		console.log(str);
 		throw str;
 	}
-}
+};
 
 LayoutUtils = function() { };
 LayoutUtils.generate = function(spec, dimensions) {
@@ -29,7 +29,7 @@ LayoutUtils.generate = function(spec, dimensions) {
 		case 'vertical':
 			break;
 	}
-}
+};
 
     /*
     var spec = {

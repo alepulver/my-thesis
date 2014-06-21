@@ -15,7 +15,7 @@ The idea is to use [KineticJS](http://kineticjs.com/) for graphics and [Meteor](
 One drawback is that widgets and layouts must be either written from scratch, or use additional libraries like:
 - [bootstrap](http://getbootstrap.com/) (for HTML+CSS)
 - [zebra](http://www.zebkit.com/) (for Canvas)
-- [jLayout](http://www.bramstein.com/projects/jlayout/) (generic).
+- [jLayout](http://www.bramstein.com/projects/jlayout/) (generic)
 
 And even if Wacom tablets aren't natively supported in Javascript, there is an official [Windows/Mac browser plugin](http://www.wacomeng.com/web/WebPluginReleaseNotes.htm), and an unofficial [Linux version](https://github.com/ZaneA/WacomWebPlugin) with partial support.
 
@@ -55,16 +55,17 @@ http://circles-experiment.meteor.com/
 
 - Allow smaller circles (external anchors should be farther)
 - Preguntar sobre la nota "te resultó forzado?" en la encuesta final
+- Save IP, browser data, timestamps for each decision, etc
 
-- Save IP, browser data, etc
-- Save mouse positions and timestamps
-- Allow downloading (not the subject) as CSV, etc
+- Save mouse positions and all events
+- Allow downloading (not the subject) as CSV, etc; before routes, try passing a parameter to the page URL
 - Make buttons and color bar horizontal to save space
 - Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
 
 #### Maybe
 
 - Refactor "layout" class for positioning elements
+- Refactor widgets in a wrapper and decorator objects
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
 - Use lodash/lazy.js instead of underscore, other languages (see gdoc)
 - Integrate with mimosa for compilation/require/bower/browserify instead of writing meteorite packages
