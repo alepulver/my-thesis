@@ -111,7 +111,7 @@ class DrawingPanel
 		finalShape.setPosition(@wrapper.getPosition())
 		@layer.add(finalShape)
 		@layer.draw();
-		@notifier(@name, finalShape) if @notifier != null
+		@notifier(@name, finalShape, @current.size()) if @notifier != null
 
 
 	setColor: (color) ->

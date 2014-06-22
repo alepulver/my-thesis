@@ -33,11 +33,11 @@ class HandleCF
 		@state = new CFStateModify this
 		@state.start()
 
-	modify_acceptCurrent: (name, shape) ->
+	modify_acceptCurrent: (name, shape, size) ->
 		@results.push({
 			position: shape.getPosition(),
 			color: shape.stroke(),
-			radius: shape.radius(),
+			size: size,
 			name: name
 		})
 		
@@ -83,8 +83,8 @@ class CFStateModify extends CFState
 	changeColor: (color) ->
 		@handler.modify_changeColor color
 	
-	acceptCurrent: (name, shape) ->
-		@handler.modify_acceptCurrent name, shape
+	acceptCurrent: (name, shape, size) ->
+		@handler.modify_acceptCurrent name, shape, size
 
 
 createPanels = (choices, colors, drawingPanelClass, shapeClass) ->

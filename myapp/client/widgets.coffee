@@ -15,7 +15,6 @@ class Circle extends Shape
 			})
 		else
 			@shape = circle
-
 	size: ->
 		{
 			width: @shape.radius()*2,
@@ -23,18 +22,57 @@ class Circle extends Shape
 		}
 
 	setSize: (size) ->
-		radius = _.min([size.width/2, size.height/2])
+		radius = _.min([size.width, size.height])
 		@shape.radius(radius)
 
 
 class Rect extends Shape
-	constructor: ->
-		#
+	constructor: (rect) ->
+		if (_.isUndefined(rect))
+			@shape = new Kinetic.Rect({
+				x: 0, y: 0,
+				width: 100, height: 100,
+				offsetX: 50, offsetY: 50,
+				stroke: 'black', strokeWidth: 6,
+				fill: 'transparent',
+				name: 'image'
+			})
+		else
+			@shape = rect
+
+	size: ->
+		@shape.size()
+
+
+	setSize: (size) ->
+		@shape.size({width: size.width*2, height: size.height*2})
+		@shape.offsetX(size.width)
+		@shape.offsetY(size.height)
 
 
 class Line extends Shape
-	constructor: ->
-		#
+	constructor: (line) ->
+		if (_.isUndefined(line))
+			@shape = new Kinetic.Line({
+				points: [-50, -50, 50, 50]
+				x: 0, y: 0,
+				width: 100, height: 100,
+				offsetX: 50, offsetY: 50,
+				stroke: 'black', strokeWidth: 6,
+				fill: 'transparent',
+				name: 'image'
+			})
+		else
+			@shape = line
+
+	size: ->
+		@shape.size()
+
+
+	setSize: (size) ->
+		@shape.size(size)
+		@shape.offsetX(size.width/2)
+		@shape.offsetY(size.height/2)
 
 
 createButton = (parameters) ->
@@ -224,13 +262,13 @@ addAnchor = (group, commonShape, name) ->
 
 	anchor.dragBoundFunc((newPos) ->
 		oldPos = this.getAbsolutePosition()
-		result = constrainPosition(newPos, oldPos, new Widgets.Circle(this))
+		#result = constrainPosition(newPos, oldPos, new Widgets.Circle(this))
 
 		center = group.getAbsolutePosition()
-		radius = _.max([Math.abs(center.x - newPos.x), Math.abs(center.y - newPos.y)])
-		size = {width: radius*2, height: radius*2}
-		if (radius < 5)
-			return oldPos
+		size = {
+			width: Math.abs(center.x - newPos.x),
+			height: Math.abs(center.y - newPos.y)
+		}
 
 		positions = anchorPositionsFor(center, size)
 		allInside = _.every(positions, (pos) ->
