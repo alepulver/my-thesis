@@ -11,13 +11,19 @@ class ChoosePanel
 		@notifier = null
 		
 		p = 0.1
+		px = 0
+		total = 0
 		@keys = _.keys(@choices)
 		@keys = _.shuffle(@keys)
 		_.forEach(@keys, (key) ->
+			if (total == 4)
+				px += 170
+				p = 0.1
+				total -= 4
 			data = self.choices[key]
 			button = Widgets.createButton({
       			text: data.text,
-      			x: 30,
+      			x: px + 30,
       			y: self.layer.getHeight()*p,
       			width: 100
 			})
@@ -28,7 +34,7 @@ class ChoosePanel
 			self.layer.add button
 
 			dot = new Kinetic.Circle(
-				x: 15
+				x: px + 15
 				y: self.layer.height()*p + button.height()/2
 				radius: 5
 				stroke: 'black'
@@ -36,7 +42,8 @@ class ChoosePanel
 			data.dot = dot
 			self.layer.add dot
 
-			p += 0.8/_.size(self.choices)
+			p += 0.8/_.min([_.size(self.choices), 4])
+			total++
 		)
 
 	setNotifier: (@notifier) ->
