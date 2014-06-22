@@ -64,9 +64,9 @@ class ChoosePanel
 		shape.getParent().draw()
 
 
-class CirclesPanel
-	constructor: (@layer) ->
-		@circles = []
+class DrawingPanel
+	constructor: (@layer, @shapeClass) ->
+		#@shapes = []
 		@current = null
 		
 		background = new Kinetic.Rect({
@@ -77,51 +77,46 @@ class CirclesPanel
 		#@layer.add(background)
 		Widgets.addBorder @layer
 
-	addCircle: (@name, @tooltip) ->
+	addShape: (@name, @tooltip) ->
 		self = this
 		
-		@circle = new Kinetic.Circle({
-			x: 0, y: 0,
-			radius: 70,
-			stroke: 'black', strokeWidth: 6,
-			fill: 'transparent',
-			name: 'image'
-		})
-		Widgets.addTooltip(@circle, tooltip)
-		@wrapper = Widgets.createInteractiveFor(@circle, @layer)
+		@current = new @shapeClass()
+		Widgets.addTooltip(@current.shape, tooltip)
+		@wrapper = Widgets.createInteractiveFor(@current, @layer)
 		
 		@button = Widgets.createButton({
 			#x: 100,
 			#y: @layer.getHeight()-100,
-			x: 200,
+			x: 50,
 			y: -100,
 			width: 100,
 			text: 'Aceptar'
 		})
-		@button.on('mousedown', -> self.acceptedCircle())
+		@button.on('mousedown', -> self.acceptedShape())
 
 		@layer.add @button
 		@layer.add @wrapper
 		@layer.draw()
 
-		@circle
+		@current.shape
 
-	acceptedCircle: ->
+	acceptedShape: ->
 		# XXX: avoid error when mouseout arrives later
 		@button.off('mouseover')
 		@button.off('mouseout')
 		@button.remove()
 		@wrapper.remove()
 
-		@circle.setPosition(@wrapper.getPosition())
-		@layer.add(@circle)
+		finalShape = @current.shape
+		finalShape.setPosition(@wrapper.getPosition())
+		@layer.add(finalShape)
 		@layer.draw();
-		@notifier(@name, @circle) if @notifier != null
+		@notifier(@name, finalShape) if @notifier != null
 
 
 	setColor: (color) ->
-		@circle.setStroke color
-		@circle.draw()
+		@current.shape.setStroke color
+		@current.shape.draw()
 
 	setNotifier: (@notifier) ->
 		@layer.listening(@notifier != null)
@@ -179,7 +174,7 @@ class TextPanel
 @Panels ?= {}
 _.merge(@Panels,
 	Choose: ChoosePanel
-	Circles: CirclesPanel
+	Drawing: DrawingPanel
 	Colors: ColorsPanel
 	Text: TextPanel
 )

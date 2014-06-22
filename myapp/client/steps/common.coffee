@@ -29,15 +29,15 @@ class HandleCF
 		})
 
 	choose_selectPeriod: (epoch) ->
-		@panels.circles.addCircle(epoch, @epochs[epoch])
+		@panels.shapes.addShape(epoch, @epochs[epoch])
 		@state = new CFStateModify this
 		@state.start()
 
-	modify_acceptCurrent: (name, circle) ->
+	modify_acceptCurrent: (name, shape) ->
 		@results.push({
-			position: circle.getPosition(),
-			color: circle.stroke(),
-			radius: circle.radius(),
+			position: shape.getPosition(),
+			color: shape.stroke(),
+			radius: shape.radius(),
 			name: name
 		})
 		
@@ -47,7 +47,7 @@ class HandleCF
 			this.finish()
 
 	modify_changeColor: (color) ->
-		@panels.circles.setColor color
+		@panels.shapes.setColor color
 		@panels.choose.colorSelected color
 
 
@@ -64,7 +64,7 @@ class CFStateChoose extends CFState
 		panels.choose.setNotifier(
 			(epoch) -> handler.state.selectPeriod epoch)
 		panels.color.setNotifier(null)
-		panels.circles.setNotifier(null)
+		panels.shapes.setNotifier(null)
 
 	selectPeriod: (epoch) ->
 		@handler.choose_selectPeriod epoch
@@ -77,17 +77,17 @@ class CFStateModify extends CFState
 
 		panels.choose.setNotifier(null)
 		panels.color.setNotifier((x) -> handler.state.changeColor x)
-		panels.circles.setNotifier(
-			(name, circle) -> handler.state.acceptCurrent(name, circle))
+		panels.shapes.setNotifier(
+			(name, shape) -> handler.state.acceptCurrent(name, shape))
 
 	changeColor: (color) ->
 		@handler.modify_changeColor color
 	
-	acceptCurrent: (name, circle) ->
-		@handler.modify_acceptCurrent name, circle
+	acceptCurrent: (name, shape) ->
+		@handler.modify_acceptCurrent name, shape
 
 
-createPanels = (choices, colors, drawingPanelClass) ->
+createPanels = (choices, colors, drawingPanelClass, shapeClass) ->
 	stage = new Kinetic.Stage({
 		container: 'container',
 		width: 800,	height: 800
@@ -113,14 +113,14 @@ createPanels = (choices, colors, drawingPanelClass) ->
 	color_menu = new Panels.Colors(colors, color_layer)
 	stage.add(color_layer)
 
-	circles_layer = new Kinetic.Layer({
+	shapes_layer = new Kinetic.Layer({
 		x: 0,
 		y: 200,
 		width: 800,
 		height: 500
 	})
-	circles_panel = new drawingPanelClass(circles_layer)
-	stage.add(circles_layer)
+	shapes_panel = new drawingPanelClass(shapes_layer, shapeClass)
+	stage.add(shapes_layer)
 
 	text_layer = new Kinetic.Layer({
 		x: 0,
@@ -133,7 +133,7 @@ createPanels = (choices, colors, drawingPanelClass) ->
 
 	stage.draw()
 
-	{choose: choose_panel, color: color_menu, circles: circles_panel, text: text_canvas, choices: choices}
+	{choose: choose_panel, color: color_menu, shapes: shapes_panel, text: text_canvas, choices: choices}
 
 
 @Steps ?= {}

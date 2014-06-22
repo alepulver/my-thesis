@@ -1,5 +1,42 @@
 _ = lodash
 
+class Shape
+	#
+
+class Circle extends Shape
+	constructor: (circle) ->
+		if (_.isUndefined(circle))
+			@shape = new Kinetic.Circle({
+				x: 0, y: 0,
+				radius: 70,
+				stroke: 'black', strokeWidth: 6,
+				fill: 'transparent',
+				name: 'image'
+			})
+		else
+			@shape = circle
+
+	size: ->
+		{
+			width: @shape.radius()*2,
+			height: @shape.radius()*2
+		}
+
+	setSize: (size) ->
+		radius = _.min([size.width/2, size.height/2])
+		@shape.radius(radius)
+
+
+class Rect extends Shape
+	constructor: ->
+		#
+
+
+class Line extends Shape
+	constructor: ->
+		#
+
+
 createButton = (parameters) ->
 	group = new Kinetic.Group({
 		x: parameters.x,
@@ -79,7 +116,8 @@ addTooltip = (shape, text) ->
 	)
 
 
-createInteractiveFor = (shape, layer) ->
+createInteractiveFor = (commonShape, layer) ->
+	shape = commonShape.shape
 	group = new Kinetic.Group({
 		x: layer.getWidth()/2,
 		y: layer.getHeight()/2,
@@ -88,31 +126,25 @@ createInteractiveFor = (shape, layer) ->
 
 	group.dragBoundFunc((newPos) ->
 		oldPos = this.getAbsolutePosition()
-		constrainPosition(newPos, oldPos, this, null)
+		constrainPosition(newPos, oldPos, commonShape)
 	)
 
 	shape.name('figure')
 	group.add(shape)
 
-	addAnchor(group, 'topLeft')
-	addAnchor(group, 'topRight')
-	addAnchor(group, 'bottomLeft')
-	addAnchor(group, 'bottomRight')
+	addAnchor(group, commonShape, 'topLeft')
+	addAnchor(group, commonShape, 'topRight')
+	addAnchor(group, commonShape, 'bottomLeft')
+	addAnchor(group, commonShape, 'bottomRight')
 
-	updateAllAnchors(group)
+	updateAllAnchors(group, commonShape)
 
 	return group
 
 
-constrainPosition = (newPos, oldPos, group, blah) ->
-	#size = group.find('.figure')[0].size()
-	radius = group.find('.figure')[0].radius()
-	size = null
-	if (blah == null)
-		size = {width: radius*2, height: radius*2}
-	else
-		size = blah
-	container = group.find('.figure')[0].getLayer()
+constrainPosition = (newPos, oldPos, commonShape) ->
+	size = commonShape.size()
+	container = commonShape.shape.getLayer()
 
 	objectTopLeft = {
 		x: (newPos.x - size.width/2),
@@ -145,6 +177,9 @@ constrainPosition = (newPos, oldPos, group, blah) ->
 
 
 anchorPositionsFor = (center, size) ->
+	if (size.width == Infinity)
+		error()
+
 	{
 		topLeft: {
 			x: center.x - size.width/2,
@@ -165,17 +200,16 @@ anchorPositionsFor = (center, size) ->
 	}
 
 
-updateAllAnchors = (group) ->
+updateAllAnchors = (group, commonShape) ->
 	anchorNames = ['topLeft', 'topRight', 'bottomLeft', 'bottomRight']
-	figure = group.find('.figure')[0]
-	newPositions = anchorPositionsFor(figure.getPosition(), figure.size())
-	
+	newPositions = anchorPositionsFor(commonShape.shape.getPosition(), commonShape.size())
+
 	_.forEach(anchorNames, (name) ->
 		pos = newPositions[name]
 		anchor = group.find(".#{name}")[0].setPosition(pos)
 	)
 
-addAnchor = (group, name) ->
+addAnchor = (group, commonShape, name) ->
 	stage = group.getStage()
 	layer = group.getLayer()
 
@@ -190,7 +224,7 @@ addAnchor = (group, name) ->
 
 	anchor.dragBoundFunc((newPos) ->
 		oldPos = this.getAbsolutePosition()
-		result = constrainPosition(newPos, oldPos, group, null)
+		result = constrainPosition(newPos, oldPos, new Widgets.Circle(this))
 
 		center = group.getAbsolutePosition()
 		radius = _.max([Math.abs(center.x - newPos.x), Math.abs(center.y - newPos.y)])
@@ -200,18 +234,17 @@ addAnchor = (group, name) ->
 
 		positions = anchorPositionsFor(center, size)
 		allInside = _.every(positions, (pos) ->
-			console.log(pos)
-			!constrainPosition(pos, pos, group, {width: 10, height: 10}).changed
+			blah = new Circle(anchor)
+			!constrainPosition(pos, pos, blah).changed
 		)
 		if (allInside)
-			#group.find('.figure')[0].size(size)
-			group.find('.figure')[0].radius(radius)
+			commonShape.setSize(size)
 			newPos
 		else
 			oldPos
 	)
 	anchor.on('dragmove', ->
-		updateAllAnchors(group)
+		updateAllAnchors(group, commonShape)
 		layer.draw()
 	)
 	anchor.on('mousedown touchstart', ->
@@ -246,4 +279,7 @@ _.merge(@Widgets, {
 	createInteractiveFor: createInteractiveFor
 	addBorder: addBorder
 	addTooltip: addTooltip
+	Circle: Circle
+	Rect: Rect
+	Line: Line
 })
