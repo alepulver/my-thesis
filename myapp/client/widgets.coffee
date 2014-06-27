@@ -1,5 +1,9 @@
 _ = lodash
 
+anchorOffset = {
+	x: 20, y: 20
+}
+
 class Shape
 	#
 
@@ -22,7 +26,9 @@ class Circle extends Shape
 		}
 
 	setSize: (size) ->
-		radius = _.min([size.width/2, size.height/2])
+		#desired = Math.sqrt(Math.pow(size.width/2, 2) + Math.pow(size.height/2, 2))
+		desired = _.min([size.width/2, size.height/2])
+		radius = _.max([desired, 3])
 		@shape.radius(radius)
 
 
@@ -164,7 +170,7 @@ createInteractiveFor = (commonShape, layer) ->
 
 	group.dragBoundFunc((newPos) ->
 		oldPos = this.getAbsolutePosition()
-		constrainPosition(newPos, oldPos, commonShape)
+		constrainPosition(newPos, oldPos, commonShape, anchorOffset)
 	)
 
 	shape.name('figure')
@@ -180,8 +186,12 @@ createInteractiveFor = (commonShape, layer) ->
 	return group
 
 
-constrainPosition = (newPos, oldPos, commonShape) ->
-	size = commonShape.size()
+constrainPosition = (newPos, oldPos, commonShape, borders) ->
+	realSize = commonShape.size()
+	size = {
+		width: realSize.width + borders.x*2,
+		height: realSize.height + borders.y*2
+	}
 	container = commonShape.shape.getLayer()
 
 	objectTopLeft = {
@@ -214,7 +224,12 @@ constrainPosition = (newPos, oldPos, commonShape) ->
 	result
 
 
-anchorPositionsFor = (center, size) ->
+anchorPositionsFor = (center, realSize) ->
+	size = {
+		width: realSize.width + anchorOffset.x*2,
+		height: realSize.height + anchorOffset.y*2
+	}
+
 	{
 		topLeft: {
 			x: center.x - size.width/2,
@@ -263,14 +278,14 @@ addAnchor = (group, commonShape, name) ->
 
 		center = group.getAbsolutePosition()
 		size = {
-			width: Math.abs(center.x - newPos.x)*2,
-			height: Math.abs(center.y - newPos.y)*2
+			width: (Math.abs(center.x - newPos.x) - anchorOffset.x)*2,
+			height: (Math.abs(center.y - newPos.y) - anchorOffset.y)*2
 		}
 
 		positions = anchorPositionsFor(center, size)
 		allInside = _.every(positions, (pos) ->
 			blah = new Circle(anchor)
-			!constrainPosition(pos, pos, blah).changed
+			!constrainPosition(pos, pos, blah, {x: 0, y: 0}).changed
 		)
 		if (allInside)
 			commonShape.setSize(size)

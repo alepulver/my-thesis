@@ -132,15 +132,19 @@ class DrawingPanel
 
 class ColorsPanel
 	constructor: (@colors, @layer) ->
-		@notifier = null;
-		@buttons = [];
+		@notifier = null
+		@buttons = []
 
-		position = 0;
+		position = 0
+		horizMax = 4
+		currentHoriz = 0
+		offsetY = 0
+
 		self = this;
 		_.each(@colors, (color) ->
 			rect = new Kinetic.Rect({
-				x: position, y: 5,
-				width: 20, height: 20,
+				x: position, y: offsetY + 10,
+				width: 30, height: 30,
 				fill: color
 			})
 			rect.on('mousedown', -> self.notify(color))
@@ -156,7 +160,13 @@ class ColorsPanel
 			)
 			self.buttons.push(rect);
 			self.layer.add(rect);
-			position += 25;
+			position += 40;
+			currentHoriz++
+
+			if (currentHoriz == horizMax)
+				currentHoriz = 0
+				offsetY += 40
+				position = 0
 		)
 
 		@layer.draw()
