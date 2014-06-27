@@ -22,7 +22,7 @@ class Circle extends Shape
 		}
 
 	setSize: (size) ->
-		radius = _.min([size.width, size.height])
+		radius = _.min([size.width/2, size.height/2])
 		@shape.radius(radius)
 
 
@@ -45,9 +45,9 @@ class Rect extends Shape
 
 
 	setSize: (size) ->
-		@shape.size({width: size.width*2, height: size.height*2})
-		@shape.offsetX(size.width)
-		@shape.offsetY(size.height)
+		@shape.size(size)
+		@shape.offsetX(size.width/2)
+		@shape.offsetY(size.height/2)
 
 
 class Line extends Shape
@@ -215,9 +215,6 @@ constrainPosition = (newPos, oldPos, commonShape) ->
 
 
 anchorPositionsFor = (center, size) ->
-	if (size.width == Infinity)
-		error()
-
 	{
 		topLeft: {
 			x: center.x - size.width/2,
@@ -266,8 +263,8 @@ addAnchor = (group, commonShape, name) ->
 
 		center = group.getAbsolutePosition()
 		size = {
-			width: Math.abs(center.x - newPos.x),
-			height: Math.abs(center.y - newPos.y)
+			width: Math.abs(center.x - newPos.x)*2,
+			height: Math.abs(center.y - newPos.y)*2
 		}
 
 		positions = anchorPositionsFor(center, size)

@@ -1,5 +1,7 @@
 _ = lodash
 
+colors = ['black', 'yellow', 'brown', 'darkviolet', 'grey', 'red', 'green', 'blue']
+
 class HandleCF
 	constructor: (@create_panels, @name) ->
 		# do nothing
@@ -140,4 +142,5 @@ createPanels = (choices, colors, drawingPanelClass, shapeClass) ->
 _.merge(@Steps, {
 	HandleControlFlow: HandleCF
 	createPanels: createPanels
+	colors: colors
 })

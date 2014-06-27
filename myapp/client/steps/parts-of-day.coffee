@@ -6,8 +6,7 @@ partsOfDay = () ->
 		afternoon: "Tarde",
 		night: "Noche",
 	}
-	colors = ['black', 'yellow', 'brown', 'violet', 'grey', 'red', 'green', 'blue']
-	create_panels = () -> Steps.createPanels choices, colors, Panels.Drawing, Widgets.Line
+	create_panels = () -> Steps.createPanels choices, Steps.colors, Panels.Drawing, Widgets.Line
 	step = new Steps.HandleControlFlow(create_panels, "parts-of-day")
 	step
 

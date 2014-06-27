@@ -2,7 +2,8 @@
   "packages": {
     "kinetic.js": {},
     "bower": {},
-    "lodash": {}
+    "lodash": {},
+    "iron-router": {}
   },
   "bower": {
     "rsvp": "3.0.6"

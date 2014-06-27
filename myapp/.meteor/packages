@@ -10,3 +10,4 @@ kinetic.js
 bower
 coffeescript
 lodash
+iron-router

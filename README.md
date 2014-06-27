@@ -52,19 +52,18 @@ http://circles-experiment.meteor.com/
 
 ### TODO
 - Add the rest of the experiments
-
 - Allow smaller circles (external anchors should be farther)
-- Preguntar sobre la nota "te resultó forzado?" en la encuesta final
-- Save IP, browser data, timestamps for each decision, etc
+- Save timestamps for each decision
+- Allow downloading (not the subject) as CSV, etc; before routes, try passing a parameter to the page URL
 
 - Save mouse positions and all events
-- Allow downloading (not the subject) as CSV, etc; before routes, try passing a parameter to the page URL
+- Save IP, browser data,
 - Make buttons and color bar horizontal to save space
 - Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
 
 #### Maybe
 
-- Refactor "layout" class for positioning elements
+- Refactor "layout" class for positioning elements (try famo.us, or mix html/css with canvas)
 - Refactor widgets in a wrapper and decorator objects
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
 - Use lodash/lazy.js instead of underscore, other languages (see gdoc)

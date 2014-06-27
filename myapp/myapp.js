@@ -1,5 +1,10 @@
 Results = new Meteor.Collection("results");
 
+Router.map(function() {
+  this.route('experiments', {path: '/'});
+  this.route('results');
+});
+
 if (Meteor.isClient) {
   Session.set("active_stage", "loading");
   
