@@ -7,7 +7,7 @@ presentPastFuture = () ->
 		future: "Futuro"
 	}
 	create_panels = () -> Steps.createPanels choices, Steps.colors, Panels.Drawing, Widgets.Circle
-	step = new Steps.HandleControlFlow(create_panels, "present-past-future")
+	step = new Steps.HandleControlFlow(create_panels, "present_past_future")
 	step
 
 

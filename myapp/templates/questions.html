@@ -1,0 +1,69 @@
+<template name="questions_begining">
+  <p>Por favor ingrese los siguientes datos (no es necesario el nombre completo).</p>
+  <form id="myform">
+    <p>
+      Nombre
+      <input type="text" name="name"/>
+    </p>
+    <p>
+      Edad
+      <input type="number" name="age" min="1" max="100">
+    </p>
+    <p>Sexo
+      <input type="radio" name="sex" value="male">Masculino
+      <input type="radio" name="sex" value="female">Femenino
+    </p>
+    <p>Actividades actuales</p>
+    <p>
+      Estudia
+      <input type="radio" name="studying" value="yes">Sí
+      <input type="radio" name="studying" value="no">No
+    </p>
+    <p>
+      Trabaja
+      <input type="radio" name="working" value="yes">Sí
+      <input type="radio" name="working" value="no">No
+    </p>
+    <input type="submit" id="submit"/><br/>
+  </form>
+</template>
+
+<template name="experiment_questions">
+  <p>Ha finalizado este experimento, su representación quedará visible abajo mientras contesta las  siguientes preguntas. Al presionar "Envair" comenzará el siguiente experimento.
+  </p>
+  <form id="myform">
+    <p>La escala va del 1 (para nada forzado) al 10 (muy forzado):</p>
+    <p>
+      Tamaño
+      <input type="number" name="size" min="1" max="10">
+    </p>
+    <p>
+      Ubicación
+      <input type="number" name="position" min="1" max="10">
+    </p>
+    <p>
+      Color
+      <input type="number" name="color" min="1" max="10">
+    </p>
+    <input type="submit" id="submit" value="Continuar"/><br/>
+  </form>
+</template>
+
+<template name="questions_ending">
+  <form id="myform">
+    <p>Si tuviera que definirse como un tipo de persona "matutina" o "nocturna", cómo se definiría?</p>
+    <p>
+      <input type="radio" name="daynight" value="5">Definitivamente matutina<br/>
+      <input type="radio" name="daynight" value="4">Moderadamente matutina<br/>
+      <input type="radio" name="daynight" value="3">Neutral<br/>
+      <input type="radio" name="daynight" value="2">Moderadamente nocturna<br/>
+      <input type="radio" name="daynight" value="1">Definitivamente nocturna<br/>
+    </p>
+    <p>
+      Comentarios<br/>
+      <textarea name="comments"></textarea>
+    </p>
+    <br/>
+    <input type="submit" id="submit"/><br/>
+  </form>
+</template>

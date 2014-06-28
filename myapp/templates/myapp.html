@@ -1,0 +1,35 @@
+<head>
+  <title>Experimentos sobre la representación del tiempo en el espacio</title>
+</head>
+
+<body>
+  
+</body>
+
+<template name="experiments">
+  {{> active_stage}}
+  {{#if stage_questions}}
+    {{> experiment_questions}}
+  {{/if}}
+</template>
+
+<template name="loading">
+  <p>Loading...</p>
+</template>
+
+<template name="introduction">
+  <h1>Experimentos sobre la representación del tiempo en el espacio</h1>
+  <p>A continuación se presentarán distintos experimentos. Al finalizar cada uno, comenzárá el siguiente, y luego del último se presentará una encuesta. No hay respuestas correctas o incorrectas, siendo las mismas de carácter subjetivo.</p>
+  <h2>
+    <a href="#" id="start">Empezar</a>
+  </h2>
+</template>
+
+<template name="thanks">
+  <h1>Gracias por participar!</h1>
+</template>
+
+<template name="results">
+  <p>results</p>
+  {{items}}
+</template>

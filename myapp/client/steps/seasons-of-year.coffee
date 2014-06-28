@@ -8,7 +8,7 @@ seasonsOfYear = () ->
 		autum: "Otoño"
 	}
 	create_panels = () -> Steps.createPanels choices, Steps.colors, Panels.Drawing, Widgets.Rect
-	step = new Steps.HandleControlFlow(create_panels, "seasons-of-year")
+	step = new Steps.HandleControlFlow(create_panels, "seasons_of_year")
 	step
 
 @Steps ?= {}

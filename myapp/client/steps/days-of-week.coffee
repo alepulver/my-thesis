@@ -11,7 +11,7 @@ daysOfWeek = () ->
 		sunday: "Domingo"
 	}
 	create_panels = () -> Steps.createPanels choices, Steps.colors, Panels.Drawing, Widgets.Rect
-	step = new Steps.HandleControlFlow(create_panels, "days-of-week")
+	step = new Steps.HandleControlFlow(create_panels, "days_of_week")
 	step
 
 @Steps ?= {}

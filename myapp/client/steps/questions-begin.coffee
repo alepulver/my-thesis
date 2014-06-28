@@ -1,10 +1,10 @@
 _ = lodash
 
-class Questions
+class QuestionsBegin
 	constructor: ->
-		@name = "questions"
+		@name = "questions_begining"
 		self = this
-		Template.questions.events({
+		Template.questions_begining.events({
 			'submit form': (event, template) -> self.formSubmitted(event, template)
 		})
 
@@ -14,17 +14,16 @@ class Questions
 	formSubmitted: (event, template) ->
 		event.preventDefault()
 
-		variables = ['name', 'age', 'sex', 'studying', 'working', 'daynight']
+		variables = ['name', 'age', 'sex', 'studying', 'working']
 		results = {}
 		_.each(variables, (field) ->
 			results[field] = template.find("input[name=#{field}]").value
 		)
-		results['comments'] = template.find("textarea[name=comments]").value
     
 		@workflow.stepFinished(results)
 
 
 @Steps ?= {}
 _.merge(@Steps, {
-	Questions: Questions
+	QuestionsBegin: QuestionsBegin
 })

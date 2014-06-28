@@ -46,11 +46,23 @@ class HandleCF
 		if @panels.choose.remaining > 0
 			this.next()
 		else
-			this.finish()
+			@state = new CFSStateFinish this
+			@state.start()
 
 	modify_changeColor: (color) ->
 		@panels.shapes.setColor color
 		@panels.choose.colorSelected color
+
+	finish_selectExit: ->
+		self = this
+		Template.experiment_questions.events({
+			'submit form': (event, template) -> self.questions_submitForm(event, template)
+		})
+		Session.set("stage_questions", true)
+
+	questions_submitForm: (event, template) ->
+		event.preventDefault()
+		this.finish()
 
 
 class CFState
@@ -87,6 +99,19 @@ class CFStateModify extends CFState
 	
 	acceptCurrent: (name, shape, size) ->
 		@handler.modify_acceptCurrent name, shape, size
+
+
+class CFSStateFinish extends CFState
+	start: ->
+		panels = @handler.panels
+		handler = @handler
+
+		panels.choose.setNotifier(null)
+		panels.color.setNotifier(null)
+		panels.shapes.askFinish(-> handler.state.selectExit())
+
+	selectExit: ->
+		@handler.finish_selectExit()
 
 
 createPanels = (choices, colors, drawingPanelClass, shapeClass) ->

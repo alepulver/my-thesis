@@ -129,6 +129,20 @@ class DrawingPanel
 		@layer.listening(@notifier != null)
 		@layer.draw()
 
+	askFinish: (notifier) ->
+		self = this
+		
+		button = Widgets.createButton({
+			x: 50,
+			y: -100,
+			width: 100,
+			text: 'Finalizar'
+		})
+		button.on('mousedown', notifier)
+
+		@layer.add button
+		@layer.draw()
+
 
 class ColorsPanel
 	constructor: (@colors, @layer) ->

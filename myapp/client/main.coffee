@@ -4,12 +4,13 @@ startMainApp = ->
 	# TODO: record date, step permutation order, etc
 	steps = [
 		new Steps.Introduction(),
+		new Steps.QuestionsBegin(),
 		Steps.presentPastFuture(),
 		Steps.seasonsOfYear(),
 		Steps.daysOfWeek(),
-		#Steps.partsOfDay(),
+		Steps.partsOfDay(),
 		#Steps.timeline(),
-		new Steps.Questions()
+		new Steps.QuestionsEnd()
 	]
 
 	workflow = new Workflow(steps, finishedMainApp)
@@ -43,12 +44,11 @@ class Workflow
 			assert(@current_index < _.size(@steps), "Workflow: nextStep index")
 			@current_step = @steps[@current_index]
 
-			#alert(@current_step.name)
 			Template[@current_step.name].rendered = () ->
-				#alert(self.current_step.name)
 				self.current_step.start(self)
 
 			Session.set("active_stage", @current_step.name)
+			Session.set("stage_questions", false)
 
 	stepFinished: (results) ->
 		@results[@current_step.name] = results
