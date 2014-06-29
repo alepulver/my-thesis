@@ -51,10 +51,9 @@ Source modifications are reloaded automatically.
 http://circles-experiment.meteor.com/
 
 ### TODO
-- Add questions after each experiment, while showing the final result
+- Handle negative angles in polar<->cartesian conversions
 - Jitter initial shape positions to avoid overlap
 - Save timestamps for each decision
-- Add pie chart experiment for parts of the day
 - Add timeline experiment (only straight line)
 - Allow downloading (not the subject) as CSV, etc; before routes, try passing a parameter to the page URL
 

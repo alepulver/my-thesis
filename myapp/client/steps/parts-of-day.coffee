@@ -8,8 +8,14 @@ partsOfDay = () ->
 	}
 
 	create_shape = (layer) ->
-		shape = new Widgets.Circle()
-		interactive_shape = new Widgets.SquareBoundedIS(shape, layer)
+		shape = new Kinetic.Wedge({
+			x: 0, y: 0,
+			radius: 200, angle: 60,
+			fill: 'black', stroke: 'black', strokeWidth: 0,
+			rotation: 0,
+			opacity: 0.5
+		})
+		interactive_shape = new Widgets.RadialSectorIS(shape, layer, 200)
 		interactive_shape
 
 	create_panels = () ->
@@ -17,7 +23,7 @@ partsOfDay = () ->
 		
 		layer = panels.shapes.layer
 		circle = new Kinetic.Circle({
-			x: layer.width/2, y: layer.height/2,
+			x: layer.width()/2, y: layer.height()/2,
 			radius: 200,
 			stroke: 'black',
 			strokeWidth: 2
