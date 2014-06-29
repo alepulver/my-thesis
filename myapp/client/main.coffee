@@ -4,11 +4,11 @@ startMainApp = ->
 	# TODO: record date, step permutation order, etc
 	steps = [
 		new Steps.Introduction(),
-		new Steps.QuestionsBegin(),
-		Steps.presentPastFuture(),
+		#new Steps.QuestionsBegin(),
+		#Steps.presentPastFuture(),
 		Steps.seasonsOfYear(),
-		Steps.daysOfWeek(),
-		Steps.partsOfDay(),
+		#Steps.daysOfWeek(),
+		#Steps.partsOfDay(),
 		#Steps.timeline(),
 		new Steps.QuestionsEnd()
 	]

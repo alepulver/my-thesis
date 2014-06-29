@@ -72,28 +72,16 @@ class ChoosePanel
 
 
 class DrawingPanel
-	constructor: (@layer, @shapeClass) ->
-		#@shapes = []
+	constructor: (@layer, @createShape) ->
 		@current = null
-		
-		background = new Kinetic.Rect({
-			fill: '#eeffee',
-			width: @layer.getWidth(),
-			height: @layer.getHeight()
-		})
-		#@layer.add(background)
-		Widgets.addBorder @layer
 
-	addShape: (@name, @tooltip) ->
+	addShape: (@name, tooltip) ->
 		self = this
-		
-		@current = new @shapeClass()
-		Widgets.addTooltip(@current.shape, tooltip)
-		@wrapper = Widgets.createInteractiveFor(@current, @layer)
+	
+		@current = @createShape(@layer)
+		@current.addTooltip(tooltip)
 		
 		@button = Widgets.createButton({
-			#x: 100,
-			#y: @layer.getHeight()-100,
 			x: 50,
 			y: -100,
 			width: 100,
@@ -102,28 +90,23 @@ class DrawingPanel
 		@button.on('mousedown', -> self.acceptedShape())
 
 		@layer.add @button
-		@layer.add @wrapper
+		@layer.add @current.group
 		@layer.draw()
 
-		@current.shape
+		@current
 
 	acceptedShape: ->
 		# XXX: avoid error when mouseout arrives later
 		@button.off('mouseover')
 		@button.off('mouseout')
 		@button.remove()
-		@wrapper.remove()
 
-		finalShape = @current.shape
-		finalShape.setPosition(@wrapper.getPosition())
-		@layer.add(finalShape)
-		@layer.draw();
-		@notifier(@name, finalShape, @current.size()) if @notifier != null
-
+		result = @current.fixState()
+		@notifier(@name, result) # if @notifier != null
 
 	setColor: (color) ->
-		@current.shape.setStroke color
-		@current.shape.draw()
+		@current.setColor color
+		@layer.draw()
 
 	setNotifier: (@notifier) ->
 		@layer.listening(@notifier != null)

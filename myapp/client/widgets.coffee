@@ -1,86 +1,5 @@
 _ = lodash
 
-anchorOffset = {
-	x: 20, y: 20
-}
-
-class Shape
-	#
-
-class Circle extends Shape
-	constructor: (circle) ->
-		if (_.isUndefined(circle))
-			@shape = new Kinetic.Circle({
-				x: 0, y: 0,
-				radius: 70,
-				stroke: 'black', strokeWidth: 6,
-				fill: 'transparent',
-				name: 'image'
-			})
-		else
-			@shape = circle
-	size: ->
-		{
-			width: @shape.radius()*2,
-			height: @shape.radius()*2
-		}
-
-	setSize: (size) ->
-		#desired = Math.sqrt(Math.pow(size.width/2, 2) + Math.pow(size.height/2, 2))
-		desired = _.min([size.width/2, size.height/2])
-		radius = _.max([desired, 3])
-		@shape.radius(radius)
-
-
-class Rect extends Shape
-	constructor: (rect) ->
-		if (_.isUndefined(rect))
-			@shape = new Kinetic.Rect({
-				x: 0, y: 0,
-				width: 100, height: 100,
-				offsetX: 50, offsetY: 50,
-				stroke: 'black', strokeWidth: 6,
-				fill: 'transparent',
-				name: 'image'
-			})
-		else
-			@shape = rect
-
-	size: ->
-		@shape.size()
-
-
-	setSize: (size) ->
-		@shape.size(size)
-		@shape.offsetX(size.width/2)
-		@shape.offsetY(size.height/2)
-
-
-class Line extends Shape
-	constructor: (line) ->
-		if (_.isUndefined(line))
-			@shape = new Kinetic.Line({
-				points: [-50, -50, 50, 50]
-				x: 0, y: 0,
-				width: 100, height: 100,
-				offsetX: 50, offsetY: 50,
-				stroke: 'black', strokeWidth: 6,
-				fill: 'transparent',
-				name: 'image'
-			})
-		else
-			@shape = line
-
-	size: ->
-		@shape.size()
-
-
-	setSize: (size) ->
-		@shape.size(size)
-		@shape.offsetX(size.width/2)
-		@shape.offsetY(size.height/2)
-
-
 createButton = (parameters) ->
 	group = new Kinetic.Group({
 		x: parameters.x,
@@ -108,14 +27,7 @@ createButton = (parameters) ->
 		cornerRadius: 10
 	})
 
-	group.on('mouseover', ->
-		rect.setStrokeWidth(5)
-		group.getParent().draw()
-	)
-	group.on('mouseout', ->
-		rect.setStrokeWidth(2)
-		group.getParent().draw()
-	)
+	makeHoverable group, rect
 
 	group.add(rect)
 	group.add(text)
@@ -142,7 +54,7 @@ addTooltip = (shape, text) ->
 		width: 100,
 		align: 'center'
 	})
-  
+
 	shape.on('mouseover', ->
 		parent = this.getParent()
 		widget.setPosition({
@@ -153,183 +65,97 @@ addTooltip = (shape, text) ->
 		parent.add(widget)
 		parent.draw()
 	)
-  
+
 	shape.on('mouseout', ->
 		widget.remove()
 		this.getParent().getParent().draw()
 	)
 
 
-createInteractiveFor = (commonShape, layer) ->
-	shape = commonShape.shape
-	group = new Kinetic.Group({
-		x: layer.getWidth()/2,
-		y: layer.getHeight()/2,
-		draggable: true
-	})
-
-	group.dragBoundFunc((newPos) ->
-		oldPos = this.getAbsolutePosition()
-		constrainPosition(newPos, oldPos, commonShape, anchorOffset)
-	)
-
-	shape.name('figure')
-	group.add(shape)
-
-	addAnchor(group, commonShape, 'topLeft')
-	addAnchor(group, commonShape, 'topRight')
-	addAnchor(group, commonShape, 'bottomLeft')
-	addAnchor(group, commonShape, 'bottomRight')
-
-	updateAllAnchors(group, commonShape)
-
-	return group
-
-
-constrainPosition = (newPos, oldPos, commonShape, borders) ->
-	realSize = commonShape.size()
-	size = {
-		width: realSize.width + borders.x*2,
-		height: realSize.height + borders.y*2
-	}
-	container = commonShape.shape.getLayer()
-
-	objectTopLeft = {
-		x: (newPos.x - size.width/2),
-		y: (newPos.y - size.height/2)
-	}  
-
-	containerPos = container.getAbsolutePosition()
-	containerTopLeft = {
-		x: (containerPos.x - container.offsetX()),
-		y: (containerPos.y - container.offsetY())
-	}
-
-	result = {x: newPos.x, y: newPos.y, changed: false}
-
-	beforeFirst = objectTopLeft.x < containerTopLeft.x
-	afterLast = objectTopLeft.x + size.width > containerTopLeft.x + container.getWidth()
-	ignoreX = beforeFirst || afterLast
-	if (ignoreX)
-		result.x = oldPos.x
-		result.changed = true
-
-	aboveFirst = objectTopLeft.y < containerTopLeft.y
-	belowLast = objectTopLeft.y + size.height > containerTopLeft.y + container.getHeight()
-	ignoreY = aboveFirst || belowLast
-	if (ignoreY)
-		result.y = oldPos.y
-		result.changed = true
-
-	result
-
-
-anchorPositionsFor = (center, realSize) ->
-	size = {
-		width: realSize.width + anchorOffset.x*2,
-		height: realSize.height + anchorOffset.y*2
-	}
-
+boundingBoxPositionsFor = (shape) ->
 	{
 		topLeft: {
-			x: center.x - size.width/2,
-			y: center.y - size.height/2
+			x: shape.x - shape.width/2,
+			y: shape.y - shape.height/2
 		},
 		topRight: {
-			x: center.x + size.width/2,
-			y: center.y - size.height/2
+			x: shape.x + shape.width/2,
+			y: shape.y - shape.height/2
 		},
 		bottomLeft: {
-			x: center.x - size.width/2,
-			y: center.y + size.height/2
+			x: shape.x - shape.width/2,
+			y: shape.y + shape.height/2
 		},
 		bottomRight: {
-			x: center.x + size.width/2,
-			y: center.y + size.height/2
+			x: shape.x + shape.width/2,
+			y: shape.y + shape.height/2
 		}
 	}
 
 
-updateAllAnchors = (group, commonShape) ->
-	anchorNames = ['topLeft', 'topRight', 'bottomLeft', 'bottomRight']
-	newPositions = anchorPositionsFor(commonShape.shape.getPosition(), commonShape.size())
+boundingBoxFits = (shape, container) ->
+	shapeBB = boundingBoxPositionsFor shape
+	adjustedContainer = {
+		x: container.x + container.width/2,
+		y: container.y + container.height/2,
+		width: container.width,
+		height: container.height
+	}
+	containerBB = boundingBoxPositionsFor adjustedContainer
 
-	_.forEach(anchorNames, (name) ->
-		pos = newPositions[name]
-		anchor = group.find(".#{name}")[0].setPosition(pos)
-	)
+	isLeft = shapeBB.topLeft.x < containerBB.topLeft.x
+	isRight = shapeBB.bottomRight.x > containerBB.bottomRight.x
+	isUp = shapeBB.topLeft.y < containerBB.topLeft.y
+	isDown = shapeBB.bottomRight.y > containerBB.bottomRight.y
 
-addAnchor = (group, commonShape, name) ->
-	stage = group.getStage()
-	layer = group.getLayer()
-
-	anchor = new Kinetic.Circle({
-		stroke: '#666',
-		fill: '#ddd',
-		strokeWidth: 2,
-		radius: 8,
-		name: name,
-		draggable: true
-	})
-
-	anchor.dragBoundFunc((newPos) ->
-		oldPos = this.getAbsolutePosition()
-		#result = constrainPosition(newPos, oldPos, new Widgets.Circle(this))
-
-		center = group.getAbsolutePosition()
-		size = {
-			width: (Math.abs(center.x - newPos.x) - anchorOffset.x)*2,
-			height: (Math.abs(center.y - newPos.y) - anchorOffset.y)*2
-		}
-
-		positions = anchorPositionsFor(center, size)
-		allInside = _.every(positions, (pos) ->
-			blah = new Circle(anchor)
-			!constrainPosition(pos, pos, blah, {x: 0, y: 0}).changed
-		)
-		if (allInside)
-			commonShape.setSize(size)
-			newPos
-		else
-			oldPos
-	)
-	anchor.on('dragmove', ->
-		updateAllAnchors(group, commonShape)
-		layer.draw()
-	)
-	anchor.on('mousedown touchstart', ->
-		group.setDraggable(false)
-	)
-	anchor.on('dragend', ->
-		group.setDraggable(true)
-	)
+	isHorizontalOff = isLeft || isRight
+	isVerticalOff = isUp || isDown
+	
+	{
+		x: !isHorizontalOff,
+		y: !isVerticalOff,
+		all: !(isHorizontalOff || isVerticalOff)
+	}
 
 
+constrainedPosUpdate = (shape, container, newPos) ->
+	newShape = {
+		x: newPos.x,
+		y: newPos.y,
+		width: shape.width,
+		height: shape.height
+	}
+	result = boundingBoxFits newShape, container
+	
+	{
+		x: (if result.x then newPos.x else shape.x),
+		y: (if result.y then newPos.y else shape.y)
+	}
+
+
+makeHoverable = (group, shape) ->
 	# add hover styling
-	anchor.on('mouseover', ->
-		layer = this.getLayer()
+	group.on('mouseover', ->
+		#layer = this.getLayer()
 		document.body.style.cursor = 'pointer'
-		this.setStrokeWidth(4)
-		this.getParent().draw()
+		shape.strokeWidth(4)
+		shape.getLayer().draw()
 	)
-	anchor.on('mouseout', ->
-		layer = this.getLayer()
+	group.on('mouseout', ->
+		#layer = this.getLayer()
 		document.body.style.cursor = 'default'
-		this.strokeWidth(2)
-		this.getParent().draw()
+		shape.strokeWidth(2)
+		shape.getLayer().draw()
 	)
-
-	group.add(anchor)
-	anchor
 
 
 @Widgets ?= {}
 _.merge(@Widgets, {
 	createButton: createButton
-	createInteractiveFor: createInteractiveFor
 	addBorder: addBorder
 	addTooltip: addTooltip
-	Circle: Circle
-	Rect: Rect
-	Line: Line
+	boundingBoxPositionsFor: boundingBoxPositionsFor
+	boundingBoxFits: boundingBoxFits
+	constrainedPosUpdate: constrainedPosUpdate
+	makeHoverable: makeHoverable
 })

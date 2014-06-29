@@ -114,7 +114,7 @@ class CFSStateFinish extends CFState
 		@handler.finish_selectExit()
 
 
-createPanels = (choices, colors, drawingPanelClass, shapeClass) ->
+createPanels = (choices, colors, drawingPanelClass, createShape) ->
 	stage = new Kinetic.Stage({
 		container: 'container',
 		width: 800,	height: 800
@@ -146,7 +146,7 @@ createPanels = (choices, colors, drawingPanelClass, shapeClass) ->
 		width: 800,
 		height: 500
 	})
-	shapes_panel = new drawingPanelClass(shapes_layer, shapeClass)
+	shapes_panel = new drawingPanelClass(shapes_layer, createShape)
 	stage.add(shapes_layer)
 
 	text_layer = new Kinetic.Layer({
@@ -163,9 +163,20 @@ createPanels = (choices, colors, drawingPanelClass, shapeClass) ->
 	{choose: choose_panel, color: color_menu, shapes: shapes_panel, text: text_canvas, choices: choices}
 
 
+create_handler_default = (choices, create_shape) ->
+	() ->
+		panels = Steps.createPanels choices, Steps.colors, Panels.Drawing, create_shape
+		
+		layer = panels.shapes.layer
+		Widgets.addBorder layer
+
+		panels
+
+
 @Steps ?= {}
 _.merge(@Steps, {
 	HandleControlFlow: HandleCF
 	createPanels: createPanels
 	colors: colors
+	create_handler_default: create_handler_default
 })
