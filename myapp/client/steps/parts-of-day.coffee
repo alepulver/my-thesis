@@ -1,5 +1,8 @@
 _ = lodash
 
+randBetween = (min, max) ->
+	Math.floor(Math.random() * (max - min + 1)) + min
+
 partsOfDay = () ->
 	choices = {
 		morning: "Mañana",
@@ -10,9 +13,9 @@ partsOfDay = () ->
 	create_shape = (layer) ->
 		shape = new Kinetic.Wedge({
 			x: 0, y: 0,
-			radius: 200, angle: 60,
+			radius: 200, angle: randBetween(50, 80),
 			fill: 'black', stroke: 'black', strokeWidth: 0,
-			rotation: 0,
+			rotation: randBetween(-120, -90),
 			opacity: 0.5
 		})
 		interactive_shape = new Widgets.RadialSectorIS(shape, layer, 200)

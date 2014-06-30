@@ -7,10 +7,10 @@
 </body>
 
 <template name="experiments">
-  {{> active_stage}}
   {{#if stage_questions}}
     {{> experiment_questions}}
   {{/if}}
+  {{> active_stage}}
 </template>
 
 <template name="loading">

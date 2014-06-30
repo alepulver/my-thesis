@@ -1,5 +1,9 @@
 _ = lodash
 
+randBetween = (min, max) ->
+	Math.floor(Math.random() * (max - min + 1)) + min
+
+
 class Shape
 	width: ->
 		this.size().width
@@ -82,8 +86,8 @@ class SquareBoundedIS extends InteractiveShape
 		self = this
 
 		@group = new Kinetic.Group({
-			x: @layer.width()/2,
-			y: @layer.height()/2,
+			x: @layer.width()/2 + randBetween(-30, 30),
+			y: @layer.height()/2 + randBetween(-30, 30),
 			draggable: true
 		})
 
@@ -308,7 +312,7 @@ class RadialSectorIS extends InteractiveShape
 		@anchors['rotation'].setPosition(polarToCartesian(pos))
 
 		pos = {
-			angle: @shape.rotation(),
+			angle: 360 + @shape.rotation(),
 			length: @anchorAngleDist
 		}
 		@anchors['angleOne'].setPosition(polarToCartesian(pos))
@@ -396,20 +400,20 @@ class LineInCircleIS extends InteractiveShape
 		oldPolar = cartesianToPolar(oldVector)
 		diffAngle = newPolar.angle - oldPolar.angle
 
-		@shape.rotate(diffAngle)
+		@group.rotate(diffAngle)
 		@shape.points([-newPolar.length, 0, newPolar.length, 0])
 
 		newPos
 
 	updateAllAnchors: ->
 		pos = {
-			angle: @shape.rotation(),
+			angle: 0,
 			length: @shape.points()[2]
 		}
 		@anchors['one'].setPosition(polarToCartesian(pos))
 
 		pos = {
-			angle: 180+@shape.rotation(),
+			angle: 180,
 			length: @shape.points()[2]
 		}
 		@anchors['two'].setPosition(polarToCartesian(pos))
@@ -429,4 +433,6 @@ _.merge(@Widgets, {
 	SquareBoundedIS
 	RadialSectorIS
 	LineInCircleIS
+	cartesianToPolar
+	polarToCartesian
 })

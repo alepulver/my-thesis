@@ -112,19 +112,28 @@ class DrawingPanel
 		@layer.listening(@notifier != null)
 		@layer.draw()
 
-	askFinish: (notifier) ->
+	askFinish: (@end_notifier) ->
 		self = this
 		
-		button = Widgets.createButton({
+		@button = Widgets.createButton({
 			x: 50,
 			y: -100,
 			width: 100,
 			text: 'Finalizar'
 		})
-		button.on('mousedown', notifier)
+		@button.on('mousedown', -> self.finishClicked())
 
-		@layer.add button
+		@layer.add @button
 		@layer.draw()
+
+	finishClicked: ->
+		# XXX: avoid error when mouseout arrives later
+		@button.off('mouseover')
+		@button.off('mouseout')
+		@button.remove()
+		@layer.draw()
+
+		@end_notifier()
 
 
 class ColorsPanel

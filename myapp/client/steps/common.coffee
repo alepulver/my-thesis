@@ -4,7 +4,7 @@ colors = ['black', 'yellow', 'brown', 'darkviolet', 'grey', 'red', 'green', 'blu
 
 class HandleCF
 	constructor: (@create_panels, @name) ->
-		# do nothing
+		@done = false
 
 	changeState: (stateClass) ->
 		@state = new stateClass this
@@ -25,6 +25,9 @@ class HandleCF
 		@state.start()
 
 	finish: ->
+		if (@done)
+			return
+		@done = true
 		@workflow.stepFinished({
 			results: @results,
 			randomSeqs: @randomSeqs
@@ -55,6 +58,7 @@ class HandleCF
 
 	finish_selectExit: ->
 		self = this
+		# XXX: must fix this some time, all forms fire this event (all using the template)
 		Template.experiment_questions.events({
 			'submit form': (event, template) -> self.questions_submitForm(event, template)
 		})

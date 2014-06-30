@@ -51,10 +51,7 @@ Source modifications are reloaded automatically.
 http://circles-experiment.meteor.com/
 
 ### TODO
-- Handle negative angles in polar<->cartesian conversions
-- Jitter initial shape positions to avoid overlap
 - Save timestamps for each decision
-- Add timeline experiment (only straight line)
 - Allow downloading (not the subject) as CSV, etc; before routes, try passing a parameter to the page URL
 
 - Save mouse positions and all events

@@ -2,7 +2,7 @@ _ = lodash
 
 class HandleTimelineCF
 	constructor: (@choices, @colors, @name) ->
-		# do nothing
+		@done = false
 
 	changeState: (stateClass) ->
 		@state = new stateClass this
@@ -13,14 +13,18 @@ class HandleTimelineCF
 			container: 'container',
 			width: 800,	height: 800
 		})
-
 		@layer = new Kinetic.Layer({
 			x: 0,
 			y: 0,
 			width: 800,
 			height: 800
 		})
-		@stage.add(@layer)
+		@background = new Kinetic.Rect({
+			x: 0, y: 0,
+			width: 800, height: 800
+		})
+		@stage.add @layer
+		@layer.add @background
 
 		@results = []
 		@randomSeqs = {
@@ -29,9 +33,9 @@ class HandleTimelineCF
 		}
 		this.askLineAdjustments()
 
-
 	askLineAdjustments: ->
 		self = this
+		@remaining = 3
 		@line = new Widgets.LineInCircleIS(@layer)
 		@button = Widgets.createButton({
 			x: 50,
@@ -55,30 +59,63 @@ class HandleTimelineCF
 		this.askToPositionEvent()
 
 	askToPositionEvent: ->
-		@layer.on('mousemove', ->
+		self = this
+		group = new Kinetic.Rect({
+			#
+		})
+		@current = new Kinetic.Rect({
+			x: 0, y: -15,
+			width: 5,
+			height: 30,
+			fill: 'red'
+		})
+		@line.group.add @current
+		@correct = false
+		@layer.draw()
+
+		@background.on('mousemove', ->
 			stage = this.getStage()
 			pos = stage.getPointerPosition()
-			console.log(pos)
+
+			center = self.line.group.getAbsolutePosition()
+			vector = {
+				x: pos.x - center.x,
+				y: pos.y - center.y
+			}
+			polarVector = Widgets.cartesianToPolar vector
+			projection = Widgets.polarToCartesian({
+				angle: polarVector.angle - self.line.group.rotation(),
+				length: polarVector.length
+			}).x
+			inRange = (x) ->
+				dist = self.line.shape.points()[2]
+				(-dist < projection and dist > projection)
+
+			if (inRange(projection))
+				self.correct = true
+				self.current.x(projection)
+				self.layer.draw()
+			else
+				self.correct = false
 		)
-		@layer.on('mousedown', ->
-			stage = this.getStage()
-			pos = stage.getPointerPosition()
-			console.log(pos)
+		@background.on('mousedown', ->
+			if (self.correct)
+				self.finishedPositioningEvent()
 		)
-		#
 
+	finishedPositioningEvent: ->
+		@background.off('mousemove')
+		@background.off('mousedown')
 
-	finishedPositioningEvent: (data) ->
-		@layer.off('mousemove')
-		@layer.off('mousedown')
-
+		###
 		@results.push({
 			position: shape.getPosition(),
 			color: shape.stroke(),
 			size: size,
 			name: name
 		})
-		remaining--
+		###
+		@remaining--
 		if @remaining > 0
 			this.askToPositionEvent()
 		else
@@ -116,6 +153,9 @@ class HandleTimelineCF
 		this.finish()
 
 	finish: ->
+		if (@done)
+			return
+		@done = true
 		@workflow.stepFinished({
 			results: @results,
 			randomSeqs: @randomSeqs
