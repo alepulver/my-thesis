@@ -8,8 +8,8 @@ startMainApp = ->
 		#Steps.presentPastFuture(),
 		#Steps.seasonsOfYear(),
 		#Steps.daysOfWeek(),
-		Steps.partsOfDay(),
-		#Steps.timeline(),
+		#Steps.partsOfDay(),
+		Steps.timeline(),
 		new Steps.QuestionsEnd()
 	]
 

@@ -176,7 +176,7 @@ create_handler_default = (choices, create_shape) ->
 @Steps ?= {}
 _.merge(@Steps, {
 	HandleControlFlow: HandleCF
-	createPanels: createPanels
-	colors: colors
-	create_handler_default: create_handler_default
+	createPanels
+	colors
+	create_handler_default
 })

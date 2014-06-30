@@ -73,17 +73,7 @@ class Rect extends Shape
 
 
 class InteractiveShape
-	getContainer: ->
-		{
-			x: @layer.getAbsolutePosition().x,
-			y: @layer.getAbsolutePosition().y,
-			width: @layer.width(),
-			height: @layer.height()
-		}
-
-	addTooltip: (name) ->
-		Widgets.addTooltip @commonShape.shape, name
-
+	#
 
 class SquareBoundedIS extends InteractiveShape
 	constructor: (@commonShape, @layer) ->
@@ -107,6 +97,17 @@ class SquareBoundedIS extends InteractiveShape
 		_.forEach(@anchorNames, (name) -> self.addAnchor name)
 
 		this.updateAllAnchors()
+
+	addTooltip: (name) ->
+		Widgets.addTooltip @commonShape.shape, name
+
+	getContainer: ->
+		{
+			x: @layer.getAbsolutePosition().x,
+			y: @layer.getAbsolutePosition().y,
+			width: @layer.width(),
+			height: @layer.height()
+		}
 
 	updateAllAnchors: ->
 		self = this
@@ -335,10 +336,97 @@ class RadialSectorIS extends InteractiveShape
 		@shape.stroke color
 
 
+class LineInCircleIS extends InteractiveShape
+	constructor: (@layer) ->
+		@anchors = {}
+		self = this
+
+		@group = new Kinetic.Group({
+			x: @layer.width()/2,
+			y: @layer.height()/2,
+		})
+
+		@shape = new Kinetic.Line({
+			points: [-100, 0, 100, 0]
+			stroke: 'black',
+			strokeWidth: 10,
+		})
+		@group.add(@shape)
+
+		this.addAnchor 'one'
+		this.addAnchor 'two'
+
+		this.updateAllAnchors()
+
+	addTooltip: (name) ->
+		Widgets.addTooltip @shape, name
+
+	addAnchor: (name, dragBoundFunc) ->
+		self = this
+		anchor = new Kinetic.Circle({
+			stroke: '#666',
+			fill: '#ddd',
+			strokeWidth: 2,
+			radius: 8,
+			name: name,
+			draggable: true
+		})
+		Widgets.makeHoverable anchor, anchor
+		
+		anchor.dragBoundFunc((newPos) ->
+			self.anchorDragBound this.getAbsolutePosition(), newPos, this
+		)
+		anchor.on('dragmove', ->
+			self.updateAllAnchors()
+		)
+		@anchors[name] = anchor
+		@group.add anchor
+
+	anchorDragBound: (oldPos, newPos, obj) ->
+		center = @group.getAbsolutePosition()
+		newVector = {
+			x: newPos.x - center.x,
+			y: newPos.y - center.y
+		}
+		oldVector = {
+			x: oldPos.x - center.x,
+			y: oldPos.y - center.y
+		}
+		newPolar = cartesianToPolar(newVector)
+		oldPolar = cartesianToPolar(oldVector)
+		diffAngle = newPolar.angle - oldPolar.angle
+
+		@shape.rotate(diffAngle)
+		@shape.points([-newPolar.length, 0, newPolar.length, 0])
+
+		newPos
+
+	updateAllAnchors: ->
+		pos = {
+			angle: @shape.rotation(),
+			length: @shape.points()[2]
+		}
+		@anchors['one'].setPosition(polarToCartesian(pos))
+
+		pos = {
+			angle: 180+@shape.rotation(),
+			length: @shape.points()[2]
+		}
+		@anchors['two'].setPosition(polarToCartesian(pos))
+
+		@layer.draw()
+
+	fixState: ->
+		@anchors['one'].remove()
+		@anchors['two'].remove()
+		@layer.draw()
+
+
 @Widgets ?= {}
 _.merge(@Widgets, {
 	Circle
 	Rect
 	SquareBoundedIS
 	RadialSectorIS
+	LineInCircleIS
 })
