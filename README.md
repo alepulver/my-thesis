@@ -53,6 +53,7 @@ http://circles-experiment.meteor.com/
 ### TODO
 - Save timestamps for each decision
 - Allow downloading (not the subject) as CSV, etc; before routes, try passing a parameter to the page URL
+- Make it look better
 
 - Save mouse positions and all events
 - Save IP, browser data,

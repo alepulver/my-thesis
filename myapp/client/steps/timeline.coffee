@@ -35,7 +35,7 @@ class HandleTimelineCF
 
 	askLineAdjustments: ->
 		self = this
-		@remaining = 3
+		@remaining = _.size(@choices)
 		@line = new Widgets.LineInCircleIS(@layer)
 		@button = Widgets.createButton({
 			x: 50,
@@ -122,6 +122,7 @@ class HandleTimelineCF
 			this.showFinalPicture()
 
 	showFinalPicture: ->
+		self = this
 		@button = Widgets.createButton({
 			x: 50,
 			y: 50,
@@ -137,6 +138,7 @@ class HandleTimelineCF
 		@button.off('mouseover')
 		@button.off('mouseout')
 		@button.remove()
+		@layer.draw()
 
 		this.askSubjectData()
 
