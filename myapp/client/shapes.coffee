@@ -211,9 +211,9 @@ degreesInRange = (degrees) ->
 
 angleDifference = (one, two) ->
 	diffAngle = two - one
-	if (diffAngle < -180)
+	while (diffAngle < -180)
 		diffAngle += 360
-	else if (diffAngle > 180)
+	while (diffAngle > 180)
 		diffAngle -= 360
 	diffAngle
 
@@ -273,7 +273,11 @@ class RadialSectorIS extends InteractiveShape
 				angle: shape.rotation() + shape.angle()/2,
 				length: self.length * 1.25
 			}
-			polarToCartesian(vector)
+			offset = polarToCartesian(vector)
+			{
+				x: shape.x() + offset.x,
+				y: shape.y() + offset.y
+			}
 
 		Widgets.addTooltip @shape, name, positionFunc
 
@@ -319,6 +323,7 @@ class RadialSectorIS extends InteractiveShape
 
 		da = angleDifference(oldPolar.angle, otherAngle)
 		db = angleDifference(newPolar.angle, otherAngle)
+
 		if (Math.abs(da) < 90 && da * db < 0)
 			return oldPos
 		if (Math.abs(db) < 5)

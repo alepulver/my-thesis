@@ -49,7 +49,7 @@ addBorder = (layer) ->
 
 defaultPosFunc = (widget, shape) ->
 	{
-		x: shape.getPosition().x - widget.getWidth()/2,
+		x: shape.getPosition().x,
 		y: shape.getPosition().y - (shape.getHeight()/2 + 30)
 	}
 
