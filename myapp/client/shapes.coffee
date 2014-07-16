@@ -386,7 +386,7 @@ class RadialSectorIS extends InteractiveShape
 
 
 class LineInCircleIS extends InteractiveShape
-	constructor: (@layer) ->
+	constructor: (@layer, @max_length) ->
 		@anchors = {}
 		self = this
 
@@ -442,6 +442,7 @@ class LineInCircleIS extends InteractiveShape
 			y: oldPos.y - center.y
 		}
 		newPolar = cartesianToPolar(newVector)
+		newPolar.length = Math.min(newPolar.length, @max_length)
 		oldPolar = cartesianToPolar(oldVector)
 		diffAngle = newPolar.angle - oldPolar.angle
 

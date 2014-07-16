@@ -36,6 +36,10 @@ createButton = (parameters) ->
 	group
 
 
+createSlider = () ->
+	#
+
+
 addBorder = (layer) ->
 	border = new Kinetic.Line({
 		points: [0, 0, layer.width(), 0, layer.width(), layer.height(), 0, layer.height(), 0, 0],
@@ -157,6 +161,7 @@ makeHoverable = (group, shape) ->
 @Widgets ?= {}
 _.merge(@Widgets, {
 	createButton: createButton
+	createSlider: createSlider
 	addBorder: addBorder
 	addTooltip: addTooltip
 	boundingBoxPositionsFor: boundingBoxPositionsFor

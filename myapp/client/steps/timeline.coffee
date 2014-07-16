@@ -35,8 +35,9 @@ class HandleTimelineCF
 
 	askLineAdjustments: ->
 		self = this
+		@position = 0
 		@remaining = _.size(@choices)
-		@line = new Widgets.LineInCircleIS(@layer)
+		@line = new Widgets.LineInCircleIS(@layer, 300)
 		@button = Widgets.createButton({
 			x: 50,
 			y: 50,
@@ -60,19 +61,39 @@ class HandleTimelineCF
 
 	askToPositionEvent: ->
 		self = this
-		group = new Kinetic.Rect({
-			#
+		group = new Kinetic.Group({
 		})
-		@current = new Kinetic.Rect({
+		bar = new Kinetic.Rect({
 			x: 0, y: -15,
 			width: 5,
 			height: 30,
 			fill: 'red'
 		})
+		text = new Kinetic.Text({
+			text: @choices[@position],
+			fontSize: 15,
+			fontFamily: 'Calibri',
+			fill: '#555',
+			width: 100,
+			#padding: 10,
+			align: 'center',
+			rotation: -@line.group.rotation()
+		})
+		if (Math.random() < 0.5)
+			text.x(0)
+			text.y(20)
+		else
+			text.x(-text.width())
+			text.y(-40)
+		group.add bar
+		group.add text
+		@current = group
+
 		@line.group.add @current
 		@correct = false
 		@layer.draw()
 
+		@background.setZIndex 1
 		@background.on('mousemove', ->
 			stage = this.getStage()
 			pos = stage.getPointerPosition()
@@ -116,6 +137,7 @@ class HandleTimelineCF
 		})
 		###
 		@remaining--
+		@position++
 		if @remaining > 0
 			this.askToPositionEvent()
 		else
@@ -140,15 +162,6 @@ class HandleTimelineCF
 		@button.remove()
 		@layer.draw()
 
-		this.askSubjectData()
-
-	askSubjectData: ->
-		self = this
-		# TODO: draw bar and wait for click
-		#self.finishedAskingSubjectData(event, template)
-
-	finishedAskingSubjectData: (template) ->
-		#event.preventDefault()
 		this.finish()
 
 	finish: ->

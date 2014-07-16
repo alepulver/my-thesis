@@ -57,12 +57,6 @@ class HandleCF
 		@panels.choose.colorSelected color
 
 	finish_selectExit: ->
-		self = this
-		# TODO: draw bar and wait for click
-		#self.finishedAskingSubjectData(event, template)
-
-	questions_submitForm: (template) ->
-		#event.preventDefault()
 		this.finish()
 
 

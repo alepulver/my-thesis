@@ -189,13 +189,8 @@ class ColorsPanel
 		@layer.draw()
 
 
-class SliderChoosePanel
-	#
-
-
 class TextPanel
 	constructor: (@layer) ->
-
 
 
 @Panels ?= {}
@@ -203,6 +198,5 @@ _.merge(@Panels,
 	Choose: ChoosePanel
 	Drawing: DrawingPanel
 	Colors: ColorsPanel
-	SliderChoose: SliderChoosePanel
 	Text: TextPanel
 )
