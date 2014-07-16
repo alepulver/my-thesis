@@ -144,14 +144,11 @@ class HandleTimelineCF
 
 	askSubjectData: ->
 		self = this
-		Template.experiment_questions.events({
-			'submit form': (event, template) ->
-				self.finishedAskingSubjectData(event, template)
-		})
-		Session.set("stage_questions", true)
+		# TODO: draw bar and wait for click
+		#self.finishedAskingSubjectData(event, template)
 
-	finishedAskingSubjectData: (event, template) ->
-		event.preventDefault()
+	finishedAskingSubjectData: (template) ->
+		#event.preventDefault()
 		this.finish()
 
 	finish: ->

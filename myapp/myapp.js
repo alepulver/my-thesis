@@ -7,14 +7,9 @@ Router.map(function() {
 
 if (Meteor.isClient) {
   Session.set("active_stage", "loading");
-  Session.set("stage_questions", false);
   
   Template.active_stage = function() {
     return Template[Session.get("active_stage")];
-  };
-
-  Template.experiments.stage_questions = function() {
-    return Session.get("stage_questions");
   };
 
   Template.results.items = function() {

@@ -48,7 +48,6 @@ class Workflow
 				self.current_step.start(self)
 
 			Session.set("active_stage", @current_step.name)
-			Session.set("stage_questions", false)
 
 	stepFinished: (results) ->
 		@results[@current_step.name] = results

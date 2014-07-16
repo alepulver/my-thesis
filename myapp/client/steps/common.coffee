@@ -58,14 +58,11 @@ class HandleCF
 
 	finish_selectExit: ->
 		self = this
-		# XXX: must fix this some time, all forms fire this event (all using the template)
-		Template.experiment_questions.events({
-			'submit form': (event, template) -> self.questions_submitForm(event, template)
-		})
-		Session.set("stage_questions", true)
+		# TODO: draw bar and wait for click
+		#self.finishedAskingSubjectData(event, template)
 
-	questions_submitForm: (event, template) ->
-		event.preventDefault()
+	questions_submitForm: (template) ->
+		#event.preventDefault()
 		this.finish()
 
 
