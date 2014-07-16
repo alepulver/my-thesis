@@ -47,20 +47,25 @@ addBorder = (layer) ->
 	layer.draw()
 
 
-addTooltip = (shape, text) ->
+defaultPosFunc = (widget, shape) ->
+	{
+		x: shape.getPosition().x - widget.getWidth()/2,
+		y: shape.getPosition().y - (shape.getHeight()/2 + 30)
+	}
+
+
+addTooltip = (shape, text, positionFunc = defaultPosFunc) ->
 	widget = new Kinetic.Text({
 		text: text,
-		fontSize: 17, fontFamily: 'Calibri',
+		fontSize: 18, fontFamily: 'Calibri',
 		width: 100,
-		align: 'center'
+		align: 'center',
+		offsetX: 50
 	})
 
 	shape.on('mouseover', ->
 		parent = this.getParent()
-		widget.setPosition({
-			x: this.getPosition().x - widget.getWidth()/2,
-			y: this.getPosition().y - (this.getHeight()/2 + 30)
-		})
+		widget.setPosition(positionFunc(widget, this))
 		widget.fill(this.stroke())
 		parent.add(widget)
 		parent.draw()

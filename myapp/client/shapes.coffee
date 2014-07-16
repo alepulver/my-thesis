@@ -200,12 +200,33 @@ class SquareBoundedIS extends InteractiveShape
 		@commonShape.setColor color
 
 
+degreesInRange = (degrees) ->
+	# XXX: KineticJS angles can be negative
+	while (degrees < 0)
+		degrees += 360
+	while (degrees >= 360)
+		degrees -= 360
+	degrees
+
+
+angleDifference = (one, two) ->
+	diffAngle = two - one
+	if (diffAngle < -180)
+		diffAngle += 360
+	else if (diffAngle > 180)
+		diffAngle -= 360
+	diffAngle
+
+
 degreesToRadians = (degrees) ->
+	degrees = degreesInRange degrees
+
 	(degrees / 360) * 2*Math.PI
 
 
 radiansToDegrees = (radians) ->
-	(radians / (2*Math.PI)) * 360
+	result = (radians / (2*Math.PI)) * 360
+	degreesInRange result
 
 
 cartesianToPolar = (coords) ->
@@ -245,7 +266,16 @@ class RadialSectorIS extends InteractiveShape
 		this.updateAllAnchors()
 
 	addTooltip: (name) ->
-		Widgets.addTooltip @shape, name
+		self = this
+
+		positionFunc = (widget, shape) ->
+			vector = {
+				angle: shape.rotation() + shape.angle()/2,
+				length: self.length * 1.25
+			}
+			polarToCartesian(vector)
+
+		Widgets.addTooltip @shape, name, positionFunc
 
 	addAnchor: (name, dragBoundFunc) ->
 		self = this
@@ -280,15 +310,25 @@ class RadialSectorIS extends InteractiveShape
 		}
 		newPolar = cartesianToPolar(newVector)
 		oldPolar = cartesianToPolar(oldVector)
-		diffAngle = newPolar.angle - oldPolar.angle
+		diffAngle = angleDifference oldPolar.angle, newPolar.angle
 
+		if (obj.name() == "angleOne")
+			otherAngle = @shape.rotation() + @shape.angle()
+		else
+			otherAngle = @shape.rotation()
+
+		da = angleDifference(oldPolar.angle, otherAngle)
+		db = angleDifference(newPolar.angle, otherAngle)
+		if (Math.abs(da) < 90 && da * db < 0)
+			return oldPos
+		if (Math.abs(db) < 5)
+			return oldPos
 
 		if (obj.name() == "angleOne")
 			@shape.rotation(newPolar.angle)
 			@shape.angle(@shape.angle() - diffAngle)
 		else
 			@shape.angle(@shape.angle() + diffAngle)
-
 
 		tmp = polarToCartesian({angle: newPolar.angle, length: @anchorAngleDist})
 		{x: tmp.x + center.x, y: tmp.y + center.y}
@@ -312,7 +352,7 @@ class RadialSectorIS extends InteractiveShape
 		@anchors['rotation'].setPosition(polarToCartesian(pos))
 
 		pos = {
-			angle: 360 + @shape.rotation(),
+			angle: @shape.rotation(),
 			length: @anchorAngleDist
 		}
 		@anchors['angleOne'].setPosition(polarToCartesian(pos))

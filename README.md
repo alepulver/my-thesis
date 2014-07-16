@@ -52,16 +52,16 @@ http://circles-experiment.meteor.com/
 
 ### TODO
 - Save timestamps for each decision
-- Allow downloading (not the subject) as CSV, etc; before routes, try passing a parameter to the page URL
+- Allow downloading (not the subject) as CSV, etc
 - Make it look better
 
 - Save mouse positions and all events
 - Save IP, browser data,
-- Make buttons and color bar horizontal to save space
 - Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
 
 #### Maybe
 
+- Make buttons and color bar horizontal to save space
 - Refactor "layout" class for positioning elements (try famo.us, or mix html/css with canvas)
 - Refactor widgets in a wrapper and decorator objects
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor

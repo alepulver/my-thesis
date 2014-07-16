@@ -16,7 +16,7 @@ partsOfDay = () ->
 			radius: 200, angle: randBetween(50, 80),
 			fill: 'black', stroke: 'black', strokeWidth: 0,
 			rotation: randBetween(-120, -90),
-			opacity: 0.5
+			opacity: 0.85
 		})
 		interactive_shape = new Widgets.RadialSectorIS(shape, layer, 200)
 		interactive_shape
