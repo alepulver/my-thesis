@@ -392,7 +392,7 @@ class LineInCircleIS extends InteractiveShape
 
 		@group = new Kinetic.Group({
 			x: @layer.width()/2,
-			y: @layer.height()/2,
+			y: @layer.height()/2
 		})
 
 		@shape = new Kinetic.Line({
@@ -481,4 +481,6 @@ _.merge(@Widgets, {
 	LineInCircleIS
 	cartesianToPolar
 	polarToCartesian
+	degreesToRadians
+	radiansToDegrees
 })

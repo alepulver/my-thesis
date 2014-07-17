@@ -69,22 +69,25 @@ class HandleTimelineCF
 			height: 30,
 			fill: 'red'
 		})
+		rightSide = (Math.random() < 0.5)
 		text = new Kinetic.Text({
 			text: @choices[@position],
 			fontSize: 15,
 			fontFamily: 'Calibri',
 			fill: '#555',
-			width: 100,
-			#padding: 10,
-			align: 'center',
-			rotation: -@line.group.rotation()
+			width: 200,
+			align: if (rightSide) then 'left' else 'right'
 		})
-		if (Math.random() < 0.5)
-			text.x(0)
-			text.y(20)
+
+		transform = text.getTransform()
+		invert = if (Math.abs(@line.group.rotation()) > 90) then 1 else -1
+		transform.rotate(Widgets.degreesToRadians(90*invert))
+		if (rightSide)
+			transform.translate(30, 0)
 		else
-			text.x(-text.width())
-			text.y(-40)
+			transform.translate(-30-text.width(), 0)
+		transform.translate(0, -10)
+
 		group.add bar
 		group.add text
 		@current = group
