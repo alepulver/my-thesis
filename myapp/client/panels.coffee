@@ -189,6 +189,114 @@ class ColorsPanel
 		@layer.draw()
 
 
+class SliderChoosePanel
+	constructor: (@choices, @layer) ->
+		@current_index = 0
+		@remaining = _.size(@choices)
+		@results = []
+	
+	start: (@notifier) ->
+		@group = new Kinetic.Group({
+			x: @layer.width()/2,
+			y: @layer.height()/2
+		})
+		line = new Kinetic.Rect({
+			x: 0, y: 0,
+			width: 500,	height: 20,
+			offsetX: 250, offsetY: 10,
+			fillLinearGradientStartPoint: {x: 0, y: 0},
+			fillLinearGradientEndPoint: {x: 500, y: 0},
+			fillLinearGradientColorStops: [0, 'white', 1, 'black']
+		})
+		@background = new Kinetic.Rect({
+			x: 0, y: 0,
+			width: 500,	height: 100,
+			offsetX: 250, offsetY: 50
+		})
+		textLeft = new Kinetic.Text({
+			text: 'Nada forzado',
+			fontSize: 20, fontFamily: 'Calibri',
+			fill: '#555',
+			width: 200,
+			align: 'left',
+			x: -250, y: 40
+		})
+		textRight = new Kinetic.Text({
+			text: 'Muy forzado',
+			fontSize: 20, fontFamily: 'Calibri',
+			fill: '#555',
+			width: 200,
+			align: 'right',
+			x: 250-200, y: 40
+		})
+		@group.add line
+		@group.add textLeft
+		@group.add textRight
+		@group.add @background
+		@layer.add @group
+		@layer.draw()
+
+		this.askForClick()
+
+	finish: ->
+		@notifier(@results)
+
+	askForClick: ->
+		self = this
+		@textTop = new Kinetic.Text({
+			text: @choices[@current_index],
+			fontSize: 25, fontFamily: 'Calibri',
+			fill: '#555',
+			width: 200, offsetX: 100,
+			align: 'center',
+			x: 0, y: -100
+		})
+		@theBar = new Kinetic.Rect({
+			x: 0, y: 0,
+			width: 6, height: 30,
+			offsetX: 3, offsetY: 15,
+			fill: 'brown'
+		})
+		@group.add @textTop
+		@group.add @theBar
+		@layer.draw()
+
+		@background.moveToTop()
+		@background.on('mousemove', ->
+			stage = this.getStage()
+			pos = stage.getPointerPosition()
+
+			center = self.group.getAbsolutePosition()
+			vector = {
+				x: pos.x - center.x,
+				y: pos.y - center.y
+			}
+			self.theBar.x(vector.x)
+			self.layer.draw()
+		)
+		@background.on('mousedown', ->
+			value = (self.theBar.x()+250)/500
+			self.sliderClicked value
+		)
+
+	sliderClicked: (position) ->
+		@background.off('mousemove')
+		@background.off('mousedown')
+		@theBar.remove()
+		@textTop.remove()
+		@layer.draw()
+
+		@current_index++
+		@remaining--
+
+		# save results
+
+		if (@remaining > 0)
+			this.askForClick()
+		else
+			this.finish()
+
+
 class TextPanel
 	constructor: (@layer) ->
 
@@ -199,4 +307,5 @@ _.merge(@Panels,
 	Drawing: DrawingPanel
 	Colors: ColorsPanel
 	Text: TextPanel
+	SliderChoose: SliderChoosePanel
 )

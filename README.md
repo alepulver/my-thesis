@@ -51,7 +51,6 @@ Source modifications are reloaded automatically.
 http://circles-experiment.meteor.com/
 
 ### TODO
-- Ask final questions with slider bars
 - Save timestamps for each decision
 - Allow downloading (not the subject) as CSV, etc
 - Make it look better

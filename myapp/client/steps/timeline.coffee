@@ -96,7 +96,7 @@ class HandleTimelineCF
 		@correct = false
 		@layer.draw()
 
-		@background.setZIndex 1
+		@background.moveToTop()
 		@background.on('mousemove', ->
 			stage = this.getStage()
 			pos = stage.getPointerPosition()
