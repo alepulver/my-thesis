@@ -190,10 +190,14 @@ class ColorsPanel
 
 
 class SliderChoosePanel
-	constructor: (@choices, @layer) ->
+	constructor: (@questions, @layer) ->
 		@current_index = 0
+		@choices = _.shuffle(@questions)
 		@remaining = _.size(@choices)
-		@results = []
+		@data = {
+			show_order: @choices,
+			results: {}
+		}
 	
 	start: (@notifier) ->
 		@group = new Kinetic.Group({
@@ -239,10 +243,14 @@ class SliderChoosePanel
 		this.askForClick()
 
 	finish: ->
-		@notifier(@results)
+		@notifier(@data)
 
 	askForClick: ->
 		self = this
+		@current_result = {
+			start_time: Steps.currentTime()
+		}
+
 		@textTop = new Kinetic.Text({
 			text: @choices[@current_index],
 			fontSize: 25, fontFamily: 'Calibri',
@@ -280,16 +288,22 @@ class SliderChoosePanel
 		)
 
 	sliderClicked: (position) ->
+		# XXX: avoid error when mouseout arrives later
 		@background.off('mousemove')
 		@background.off('mousedown')
+
+		_.merge(@current_result, {
+			end_time: Steps.currentTime(),
+			value: position
+		})
+		@data.results[@choices[@current_index]] = @current_result
+
 		@theBar.remove()
 		@textTop.remove()
 		@layer.draw()
 
 		@current_index++
 		@remaining--
-
-		# save results
 
 		if (@remaining > 0)
 			this.askForClick()

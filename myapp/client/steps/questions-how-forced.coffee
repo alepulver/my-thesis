@@ -23,7 +23,6 @@ class QuestionsHowForced
 		@panel.start((results) -> self.ended results)
 
 	ended: (results) ->
-		#results = {}
 		@workflow.stepFinished(results)
 
 

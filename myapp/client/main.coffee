@@ -25,18 +25,19 @@ finishedMainApp = (results) ->
 
 
 @startMainApp = startMainApp
-#@finishedMainApp = finishedMainApp
 
-# TODO: time each stage
+
 class Workflow
 	constructor: (@steps, @finishNotifier) ->
 		# do nothing
 	start: ->
 		@current_index = -1
 		@results = {}
+		@results['start_time'] = Steps.currentTime()
 		this.nextStep()
 
 	finish: ->
+		@results['finish_time'] = Steps.currentTime()
 		@finishNotifier(@results)
 
 	nextStep: ->
@@ -44,6 +45,7 @@ class Workflow
 			@current_index++
 			assert(@current_index < _.size(@steps), "Workflow: nextStep index")
 			@current_step = @steps[@current_index]
+			@current_start_time = Steps.currentTime()
 
 			Template[@current_step.name].rendered = () ->
 				self.current_step.start(self)
@@ -51,6 +53,9 @@ class Workflow
 			Session.set("active_stage", @current_step.name)
 
 	stepFinished: (results) ->
+		results['end_time'] = Steps.currentTime
+		results['start_time'] = @current_start_time
+
 		@results[@current_step.name] = results
 		if @current_index >= _.size(@steps)-1
 			this.finish()

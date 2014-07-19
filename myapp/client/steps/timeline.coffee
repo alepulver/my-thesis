@@ -1,8 +1,9 @@
 _ = lodash
 
 class HandleTimelineCF
-	constructor: (@choices, @colors, @name) ->
+	constructor: (@questions, @colors, @name) ->
 		@done = false
+		@choices = _.shuffle(@questions)
 
 	changeState: (stateClass) ->
 		@state = new stateClass this
@@ -26,15 +27,16 @@ class HandleTimelineCF
 		@stage.add @layer
 		@layer.add @background
 
-		@results = []
-		@randomSeqs = {
+		@results = {}
+		@show_order = {
 			#colors: @panels.color.colors,
-			#choices: @panels.choose.keys
+			choices: @choices
 		}
 		this.askLineAdjustments()
 
 	askLineAdjustments: ->
 		self = this
+		@current_start_time = Steps.currentTime()
 		@position = 0
 		@remaining = _.size(@choices)
 		@line = new Widgets.LineInCircleIS(@layer, 300)
@@ -56,11 +58,20 @@ class HandleTimelineCF
 		@button.off('mouseout')
 		@button.remove()
 
-		results = @line.fixState()
+		@result_line = {
+			start_time: @current_start_time,
+			end_time: Steps.currentTime(),
+			length: @line.shape.points[2] * 2,
+			rotation: @line.shape.rotation()
+		}
+
+		@line.fixState()
 		this.askToPositionEvent()
 
 	askToPositionEvent: ->
 		self = this
+		@current_start_time = Steps.currentTime()
+
 		group = new Kinetic.Group({
 		})
 		bar = new Kinetic.Rect({
@@ -131,14 +142,12 @@ class HandleTimelineCF
 		@background.off('mousemove')
 		@background.off('mousedown')
 
-		###
-		@results.push({
-			position: shape.getPosition(),
-			color: shape.stroke(),
-			size: size,
-			name: name
-		})
-		###
+		@results[@choices[@position]] = {
+			start_time: @current_start_time,
+			end_time: Steps.currentTime(),
+			position: @current.x() / @line.shape.points[2]
+		}
+
 		@remaining--
 		@position++
 		if @remaining > 0
@@ -173,7 +182,9 @@ class HandleTimelineCF
 		@done = true
 		@workflow.stepFinished({
 			results: @results,
-			randomSeqs: @randomSeqs
+			line: @result_line,
+			#color_order: @show_order.colors,
+			show_order: @show_order.choices
 		})
 
 

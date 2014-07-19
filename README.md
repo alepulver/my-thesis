@@ -51,23 +51,21 @@ Source modifications are reloaded automatically.
 http://circles-experiment.meteor.com/
 
 ### TODO
-- Save timestamps for each decision
 - Allow downloading (not the subject) as CSV, etc
+- Save IP, browser data, country, etc
+- Save when color changed and resized, moved as an event list with timestamps
 - Make it look better
 
-- Save mouse positions and all events
-- Save IP, browser data,
-- Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
+- Try layout framework like boostrap or gumby for the rest of the page (not canvas)
+- Check canvas proportions
 
 #### Maybe
 
 - Make buttons and color bar horizontal to save space
+- Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
 - Refactor "layout" class for positioning elements (try famo.us, or mix html/css with canvas)
 - Refactor widgets in a wrapper and decorator objects
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
-- Use lodash/lazy.js instead of underscore, other languages (see gdoc)
-- Integrate with mimosa for compilation/require/bower/browserify instead of writing meteorite packages
-- Try layout framework like boostrap or gumby for the rest of the page (not canvas)
 
 ### References
 

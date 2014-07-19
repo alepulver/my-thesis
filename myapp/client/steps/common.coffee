@@ -1,6 +1,11 @@
 _ = lodash
 
+currentTime = () ->
+	(new Date()).getTime()
+
+
 colors = ['black', 'yellow', 'brown', 'darkviolet', 'grey', 'red', 'green', 'blue']
+
 
 class HandleCF
 	constructor: (@create_panels, @name) ->
@@ -13,11 +18,12 @@ class HandleCF
 	start: (@workflow) ->
 		@panels = @create_panels()
 		@epochs = @panels.choices
-		@results = []
-		@randomSeqs = {
+		@results = {}
+		@show_order = {
 			colors: @panels.color.colors,
 			choices: @panels.choose.keys
 		}
+		@selected_order = []
 		this.next()
 
 	next: ->
@@ -30,21 +36,29 @@ class HandleCF
 		@done = true
 		@workflow.stepFinished({
 			results: @results,
-			randomSeqs: @randomSeqs
+			show_order: @show_order.choices,
+			color_order: @show_order.colors,
+			selected_order: @selected_order
 		})
 
 	choose_selectPeriod: (epoch) ->
+		@current_result = {
+			start_time: currentTime()
+		}
+		@selected_order.push(epoch)
+
 		@panels.shapes.addShape(epoch, @epochs[epoch])
 		@state = new CFStateModify this
 		@state.start()
 
 	modify_acceptCurrent: (name, shape, size) ->
-		@results.push({
+		_.merge(@current_result, {
+			end_time: currentTime(),
 			position: shape.getPosition(),
 			color: shape.stroke(),
 			size: size,
-			name: name
 		})
+		@results[name] = @current_result
 		
 		if @panels.choose.remaining > 0
 			this.next()
@@ -174,4 +188,5 @@ _.merge(@Steps, {
 	createPanels
 	colors
 	create_handler_default
+	currentTime
 })
