@@ -11,3 +11,5 @@ bower
 coffeescript
 lodash
 iron-router
+headers
+Geolocation

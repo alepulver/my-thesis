@@ -7,6 +7,7 @@ Router.map(function() {
 
 if (Meteor.isClient) {
   Session.set("active_stage", "loading");
+  Session.set("current_user", Meteor.uuid());
   
   Template.active_stage = function() {
     return Template[Session.get("active_stage")];

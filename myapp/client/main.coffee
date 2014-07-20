@@ -19,8 +19,7 @@ startMainApp = ->
 
 
 finishedMainApp = (results) ->
-	# TODO: add IP, date, etc
-	Results.insert(results)
+	#Results.insert(results)
 	Session.set("active_stage", "thanks")
 
 
@@ -53,10 +52,20 @@ class Workflow
 			Session.set("active_stage", @current_step.name)
 
 	stepFinished: (results) ->
-		results['end_time'] = Steps.currentTime
-		results['start_time'] = @current_start_time
+		end_time = Steps.currentTime()
 
-		@results[@current_step.name] = results
+		Results.insert({
+			participant: Session.get("current_user"),
+			stage: @current_step.name,
+			start_time: @current_start_time,
+			end_time: end_time,
+			results: results
+		})
+
+		#results['end_time'] = end_time
+		#results['start_time'] = @current_start_time
+		#@results[@current_step.name] = results
+
 		if @current_index >= _.size(@steps)-1
 			this.finish()
 		else

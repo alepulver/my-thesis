@@ -51,12 +51,10 @@ Source modifications are reloaded automatically.
 http://circles-experiment.meteor.com/
 
 ### TODO
+- Add /reports page with password or token, to check if results are saved correctly
 - Allow downloading (not the subject) as CSV, etc
-- Save IP, browser data, country, etc
 - Save when color changed and resized, moved as an event list with timestamps
-- Make it look better
-
-- Try layout framework like boostrap or gumby for the rest of the page (not canvas)
+- Make it look better (try layout framework like boostrap or gumby)
 - Check canvas proportions
 
 #### Maybe

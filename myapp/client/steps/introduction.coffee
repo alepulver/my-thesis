@@ -13,7 +13,20 @@ class Introduction
 
 	startPressed: (event, template) ->
 		event.preventDefault()
-		@workflow.stepFinished({})
+
+		results = {
+			ip_address: headers.getClientIP()
+		}
+		###
+		geo = Geolocation.getInstance()
+		results['geolocation'] = {
+			latitude: geo.lat,
+			longitude: geo.lng,
+			error: geo.error
+		}
+		###
+
+		@workflow.stepFinished(results)
 
 
 @Steps ?= {}

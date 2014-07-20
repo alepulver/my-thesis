@@ -3,7 +3,9 @@
     "kinetic.js": {},
     "bower": {},
     "lodash": {},
-    "iron-router": {}
+    "iron-router": {},
+    "headers": {},
+    "Geolocation": {}
   },
   "bower": {
     "rsvp": "3.0.6"
