@@ -52,7 +52,7 @@ http://circles-experiment.meteor.com/
 
 ### TODO
 - Add /reports page with password or token, to check if results are saved correctly
-- Allow downloading (not the subject) as CSV, etc
+- Allow downloading (not the subject) as CSV or any tabulated format
 - Save when color changed and resized, moved as an event list with timestamps
 - Make it look better (try layout framework like boostrap or gumby)
 - Check canvas proportions

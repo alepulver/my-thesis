@@ -13,8 +13,9 @@ if (Meteor.isClient) {
     return Template[Session.get("active_stage")];
   };
 
-  Template.results.items = function() {
-    return JSON.stringify(Results.find());
+  Template.results.as_json = function() {
+    data = Results.find().fetch();
+    return JSON.stringify(data, null, 2);
   };
 
   Meteor.startup(function() {
