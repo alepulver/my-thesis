@@ -12,7 +12,7 @@ daysOfWeek = () ->
 	}
 
 	create_shape = (layer) ->
-		shape = new Widgets.Rect()
+		shape = new Widgets.FilledRect()
 		interactive_shape = new Widgets.SquareBoundedIS(shape, layer)
 		interactive_shape
 	

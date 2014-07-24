@@ -7,7 +7,8 @@
       "lodash": {},
       "iron-router": {},
       "headers": {},
-      "Geolocation": {}
+      "Geolocation": {},
+      "bootstrap-3": {}
     },
     "packages": {
       "kinetic.js": {
@@ -39,6 +40,11 @@
         "git": "https://github.com/hculap/geolocation.git",
         "tag": "v0.1.0",
         "commit": "17485d2e08301febefafda5997f803d4ac971bdb"
+      },
+      "bootstrap-3": {
+        "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",
+        "tag": "v3.2.0-1",
+        "commit": "17a63902fc6cf1096c5289d963c66cf28b474727"
       },
       "blaze-layout": {
         "git": "https://github.com/EventedMind/blaze-layout.git",

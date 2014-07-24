@@ -14,11 +14,8 @@ class QuestionsEnd
   formSubmitted: (event, template) ->
     event.preventDefault()
 
-    variables = ['daynight']
     results = {}
-    _.each(variables, (field) ->
-      results[field] = template.find("input[name=#{field}]").value
-    )
+    results['daynight'] = template.find("select[name=daynight]").value
     results['comments'] = template.find("textarea[name=comments]").value
     
     @workflow.stepFinished(results)

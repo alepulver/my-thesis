@@ -4,7 +4,7 @@ currentTime = () ->
 	(new Date()).getTime()
 
 
-colors = ['black', 'yellow', 'brown', 'darkviolet', 'grey', 'red', 'green', 'blue']
+colors = ['black', 'yellow', 'saddlebrown', 'darkviolet', 'grey', 'red', 'green', 'blue']
 
 
 class HandleCF
@@ -51,13 +51,9 @@ class HandleCF
 		@state = new CFStateModify this
 		@state.start()
 
-	modify_acceptCurrent: (name, shape, size) ->
-		_.merge(@current_result, {
-			end_time: currentTime(),
-			position: shape.getPosition(),
-			color: shape.stroke(),
-			size: size,
-		})
+	modify_acceptCurrent: (name, data) ->
+		@current_result['end_time'] = currentTime()
+		_.merge(@current_result, data)
 		@results[name] = @current_result
 		
 		if @panels.choose.remaining > 0
@@ -101,13 +97,13 @@ class CFStateModify extends CFState
 		panels.choose.setNotifier(null)
 		panels.color.setNotifier((x) -> handler.state.changeColor x)
 		panels.shapes.setNotifier(
-			(name, shape) -> handler.state.acceptCurrent(name, shape))
+			(name, data) -> handler.state.acceptCurrent(name, data))
 
 	changeColor: (color) ->
 		@handler.modify_changeColor color
 	
-	acceptCurrent: (name, shape, size) ->
-		@handler.modify_acceptCurrent name, shape, size
+	acceptCurrent: (name, data) ->
+		@handler.modify_acceptCurrent name, data
 
 
 class CFSStateFinish extends CFState

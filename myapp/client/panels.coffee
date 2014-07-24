@@ -200,45 +200,58 @@ class SliderChoosePanel
 		}
 	
 	start: (@notifier) ->
-		@group = new Kinetic.Group({
-			x: @layer.width()/2,
-			y: @layer.height()/2
-		})
-		line = new Kinetic.Rect({
-			x: 0, y: 0,
-			width: 500,	height: 20,
-			offsetX: 250, offsetY: 10,
-			fillLinearGradientStartPoint: {x: 0, y: 0},
-			fillLinearGradientEndPoint: {x: 500, y: 0},
-			fillLinearGradientColorStops: [0, 'white', 1, 'black']
-		})
-		@background = new Kinetic.Rect({
-			x: 0, y: 0,
-			width: 500,	height: 100,
-			offsetX: 250, offsetY: 50
-		})
-		textLeft = new Kinetic.Text({
-			text: 'Nada forzado',
-			fontSize: 20, fontFamily: 'Calibri',
-			fill: '#555',
-			width: 200,
-			align: 'left',
-			x: -250, y: 40
-		})
-		textRight = new Kinetic.Text({
-			text: 'Muy forzado',
-			fontSize: 20, fontFamily: 'Calibri',
-			fill: '#555',
-			width: 200,
-			align: 'right',
-			x: 250-200, y: 40
-		})
-		@group.add line
-		@group.add textLeft
-		@group.add textRight
-		@group.add @background
-		@layer.add @group
-		@layer.draw()
+		@gui_items = []
+		offset = 0
+		
+		_.forEach(@choices, (choice) ->
+			@group = new Kinetic.Group({
+				x: offset + 50,
+				y: @layer.height()/2
+			})
+			###
+			line = new Kinetic.Rect({
+				x: 0, y: 0,
+				width: 500,	height: 20,
+				offsetX: 250, offsetY: 10,
+				fillLinearGradientStartPoint: {x: 0, y: 0},
+				fillLinearGradientEndPoint: {x: 500, y: 0},
+				fillLinearGradientColorStops: [0, 'white', 1, 'black']
+			})
+			###
+			line = new Kinetic.Line({
+				points: [0, 0, 500, 0],
+				offsetX: 250,
+				stroke: 'black', strokeWidth: 2
+			})
+			@background = new Kinetic.Rect({
+				x: 0, y: 0,
+				width: 500,	height: 100,
+				offsetX: 250, offsetY: 50
+			})
+			textLeft = new Kinetic.Text({
+				text: 'Nada forzado',
+				fontSize: 20, fontFamily: 'Calibri',
+				fill: '#555',
+				width: 200,
+				align: 'center',
+				x: -250-100, y: 40
+			})
+			textRight = new Kinetic.Text({
+				text: 'Muy forzado',
+				fontSize: 20, fontFamily: 'Calibri',
+				fill: '#555',
+				width: 200,
+				align: 'center',
+				x: 250-100, y: 40
+			})
+			@group.add line
+			@group.add textLeft
+			@group.add textRight
+			@group.add @background
+			@layer.add @group
+			@layer.draw()
+
+			offset += 200
 
 		this.askForClick()
 

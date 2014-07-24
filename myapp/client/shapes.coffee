@@ -37,6 +37,12 @@ class Circle extends Shape
 	setColor: (color) ->
 		@shape.setStroke color
 
+	getData: ->
+		{
+			radius: @shape.radius(),
+			color: @shape.getStroke()
+		}
+
 
 class Rect extends Shape
 	constructor: (rect) ->
@@ -64,6 +70,46 @@ class Rect extends Shape
 
 	setColor: (color) ->
 		@shape.setStroke color
+
+	getData: ->
+		{
+			size: @shape.size()
+			color: @shape.getStroke()
+		}
+
+
+class FilledRect extends Shape
+	constructor: (rect) ->
+		@shape = new Kinetic.Rect({
+			x: 0, y: 0,
+			width: 100, height: 100,
+			offsetX: 50, offsetY: 50,
+			strokeWidth: 0,
+			fill: 'black',
+			name: 'image'
+		})
+
+	size: ->
+		@shape.size()
+
+
+	setSize: (desiredSize) ->
+		size = {
+			width: _.max([desiredSize.width, 5]),
+			height: _.max([desiredSize.height, 5])
+		}
+		@shape.size(size)
+		@shape.offsetX(size.width/2)
+		@shape.offsetY(size.height/2)
+
+	setColor: (color) ->
+		@shape.fill color
+
+	getData: ->
+		{
+			size: @shape.size()
+			color: @shape.fill()
+		}
 
 
 ###
@@ -194,7 +240,11 @@ class SquareBoundedIS extends InteractiveShape
 		@layer.add shape
 		@layer.draw()
 
-		shape
+		data = {
+			position: @group.getPosition(),
+		}
+		_.merge(data, @commonShape.getData())
+		data
 
 	setColor: (color) ->
 		@commonShape.setColor color
@@ -377,7 +427,11 @@ class RadialSectorIS extends InteractiveShape
 		@layer.add @shape
 		@layer.draw()
 
-		@shape
+		{
+			rotation: @shape.rotation(),
+			angle: @shape.angle(),
+			color: @shape.stroke()
+		}
 
 	setColor: (color) ->
 		@shape.fill color
@@ -385,8 +439,17 @@ class RadialSectorIS extends InteractiveShape
 		@shape.stroke color
 
 
-class LineInCircleIS extends InteractiveShape
-	constructor: (@layer, @max_length) ->
+constrainBetween = (x, min, max) ->
+	if (x < min)
+		min
+	else if (x > max)
+		max
+	else
+		x
+
+
+class LineInLayerIS extends InteractiveShape
+	constructor: (@layer) ->
 		@anchors = {}
 		self = this
 
@@ -398,9 +461,19 @@ class LineInCircleIS extends InteractiveShape
 		@shape = new Kinetic.Line({
 			points: [-100, 0, 100, 0]
 			stroke: 'black',
-			strokeWidth: 10,
+			strokeWidth: 2,
 		})
 		@group.add(@shape)
+
+		@box = new Kinetic.Rect({
+			x: @layer.width()/2,
+			y: @layer.height()/2,
+			width: @layer.width() * 0.7,
+			height: @layer.height() * 0.7,
+			stroke: 'black', strokeWidth: 2
+		})
+		@box.offsetX(@box.width()/2)
+		@box.offsetY(@box.height()/2)
 
 		this.addAnchor 'one'
 		this.addAnchor 'two'
@@ -441,8 +514,10 @@ class LineInCircleIS extends InteractiveShape
 			x: oldPos.x - center.x,
 			y: oldPos.y - center.y
 		}
+		newVector.x = constrainBetween(newVector.x, -@box.width()/2, @box.width()/2)
+		newVector.y = constrainBetween(newVector.y, -@box.height()/2, @box.height()/2)
 		newPolar = cartesianToPolar(newVector)
-		newPolar.length = Math.min(newPolar.length, @max_length)
+		#newPolar.length = Math.min(newPolar.length, @max_length)
 		oldPolar = cartesianToPolar(oldVector)
 		diffAngle = newPolar.angle - oldPolar.angle
 
@@ -471,16 +546,23 @@ class LineInCircleIS extends InteractiveShape
 		@anchors['two'].remove()
 		@layer.draw()
 
+		{
+			length: @shape.points()[2] * 2,
+			rotation: @group.rotation()
+		}
+
 
 @Widgets ?= {}
 _.merge(@Widgets, {
 	Circle
 	Rect
+	FilledRect
 	SquareBoundedIS
 	RadialSectorIS
-	LineInCircleIS
+	LineInLayerIS
 	cartesianToPolar
 	polarToCartesian
 	degreesToRadians
 	radiansToDegrees
+	degreesInRange
 })

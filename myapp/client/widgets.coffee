@@ -66,7 +66,10 @@ addTooltip = (shape, text, positionFunc = defaultPosFunc) ->
 	shape.on('mouseover', ->
 		parent = this.getParent()
 		widget.setPosition(positionFunc(widget, this))
-		widget.fill(this.stroke())
+		color = this.stroke()
+		if (color == 'yellow')
+			color = 'gold'
+		widget.fill(color)
 		parent.add(widget)
 		parent.draw()
 	)

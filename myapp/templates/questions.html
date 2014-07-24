@@ -10,19 +10,25 @@
       <input type="number" name="age" min="1" max="100">
     </p>
     <p>Sexo
-      <input type="radio" name="sex" value="male">Masculino
-      <input type="radio" name="sex" value="female">Femenino
+      <select name="sex">
+        <option value="male">Masculino</option>
+        <option value="female">Femenino</option>
+      </select>
     </p>
     <p>Actividades actuales</p>
     <p>
       Estudia
-      <input type="radio" name="studying" value="yes">Sí
-      <input type="radio" name="studying" value="no">No
+      <select name="studying">
+        <option value="yes">Sí</option>
+        <option value="no">No</option>
+      </select>
     </p>
     <p>
       Trabaja
-      <input type="radio" name="working" value="yes">Sí
-      <input type="radio" name="working" value="no">No
+      <select name="working">
+        <option value="yes">Sí</option>
+        <option value="no">No</option>
+      </select>
     </p>
     <input type="submit" id="submit"/><br/>
   </form>
@@ -32,15 +38,17 @@
   <form id="myform">
     <p>Si tuviera que definirse como un tipo de persona "matutina" o "nocturna", cómo se definiría?</p>
     <p>
-      <input type="radio" name="daynight" value="5">Definitivamente matutina<br/>
-      <input type="radio" name="daynight" value="4">Moderadamente matutina<br/>
-      <input type="radio" name="daynight" value="3">Neutral<br/>
-      <input type="radio" name="daynight" value="2">Moderadamente nocturna<br/>
-      <input type="radio" name="daynight" value="1">Definitivamente nocturna<br/>
+      <select name="daynight">
+        <option value="5">Definitivamente matutina</option>
+        <option value="4">Moderadamente matutina</option>
+        <option value="3">Neutral</option>
+        <option value="2">Moderadamente nocturna</option>
+        <option value="1">Definitivamente nocturna</option>
+      </select>
     </p>
     <p>
       Comentarios<br/>
-      <textarea name="comments"></textarea>
+      <textarea name="comments" style="width: 400px; height: 200px"></textarea>
     </p>
     <br/>
     <input type="submit" id="submit"/><br/>

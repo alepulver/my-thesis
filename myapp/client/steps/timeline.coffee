@@ -39,7 +39,7 @@ class HandleTimelineCF
 		@current_start_time = Steps.currentTime()
 		@position = 0
 		@remaining = _.size(@choices)
-		@line = new Widgets.LineInCircleIS(@layer, 300)
+		@line = new Widgets.LineInLayerIS(@layer)
 		@button = Widgets.createButton({
 			x: 50,
 			y: 50,
@@ -48,6 +48,7 @@ class HandleTimelineCF
 		})
 		@button.on('mousedown', -> self.finishedLineAdjustments())
 
+		@layer.add @line.box
 		@layer.add @line.group
 		@layer.add @button
 		@layer.draw()
@@ -60,12 +61,13 @@ class HandleTimelineCF
 
 		@result_line = {
 			start_time: @current_start_time,
-			end_time: Steps.currentTime(),
-			length: @line.shape.points[2] * 2,
-			rotation: @line.shape.rotation()
+			end_time: Steps.currentTime()
 		}
-
-		@line.fixState()
+		
+		data = @line.fixState()
+		@line.box.remove()
+		_.merge(@result_line, data)
+		
 		this.askToPositionEvent()
 
 	askToPositionEvent: ->
@@ -91,7 +93,8 @@ class HandleTimelineCF
 		})
 
 		transform = text.getTransform()
-		invert = if (Math.abs(@line.group.rotation()) > 90) then 1 else -1
+		rotation = Widgets.degreesInRange @line.group.rotation()
+		invert = if (rotation > 0 && rotation < 180) then -1 else 1
 		transform.rotate(Widgets.degreesToRadians(90*invert))
 		if (rightSide)
 			transform.translate(30, 0)
@@ -145,7 +148,7 @@ class HandleTimelineCF
 		@results[@choices[@position]] = {
 			start_time: @current_start_time,
 			end_time: Steps.currentTime(),
-			position: @current.x() / @line.shape.points[2]
+			position: @current.x() / @line.shape.points()[2]
 		}
 
 		@remaining--
@@ -192,7 +195,7 @@ timeline = () ->
 	choices = [
 		"el origen del universo",
 		"el origen de la vida",
-		"el nacimiento de Jesucristo",
+		"el año 1 (hoy es 2014)",
 		"el Renacimiento",
 		"los Beatles",
 		"mi nacimiento",
