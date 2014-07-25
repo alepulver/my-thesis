@@ -74,11 +74,13 @@ class ChoosePanel
 class DrawingPanel
 	constructor: (@layer, @createShape) ->
 		@current = null
+		@shapes = []
 
 	addShape: (@name, tooltip) ->
 		self = this
 	
 		@current = @createShape(@layer)
+		@shapes.push @current
 		@current.addTooltip(tooltip)
 		
 		@button = Widgets.createButton({
@@ -134,6 +136,40 @@ class DrawingPanel
 		@layer.draw()
 
 		@end_notifier()
+
+
+class DrawingPanelNoOverlap extends DrawingPanel
+	noIntersections: ->
+		self = this
+		rectOne = {
+			x: @current.commonShape.shape.getAbsolutePosition().x,
+			y: @current.commonShape.shape.getAbsolutePosition().y,
+			width: @current.commonShape.width(),
+			height: @current.commonShape.height()
+		}
+
+		haveToExit = false
+		_.forEach(@shapes, (shape) ->
+			if (shape != self.current)
+				rectTwo = {
+					x: shape.commonShape.shape.getAbsolutePosition().x,
+					y: shape.commonShape.shape.getAbsolutePosition().y,
+					width: shape.commonShape.width(),
+					height: shape.commonShape.height()
+				}
+				if (Widgets.rectCollision rectOne, rectTwo)
+					# XXX: return binds locally
+					haveToExit = true
+					return
+		)
+		!haveToExit
+
+
+	acceptedShape: ->
+		if (this.noIntersections())
+			super()
+		else
+			alert("Las figuras no pueden superponerse, por favor ubícala en otro lugar")
 
 
 class ColorsPanel
@@ -254,6 +290,7 @@ class TextPanel
 _.merge(@Panels,
 	Choose: ChoosePanel
 	Drawing: DrawingPanel
+	DrawingNoOverlap: DrawingPanelNoOverlap
 	Colors: ColorsPanel
 	Text: TextPanel
 	SliderChoose: SliderChoosePanel

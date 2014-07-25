@@ -253,47 +253,6 @@ class SquareBoundedIS extends InteractiveShape
 		@commonShape.setColor color
 
 
-class SquareBoundedISNoOverlap extends SquareBoundedIS
-	constructor: (commonShape, layer, @others) ->
-		super(commonShape, layer)
-
-	mainDragBound: (newPos) ->
-		self = this
-		rectOne = {
-			x: newPos.x,
-			y: newPos.y,
-			width: @commonShape.width(),
-			height: @commonShape.height()
-		}
-
-		haveToExit = false
-		_.forEach(@others, (shape) ->
-			if (shape != self)
-				rectTwo = {
-					x: shape.commonShape.shape.getAbsolutePosition().x,
-					y: shape.commonShape.shape.getAbsolutePosition().y,
-					width: shape.commonShape.width(),
-					height: shape.commonShape.height()
-				}
-				if (Widgets.rectCollision rectOne, rectTwo)
-					# XXX: return binds locally
-					haveToExit = true
-					return
-		)
-		if (haveToExit)
-			return @group.getAbsolutePosition()
-
-		shape = {
-			x: @group.getAbsolutePosition().x,
-			y: @group.getAbsolutePosition().y,
-			width: @commonShape.width() + @anchorMargin.x,
-			height: @commonShape.height() + @anchorMargin.y
-		}
-		container = this.getContainer()
-
-		Widgets.constrainedPosUpdate shape, container, newPos
-
-
 degreesInRange = (degrees) ->
 	# XXX: KineticJS angles can be negative
 	while (degrees < 0)
@@ -602,7 +561,6 @@ _.merge(@Widgets, {
 	Rect
 	FilledRect
 	SquareBoundedIS
-	SquareBoundedISNoOverlap
 	RadialSectorIS
 	LineInLayerIS
 	cartesianToPolar

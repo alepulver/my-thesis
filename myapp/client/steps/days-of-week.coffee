@@ -1,5 +1,14 @@
 _ = lodash
 
+create_handler_default = (choices, create_shape) ->
+	() ->
+		panels = Steps.createPanels choices, Steps.colors, Panels.DrawingNoOverlap, create_shape
+		
+		layer = panels.shapes.layer
+		Widgets.addBorder layer
+
+		panels
+
 daysOfWeek = () ->
 	choices = {
 		monday: "Lunes",
@@ -11,14 +20,12 @@ daysOfWeek = () ->
 		sunday: "Domingo"
 	}
 
-	others = []
 	create_shape = (layer) ->
 		shape = new Widgets.FilledRect()
-		interactive_shape = new Widgets.SquareBoundedISNoOverlap(shape, layer, others)
-		others.push interactive_shape
+		interactive_shape = new Widgets.SquareBoundedIS(shape, layer)
 		interactive_shape
 	
-	create_panels = Steps.create_handler_default(choices, create_shape)
+	create_panels = create_handler_default(choices, create_shape)
 
 	step = new Steps.HandleControlFlow(create_panels, "days_of_week")
 	step
