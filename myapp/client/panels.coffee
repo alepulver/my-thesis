@@ -200,58 +200,23 @@ class SliderChoosePanel
 		}
 	
 	start: (@notifier) ->
+		self = this
 		@gui_items = []
 		offset = 0
 		
 		_.forEach(@choices, (choice) ->
-			@group = new Kinetic.Group({
-				x: offset + 50,
-				y: @layer.height()/2
+			group = new Kinetic.Group({
+				x: self.layer.width()/2,
+				y: offset + 75
 			})
-			###
-			line = new Kinetic.Rect({
-				x: 0, y: 0,
-				width: 500,	height: 20,
-				offsetX: 250, offsetY: 10,
-				fillLinearGradientStartPoint: {x: 0, y: 0},
-				fillLinearGradientEndPoint: {x: 500, y: 0},
-				fillLinearGradientColorStops: [0, 'white', 1, 'black']
-			})
-			###
-			line = new Kinetic.Line({
-				points: [0, 0, 500, 0],
-				offsetX: 250,
-				stroke: 'black', strokeWidth: 2
-			})
-			@background = new Kinetic.Rect({
-				x: 0, y: 0,
-				width: 500,	height: 100,
-				offsetX: 250, offsetY: 50
-			})
-			textLeft = new Kinetic.Text({
-				text: 'Nada forzado',
-				fontSize: 20, fontFamily: 'Calibri',
-				fill: '#555',
-				width: 200,
-				align: 'center',
-				x: -250-100, y: 40
-			})
-			textRight = new Kinetic.Text({
-				text: 'Muy forzado',
-				fontSize: 20, fontFamily: 'Calibri',
-				fill: '#555',
-				width: 200,
-				align: 'center',
-				x: 250-100, y: 40
-			})
-			@group.add line
-			@group.add textLeft
-			@group.add textRight
-			@group.add @background
-			@layer.add @group
-			@layer.draw()
 
-			offset += 200
+			item = new Widgets.inputSlider(group, choice)
+
+			self.layer.add group
+			self.gui_items.push(item)
+			offset += 160
+		)
+		self.layer.draw()
 
 		this.askForClick()
 
@@ -263,57 +228,14 @@ class SliderChoosePanel
 		@current_result = {
 			start_time: Steps.currentTime()
 		}
-
-		@textTop = new Kinetic.Text({
-			text: @choices[@current_index],
-			fontSize: 25, fontFamily: 'Calibri',
-			fill: '#555',
-			width: 200, offsetX: 100,
-			align: 'center',
-			x: 0, y: -100
-		})
-		@theBar = new Kinetic.Rect({
-			x: 0, y: 0,
-			width: 6, height: 30,
-			offsetX: 3, offsetY: 15,
-			fill: 'brown'
-		})
-		@group.add @textTop
-		@group.add @theBar
-		@layer.draw()
-
-		@background.moveToTop()
-		@background.on('mousemove', ->
-			stage = this.getStage()
-			pos = stage.getPointerPosition()
-
-			center = self.group.getAbsolutePosition()
-			vector = {
-				x: pos.x - center.x,
-				y: pos.y - center.y
-			}
-			self.theBar.x(vector.x)
-			self.layer.draw()
-		)
-		@background.on('mousedown', ->
-			value = (self.theBar.x()+250)/500
-			self.sliderClicked value
-		)
+		@gui_items[@current_index].enable((position) -> self.sliderClicked position)
 
 	sliderClicked: (position) ->
-		# XXX: avoid error when mouseout arrives later
-		@background.off('mousemove')
-		@background.off('mousedown')
-
 		_.merge(@current_result, {
 			end_time: Steps.currentTime(),
 			value: position
 		})
 		@data.results[@choices[@current_index]] = @current_result
-
-		@theBar.remove()
-		@textTop.remove()
-		@layer.draw()
 
 		@current_index++
 		@remaining--

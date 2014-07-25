@@ -36,6 +36,90 @@ createButton = (parameters) ->
 	group
 
 
+class inputSlider
+	constructor: (@group, @text) ->
+		commonText = (moreParams) ->
+			localParams = {
+				fontSize: 20, fontFamily: 'Calibri',
+				fill: '#555',
+				width: 200,
+				align: 'center'
+			}
+			params = _.merge({}, localParams, moreParams)
+			new Kinetic.Text(params)
+
+		line = new Kinetic.Line({
+			points: [0, 0, 500, 0],
+			offsetX: 250,
+			stroke: 'black', strokeWidth: 2
+		})
+		@background = new Kinetic.Rect({
+			x: 0, y: 0,
+			width: 540,	height: 30,
+			offsetX: 270, offsetY: 15,
+			fill: 'transparent'
+		})
+		textLeft = commonText({
+			text: 'Nada forzado',
+			x: -250-100, y: 20
+		})
+		textRight = commonText({
+			text: 'Muy forzado',
+			x: 250-100, y: 20
+		})
+		textTop = commonText({
+			text: text,
+			fontSize: 25,
+			fill: '#555',
+			offsetX: 100,
+			x: 0, y: -60
+		})
+		@bar = new Kinetic.Rect({
+			x: 0, y: 0,
+			width: 6, height: 30,
+			offsetX: 3, offsetY: 15,
+			fill: 'grey'
+		})
+		@group.add line
+		@group.add textLeft
+		@group.add textRight
+		@group.add textTop
+		@group.add @bar
+		@group.add @background
+
+	enable: (@notifier) ->
+		self = this
+		@bar.fill('brown')
+		@bar.getLayer().draw()
+		@background.on('mousemove', ->
+			stage = this.getStage()
+			pos = stage.getPointerPosition()
+
+			center = self.group.getAbsolutePosition()
+			vector = {
+				x: pos.x - center.x,
+				y: pos.y - center.y
+			}
+			self.bar.x(Widgets.constrainBetween(vector.x, -250, 250))
+			self.group.getLayer().draw()
+		)
+		@background.on('mousedown', ->
+			self.clickHandler()
+		)
+
+	clickHandler: ->
+		# XXX: avoid error when mouseout arrives later
+		@background.off('mousemove')
+		@background.off('mousedown')
+
+		@bar.fill('black')
+		@bar.getLayer().draw()
+
+		value = (@bar.x()+250)/500
+		console.log(value)
+		@notifier value
+
+
 addBorder = (layer) ->
 	border = new Kinetic.Line({
 		points: [0, 0, layer.width(), 0, layer.width(), layer.height(), 0, layer.height(), 0, 0],
@@ -160,6 +244,7 @@ makeHoverable = (group, shape) ->
 @Widgets ?= {}
 _.merge(@Widgets, {
 	createButton: createButton
+	inputSlider: inputSlider
 	addBorder: addBorder
 	addTooltip: addTooltip
 	boundingBoxPositionsFor: boundingBoxPositionsFor

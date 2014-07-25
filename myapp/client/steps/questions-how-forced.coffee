@@ -10,13 +10,13 @@ class QuestionsHowForced
 		@choices = ['Tamaño', 'Ubicación', 'Color']
 		@stage = new Kinetic.Stage({
 			container: 'container',
-			width: 800, height: 400
+			width: 800, height: 800
 		})
 		@layer = new Kinetic.Layer({
 			x: 0,
 			y: 0,
 			width: 800,
-			height: 400
+			height: 800
 		})
 		@panel = new Panels.SliderChoose @choices, @layer
 		@stage.add(@layer)

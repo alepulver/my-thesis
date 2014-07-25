@@ -51,16 +51,17 @@ Source modifications are reloaded automatically.
 http://circles-experiment.meteor.com/
 
 ### TODO
-- Add /reports page with password or token, to check if results are saved correctly
-- Allow downloading (not the subject) as CSV or any tabulated format
-- Save when color changed and resized, moved as an event list with timestamps
 - Make it look better (try layout framework like boostrap or gumby)
+- Save when color changed and resized, moved as an event list with timestamps
+
+- Add password or token to /reports
+- Allow viewing results graphically, or even with an animation
+- Allow downloading (not the subject) as CSV or any tabulated format
 
 #### Maybe
 
 - Make buttons and color bar horizontal to save space
 - Add message box responding to current mouse position, or tooltip next to the mouse (perhaps outside canvas)
-- Refactor "layout" class for positioning elements (try famo.us, or mix html/css with canvas)
 - Refactor widgets in a wrapper and decorator objects
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
 

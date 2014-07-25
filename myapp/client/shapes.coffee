@@ -565,4 +565,5 @@ _.merge(@Widgets, {
 	degreesToRadians
 	radiansToDegrees
 	degreesInRange
+	constrainBetween
 })
