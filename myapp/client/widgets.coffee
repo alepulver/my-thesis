@@ -210,6 +210,15 @@ boundingBoxFits = (shape, container) ->
 	}
 
 
+rectCollision = (rect1, rect2) ->
+	right = rect2.x > rect1.x+rect1.width
+	left = rect2.x+rect2.width < rect1.x
+	down = rect2.y > rect1.y+rect1.height
+	up = rect2.y+rect2.height < rect1.y
+
+	!(right || left || down || up)
+
+
 constrainedPosUpdate = (shape, container, newPos) ->
 	newShape = {
 		x: newPos.x,
@@ -251,4 +260,5 @@ _.merge(@Widgets, {
 	boundingBoxFits: boundingBoxFits
 	constrainedPosUpdate: constrainedPosUpdate
 	makeHoverable: makeHoverable
+	rectCollision: rectCollision
 })

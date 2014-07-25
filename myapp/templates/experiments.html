@@ -25,17 +25,10 @@
 <template name="timeline">
   <h1>Eventos en el tiempo</h1>
   <p>Dibujá una línea e identificá en ella los siguientes eventos:</p>
-  <ul>
-    <li>el origen del universo</li>
-    <li>el origen de la vida</li>
-    <li>el año 1 (hoy es 2014)</li>
-    <li>el Renacimiento</li>
-    <li>los Beatles</li>
-    <li>mi nacimiento</li>
-    <li>mi niñez</li>
-    <li>mi juventud</li>
-    <li>hoy</li>
-    <li>mi vejez</li>
+  <ul style="column-count:3; -webkit-column-count:3; -moz-column-count:3; -ms-column-count:3; -o-column-count:3;">
+    {{#each items}}
+      <li>{{this}}</li>
+    {{/each}}
   </ul>
   <p>No hay respuestas correctas o incorrectas</p>
   <div id="container"></div>

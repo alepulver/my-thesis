@@ -15,7 +15,7 @@ class QuestionsBegin
 		event.preventDefault()
 
 		results = {}
-		variables = ['name', 'age']
+		variables = ['name', 'age', 'email']
 		_.each(variables, (field) ->
 			results[field] = template.find("input[name=#{field}]").value
 		)

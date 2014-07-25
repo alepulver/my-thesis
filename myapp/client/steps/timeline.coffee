@@ -2,8 +2,11 @@ _ = lodash
 
 class HandleTimelineCF
 	constructor: (@questions, @colors, @name) ->
+		self = this
 		@done = false
 		@choices = _.shuffle(@questions)
+		Template[@name].items = () ->
+			self.choices
 
 	changeState: (stateClass) ->
 		@state = new stateClass this

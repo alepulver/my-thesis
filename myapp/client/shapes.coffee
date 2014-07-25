@@ -82,9 +82,9 @@ class FilledRect extends Shape
 	constructor: (rect) ->
 		@shape = new Kinetic.Rect({
 			x: 0, y: 0,
-			width: 100, height: 100,
-			offsetX: 50, offsetY: 50,
-			strokeWidth: 0,
+			width: 50, height: 100,
+			offsetX: 25, offsetY: 50,
+			strokeWidth: 0, stroke: 'black',
 			fill: 'black',
 			name: 'image'
 		})
@@ -95,14 +95,17 @@ class FilledRect extends Shape
 
 	setSize: (desiredSize) ->
 		size = {
-			width: _.max([desiredSize.width, 5]),
-			height: _.max([desiredSize.height, 5])
+			width: 50,
+			height: _.max([desiredSize.height, 10])
 		}
 		@shape.size(size)
 		@shape.offsetX(size.width/2)
 		@shape.offsetY(size.height/2)
 
 	setColor: (color) ->
+		# XXX: for addTooltip
+		@shape.stroke color
+
 		@shape.fill color
 
 	getData: ->
@@ -248,6 +251,47 @@ class SquareBoundedIS extends InteractiveShape
 
 	setColor: (color) ->
 		@commonShape.setColor color
+
+
+class SquareBoundedISNoOverlap extends SquareBoundedIS
+	constructor: (commonShape, layer, @others) ->
+		super(commonShape, layer)
+
+	mainDragBound: (newPos) ->
+		self = this
+		rectOne = {
+			x: newPos.x,
+			y: newPos.y,
+			width: @commonShape.width(),
+			height: @commonShape.height()
+		}
+
+		haveToExit = false
+		_.forEach(@others, (shape) ->
+			if (shape != self)
+				rectTwo = {
+					x: shape.commonShape.shape.getAbsolutePosition().x,
+					y: shape.commonShape.shape.getAbsolutePosition().y,
+					width: shape.commonShape.width(),
+					height: shape.commonShape.height()
+				}
+				if (Widgets.rectCollision rectOne, rectTwo)
+					# XXX: return binds locally
+					haveToExit = true
+					return
+		)
+		if (haveToExit)
+			return @group.getAbsolutePosition()
+
+		shape = {
+			x: @group.getAbsolutePosition().x,
+			y: @group.getAbsolutePosition().y,
+			width: @commonShape.width() + @anchorMargin.x,
+			height: @commonShape.height() + @anchorMargin.y
+		}
+		container = this.getContainer()
+
+		Widgets.constrainedPosUpdate shape, container, newPos
 
 
 degreesInRange = (degrees) ->
@@ -558,6 +602,7 @@ _.merge(@Widgets, {
 	Rect
 	FilledRect
 	SquareBoundedIS
+	SquareBoundedISNoOverlap
 	RadialSectorIS
 	LineInLayerIS
 	cartesianToPolar
