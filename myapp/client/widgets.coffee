@@ -121,11 +121,19 @@ class inputSlider
 
 
 addBorder = (layer) ->
+	###
 	border = new Kinetic.Line({
 		points: [0, 0, layer.width(), 0, layer.width(), layer.height(), 0, layer.height(), 0, 0],
 		dash: [20, 5],
 		stroke: 'black',
 		strokeWidth: 5
+	})
+	###
+	border = new Kinetic.Rect({
+		x: 2, y: 2,
+		width: layer.width()-4, height: layer.height()-2,
+		stroke: 'grey', strokeWidth: 4,
+		fill: 'transparent'
 	})
 	layer.add border
 	layer.draw()

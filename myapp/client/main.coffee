@@ -1,16 +1,19 @@
 _ = lodash
 
 startMainApp = ->
-	# TODO: record date, step permutation order, etc
+	local_id = ReactiveStore.get("local_id") || ""
+	if (local_id == "")
+		ReactiveStore.set("local_id", Random.secret())
+
 	steps = [
 		new Steps.Introduction(),
-		#new Steps.QuestionsBegin(),
-		#Steps.presentPastFuture(),
-		#Steps.seasonsOfYear(),
+		new Steps.QuestionsBegin(),
+		Steps.presentPastFuture(),
+		Steps.seasonsOfYear(),
 		Steps.daysOfWeek(),
-		#Steps.partsOfDay(),
-		#Steps.timeline(),
-		#new Steps.QuestionsHowForced(),
+		Steps.partsOfDay(),
+		Steps.timeline(),
+		new Steps.QuestionsHowForced(),
 		new Steps.QuestionsEnd()
 	]
 
@@ -19,7 +22,6 @@ startMainApp = ->
 
 
 finishedMainApp = (results) ->
-	#Results.insert(results)
 	Session.set("active_stage", "thanks")
 
 
@@ -29,7 +31,9 @@ finishedMainApp = (results) ->
 class Workflow
 	constructor: (@steps, @finishNotifier) ->
 		# do nothing
+
 	start: ->
+		@local_id = ReactiveStore.get("local_id")
 		@current_index = -1
 		@results = {}
 		@results['start_time'] = Steps.currentTime()
@@ -59,12 +63,9 @@ class Workflow
 			stage: @current_step.name,
 			start_time: @current_start_time,
 			end_time: end_time,
+			local_id: @local_id,
 			results: results
 		})
-
-		#results['end_time'] = end_time
-		#results['start_time'] = @current_start_time
-		#@results[@current_step.name] = results
 
 		if @current_index >= _.size(@steps)-1
 			this.finish()

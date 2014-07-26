@@ -13,9 +13,9 @@ partsOfDay = () ->
 	create_shape = (layer) ->
 		shape = new Kinetic.Wedge({
 			x: 0, y: 0,
-			radius: 200, angle: randBetween(50, 80),
+			radius: 200, angle: randBetween(30, 80),
 			fill: 'black', stroke: 'black', strokeWidth: 0,
-			rotation: randBetween(-120, -90),
+			rotation: randBetween(0, 360),
 			opacity: 0.85
 		})
 		interactive_shape = new Widgets.RadialSectorIS(shape, layer, 200)

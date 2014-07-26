@@ -134,9 +134,14 @@ class SquareBoundedIS extends InteractiveShape
 		@anchorMargin = {x: 20, y: 20}
 		self = this
 
+		posMax = {
+			x: (@layer.width() - @commonShape.size().width - 20)/2,
+			y: (@layer.height() - @commonShape.size().height - 20)/2,
+		}
+
 		@group = new Kinetic.Group({
-			x: @layer.width()/2 + randBetween(-30, 30),
-			y: @layer.height()/2 + randBetween(-30, 30),
+			x: @layer.width()/2 + randBetween(-posMax.x, posMax.x),
+			y: @layer.height()/2 + randBetween(-posMax.y, posMax.y),
 			draggable: true
 		})
 

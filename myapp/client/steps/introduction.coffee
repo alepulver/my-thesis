@@ -15,7 +15,8 @@ class Introduction
 		event.preventDefault()
 
 		results = {
-			ip_address: headers.getClientIP()
+			ip_address: headers.getClientIP(),
+			user_agent: navigator.userAgent
 		}
 		###
 		geo = Geolocation.getInstance()

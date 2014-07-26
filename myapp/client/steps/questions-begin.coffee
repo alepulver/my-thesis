@@ -24,7 +24,17 @@ class QuestionsBegin
 			results[field] = template.find("select[name=#{field}]").value
 		)
 
-		@workflow.stepFinished(results)
+		if (@alreadyDone results.email)
+			Session.set("active_stage", "already_completed")
+		else
+			@workflow.stepFinished(results)
+
+	alreadyDone: (email) ->
+		if (email == "")
+			false
+		else
+			already_done = Results.find({'stage': @name, 'results.email': email}).fetch()
+			_.size(already_done) > 0
 
 
 @Steps ?= {}
