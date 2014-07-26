@@ -23,6 +23,7 @@ class QuestionsHowForced
 		@panel.start((results) -> self.ended results)
 
 	ended: (results) ->
+		results['stage_as_json'] = @stage.toJSON()
 		@workflow.stepFinished(results)
 
 

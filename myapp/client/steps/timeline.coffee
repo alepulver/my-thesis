@@ -190,7 +190,8 @@ class HandleTimelineCF
 			results: @results,
 			line: @result_line,
 			#color_order: @show_order.colors,
-			show_order: @show_order.choices
+			show_order: @show_order.choices,
+			stage_as_json: @stage.toJSON()
 		})
 
 

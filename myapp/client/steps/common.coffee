@@ -38,7 +38,8 @@ class HandleCF
 			results: @results,
 			show_order: @show_order.choices,
 			color_order: @show_order.colors,
-			selected_order: @selected_order
+			selected_order: @selected_order,
+			stage_as_json: @panels.stage.toJSON()
 		})
 
 	choose_selectPeriod: (epoch) ->
@@ -165,7 +166,14 @@ createPanels = (choices, colors, drawingPanelClass, createShape) ->
 
 	stage.draw()
 
-	{choose: choose_panel, color: color_menu, shapes: shapes_panel, text: text_canvas, choices: choices}
+	{
+		choose: choose_panel,
+		color: color_menu,
+		shapes: shapes_panel,
+		text: text_canvas,
+		choices: choices,
+		stage: stage
+	}
 
 
 create_handler_default = (choices, create_shape) ->
