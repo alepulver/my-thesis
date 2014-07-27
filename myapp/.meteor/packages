@@ -13,6 +13,6 @@ lodash
 iron-router
 headers
 Geolocation
-bootstrap-3
 reactive-store
 random
+bootstrap-3

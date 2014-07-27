@@ -5,11 +5,44 @@ class QuestionsBegin
 		@name = "questions_begining"
 		self = this
 		Template.questions_begining.events({
-			'submit form': (event, template) -> self.formSubmitted(event, template)
+			'success.form.bv': (event, template) -> self.formSubmitted(event, template)
 		})
 
 	start: (@workflow) ->
-		# do nothing
+		notSelected =
+			message: 'No seleccionaste ninguna opción'
+			callback: (value, validator) ->
+				value != null
+		
+		$('form[id="myform"]').bootstrapValidator(
+			feedbackIcons:
+				valid: 'glyphicon glyphicon-ok'
+				invalid: 'glyphicon glyphicon-remove'
+				validating: 'glyphicon glyphicon-refresh'
+
+			fields:
+				name:
+					validators:
+						notEmpty:
+							message: 'Por favor ingresá su nombre, no es necesario el apellido'
+				email:
+					validators:
+						emailAddress:
+							message: 'No es una dirección de mail válida, puede omitirse si lo preferís'
+				age:
+					validators:
+						notEmpty:
+							message: 'Por favor ingresá su edad'
+				sex:
+					validators:
+						callback: notSelected
+				studying:
+					validators:
+						callback: notSelected
+				working:
+					validators:
+						callback: notSelected
+		)
 
 	formSubmitted: (event, template) ->
 		event.preventDefault()
@@ -33,7 +66,8 @@ class QuestionsBegin
 		if (email == "")
 			false
 		else
-			already_done = Results.find({'stage': @name, 'results.email': email}).fetch()
+			pattern = {'stage': @name, 'results.email': email}
+			already_done = Results.find(pattern).fetch()
 			_.size(already_done) > 0
 
 

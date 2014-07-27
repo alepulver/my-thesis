@@ -8,8 +8,8 @@
       "iron-router": {},
       "headers": {},
       "Geolocation": {},
-      "bootstrap-3": {},
-      "reactive-store": {}
+      "reactive-store": {},
+      "bootstrap-3": {}
     },
     "packages": {
       "kinetic.js": {
@@ -42,15 +42,15 @@
         "tag": "v0.1.0",
         "commit": "17485d2e08301febefafda5997f803d4ac971bdb"
       },
-      "bootstrap-3": {
-        "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",
-        "tag": "v3.2.0-1",
-        "commit": "17a63902fc6cf1096c5289d963c66cf28b474727"
-      },
       "reactive-store": {
         "git": "https://github.com/andrewreedy/reactive-store.git",
         "tag": "v0.0.1",
         "commit": "18a945ff0d1a449938f35afd2bbbf09d1ecd322a"
+      },
+      "bootstrap-3": {
+        "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",
+        "tag": "v3.2.0-1",
+        "commit": "17a63902fc6cf1096c5289d963c66cf28b474727"
       },
       "blaze-layout": {
         "git": "https://github.com/EventedMind/blaze-layout.git",

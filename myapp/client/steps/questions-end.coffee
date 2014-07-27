@@ -5,11 +5,26 @@ class QuestionsEnd
     @name = "questions_ending"
     self = this
     Template.questions_ending.events({
-      'submit form': (event, template) -> self.formSubmitted(event, template)
+      'success.form.bv': (event, template) -> self.formSubmitted(event, template)
     })
 
   start: (@workflow) ->
-    # do nothing
+    notSelected =
+      message: 'No seleccionaste ninguna opción'
+      callback: (value, validator) ->
+        value != null
+    
+    $('form[id="myform"]').bootstrapValidator(
+      feedbackIcons:
+        valid: 'glyphicon glyphicon-ok'
+        invalid: 'glyphicon glyphicon-remove'
+        validating: 'glyphicon glyphicon-refresh'
+
+      fields:
+        daynight:
+          validators:
+            callback: notSelected
+    )
 
   formSubmitted: (event, template) ->
     event.preventDefault()

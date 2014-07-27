@@ -7,7 +7,16 @@
   
 </body>
 
+<template name="loading">
+  <p>Loading...</p>
+</template>
+
 <template name="experiments">
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+      <h2>Experimento sobre la representación del tiempo en el espacio</h2>
+    </div>
+  </nav>
   <div class="container">
     <div class="row">
       <div class="col-md-1"></div>
@@ -19,20 +28,22 @@
   </div>
 </template>
 
-<template name="loading">
-  <p>Loading...</p>
-</template>
-
 <template name="introduction">
-  <h1>Representación del tiempo en el espacio</h1>
-  <p class="lead">Este es un experimentos sobre la representación del tiempo en el espacio, de aproximadamente 10 minutos de duración, y puede realizarse una sola vez por participante. No hay respuestas correctas o incorrectas.</p>
+  <h1>Bienvenido</h1>
+  <p class="lead">Este es un experimento sobre la representación del tiempo en el espacio, de aproximadamente 10 minutos de duración, y puede realizarse una sola vez por participante. No hay respuestas correctas o incorrectas.</p>
   {{> agreement}}
   <hr/>
   <button type="button" id="start" class="btn btn-primary btn-lg">Continuar</button>
 </template>
 
 <template name="thanks">
-  <h1>Gracias por participar!</h1>
+  <h1>Gracias por participar</h1>
+  <p>El experimento ha finalizado.</p>
+</template>
+
+<template name="already_completed">
+  <h1>Gracias por participar</h1>
+  <p>La dirección de e-mail que ingresaste ya se encuentra en nuestra lista de participantes, te pedimos que no participe más de una vez.</p>
 </template>
 
 <template name="results">
@@ -40,9 +51,4 @@
   <pre>
     {{as_json}}
   </pre>
-</template>
-
-<template name="already_completed">
-  <h1>Gracias por participar</h1>
-  <p>La dirección de e-mail que ha ingresado ya se encuentra en nuestra lista de participantes, le pedimos que no participe más de una vez.</p>
 </template>

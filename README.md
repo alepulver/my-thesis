@@ -52,10 +52,9 @@ http://circles-experiment.meteor.com/
 
 ### TODO
 
-- Check that form fields are present
-- Use layout with navbar, title, etc
-- Replace "how forced" questions with bootstrap-slider in the same page as "questions_ending"
+- Replace "how forced" questions with bootstrap-slider in the same page as "questions_ending" (needs modernizr for tablets?)
 - Add "touch*" events so it works on tablets
+- Scale down canvas if screen space is too small, using setScale to avoid changing pixel values
 
 - Allow viewing results graphically (toDataURL)
 - Add password or token to /reports

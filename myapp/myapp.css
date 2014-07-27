@@ -13,3 +13,7 @@ div.my-boxed-inner {
 	overflow: auto;
 	padding-right: 10px;
 }
+
+body {
+	padding-top: 70px;
+}

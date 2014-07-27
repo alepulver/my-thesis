@@ -6,8 +6,8 @@
     "iron-router": {},
     "headers": {},
     "Geolocation": {},
-    "bootstrap-3": {},
-    "reactive-store": {}
+    "reactive-store": {},
+    "bootstrap-3": {}
   },
   "bower": {
     "rsvp": "3.0.6"
