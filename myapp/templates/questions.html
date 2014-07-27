@@ -1,41 +1,54 @@
 <template name="questions_begining">
-  <p>Por favor ingrese los siguientes datos (no es necesario el nombre completo).</p>
-  <form id="myform">
-    <p>
-      Nombre
-      <input type="text" name="name"/>
-    </p>
-    <p>
-      E-Mail
-      <input type="text" name="email"/>
-    </p>
-    <p>No vamos a utilizar esta dirección para mandarte ningún correo electrónico. El experimento es completamente anónimo, pedimos el email únicamente para saber quiénes ya lo realizaron.</p>
-    <p>
-      Edad
-      <input type="number" name="age" min="1" max="100">
-    </p>
-    <p>Sexo
-      <select name="sex">
+  <p>Antes de comenzar el experimento le pedimos por favor que complete los siguientes datos.
+  No es necesario el nombre completo.</p>
+  
+  <form id="myform" role="form">  
+    <div class="form-group">
+      <label for="name">Nombre</label>
+      <input type="text" class="form-control" id="name" placeholder="Escriba su nombre">
+    </div>
+    
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" id="email" placeholder="Escriba su mail">
+      <p class="bg-info">No vamos a utilizar esta dirección para mandarte ningún correo electrónico. El experimento es completamente anónimo, pedimos el email únicamente para saber quiénes ya lo realizaron.</p>
+    </div>
+
+    <div class="form-group">
+      <label for="age">Edad</label>
+      <input type="number" min="18" max="100" class="form-control" id="age" placeholder="Ingrese su edad">
+    </div>
+
+    <div class="form-group">
+      <label for="sex">Sexo</label>
+      <select id="sex" class="form-control">
+        <option disabled selected> -- elija una opción -- </option>
         <option value="male">Masculino</option>
         <option value="female">Femenino</option>
       </select>
-    </p>
-    <p>Actividades actuales</p>
-    <p>
-      Estudia
-      <select name="studying">
+    </div>
+
+    <p><b>Actividades actuales</b></p>
+
+    <div class="form-group">
+      <label for="studying">Estudia</label>
+      <select id="studying" class="form-control">
+        <option disabled selected> -- elija una opción -- </option>
         <option value="yes">Sí</option>
         <option value="no">No</option>
       </select>
-    </p>
-    <p>
-      Trabaja
-      <select name="working">
+    </div>
+    
+    <div class="form-group">
+      <label for="working">Trabaja</label>
+      <select id="working" class="form-control">
+        <option disabled selected> -- elija una opción -- </option>
         <option value="yes">Sí</option>
         <option value="no">No</option>
       </select>
-    </p>
-    <input type="submit" id="submit"/><br/>
+    </div>
+
+    <button type="submit" id="submit" class="btn btn-primary">Continuar</button>
   </form>
 </template>
 

@@ -8,7 +8,15 @@
 </body>
 
 <template name="experiments">
-  {{> active_stage}}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
+        {{> active_stage}}
+      </div>
+      <div class="col-md-1"></div>
+    </div>
+  </div>
 </template>
 
 <template name="loading">
@@ -16,20 +24,11 @@
 </template>
 
 <template name="introduction">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-1"></div>
-      <div class="col-md-10">
-        <h1>Experimentos sobre la representación del tiempo en el espacio</h1>
-        <p>A continuación se presentarán distintos experimentos. Al finalizar cada uno, comenzárá el siguiente, y luego del último se presentará una encuesta. No hay respuestas correctas o incorrectas, siendo las mismas de carácter subjetivo.</p>
-        {{> agreement}}
-        <h2>
-          <a href="#" id="start">CONTINUAR</a>
-        </h2>
-      </div>
-      <div class="col-md-1"></div>
-    </div>
-  </div>
+  <h1>Experimentos sobre la representación del tiempo en el espacio</h1>
+  <p>A continuación se presentarán distintos experimentos. Al finalizar cada uno, comenzárá el siguiente, y luego del último se presentará una encuesta. No hay respuestas correctas o incorrectas, siendo las mismas de carácter subjetivo.</p>
+  {{> agreement}}
+  <hr/>
+  <button type="button" id="start" class="btn btn-primary btn-lg">Continuar</button>
 </template>
 
 <template name="thanks">

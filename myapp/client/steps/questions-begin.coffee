@@ -17,11 +17,11 @@ class QuestionsBegin
 		results = {}
 		variables = ['name', 'age', 'email']
 		_.each(variables, (field) ->
-			results[field] = template.find("input[name=#{field}]").value
+			results[field] = template.find("input[id=#{field}]").value
 		)
 		variables = ['sex', 'studying', 'working']
 		_.each(variables, (field) ->
-			results[field] = template.find("select[name=#{field}]").value
+			results[field] = template.find("select[id=#{field}]").value
 		)
 
 		if (@alreadyDone results.email)
