@@ -1,35 +1,34 @@
 <template name="present_past_future">
-  <h1>Presente, pasado y futuro</h1>
-  <p>Dibujá tres círculos que representen el pasado, el presente y el futuro. Podés ubicarlos donde quieras en la región siguiente, y pueden tener distintos tamaños si así lo preferís. Elegí el color que quieras para cada uno (podés repetir). No hay respuestas correctas o incorrectas.</p>
+  <h1>Referencias temporales</h1>
+  <p>Dibujá tres círculos que representen las referencias temporales. Podés ubicarlos donde quieras en la región siguiente (aunque se superpongan). Pueden tener distintos tamaños y colores.</p>
   <div id="container" align="center"></div>
 </template>
 
 <template name="seasons_of_year">
   <h1>Estaciones del año</h1>
-  <p>Dibujá 4 rectángulos que representen las estaciones. Podés ubicarlos donde quieras dentro de la región siguiente, y pueden tener distintos tamaños si así lo preferís. Elegí el color que quieras para cada uno (podés repetir). No hay respuestas correctas o incorrectas.</p>
+  <p>Dibujá 4 rectángulos que representen las estaciones del año. Podés ubicarlos donde quieras, aunque se superpongan unos con otros. Pueden tener distintos tamaños y colores.</p>
   <div id="container" align="center"></div>
 </template>
 
 <template name="days_of_week">
   <h1>Días de la semana</h1>
-  <p>Dibujá 7 rectángulos que representen los días de la semana. Podés ubicarlos donde quieras dentro de la región siguiente, y pueden tener distintos tamaños si así lo preferís. Elegí el color que quieras para cada uno (podés repetir). No hay respuestas correctas o incorrectas.</p>
+  <p>Deberás ubicar 7 rectángulos que representan los días de la semana. Los mismos no pueden superponerse, y su ancho no puede ajustarse (sólo la altura). No hay restricciones sobre la elección de colores.</p>
   <div id="container" align="center"></div>
 </template>
 
 <template name="parts_of_day">
-  <h1>Mañana, tarde y noche</h1>
-  <p>El siguiente círculo representa el día, y la tarea consiste en dibujar 3 sectores para cada una de sus partes: mañana, tarde y noche. Se puede elegir cuánto abarca cada una, así como su color (los cuales pueden repetirse). También puede haber superposicion entre los sectores. No hay respuestas correctas o incorrectas.</p>
+  <h1>Partes del día</h1>
+  <p>El siguiente círculo representa un día completo, y la tarea consiste en marcar cada una de sus partes con sectores. Se puede elegir cuánto abarca cada una, y su posición, así como el color. También puede haber superposición entre los sectores.</p>
   <div id="container" align="center"></div>
 </template>
 
 <template name="timeline">
   <h1>Eventos en el tiempo</h1>
-  <p>Dibujá una línea e identificá en ella los siguientes eventos:</p>
+  <p>Primero elegí la orientación y longitud de la línea, y luego aparecerán los siguientes eventos (uno tras otro) para que los ubiques a lo largo de ella.</p>
   <ul style="column-count:3; -webkit-column-count:3; -moz-column-count:3; -ms-column-count:3; -o-column-count:3;">
     {{#each items}}
       <li>{{this}}</li>
     {{/each}}
   </ul>
-  <p>No hay respuestas correctas o incorrectas</p>
   <div id="container" align="center"></div>
 </template>

@@ -1,4 +1,5 @@
 <template name="questions_begining">
+  <h1>Preguntas iniciales</h1>
   <p>Antes de comenzar el experimento le pedimos por favor que complete los siguientes datos.
   No es necesario el nombre completo.</p>
   
@@ -9,7 +10,7 @@
     </div>
     
     <div class="form-group">
-      <label for="email">Email</label>
+      <label for="email">Email (opcional)</label>
       <input type="email" class="form-control" id="email" placeholder="Escriba su mail">
       <p class="bg-info">No vamos a utilizar esta dirección para mandarte ningún correo electrónico. El experimento es completamente anónimo, pedimos el email únicamente para saber quiénes ya lo realizaron.</p>
     </div>
@@ -53,23 +54,28 @@
 </template>
 
 <template name="questions_ending">
+  <h1>Preguntas finales</h1>
+  <p>Muchas gracias por participar en el experimento. Antes de que te vayas, te pedimos que respondas las siguientes preguntas.</p>
+
   <form id="myform">
-    <p>Si tuviera que definirse como un tipo de persona "matutina" o "nocturna", cómo se definiría?</p>
-    <p>
-      <select name="daynight">
+    <div class="form-group">
+      <label for="daynight">Me definiría como una persona...</label>
+      <select id="daynight" class="form-control">
+        <option disabled selected> -- elija una opción -- </option>
         <option value="5">Definitivamente matutina</option>
         <option value="4">Moderadamente matutina</option>
         <option value="3">Neutral</option>
         <option value="2">Moderadamente nocturna</option>
         <option value="1">Definitivamente nocturna</option>
       </select>
-    </p>
-    <p>
-      Comentarios<br/>
-      <textarea name="comments" style="width: 400px; height: 200px"></textarea>
-    </p>
-    <br/>
-    <input type="submit" id="submit"/><br/>
+    </div>
+
+    <div class="form-group">
+      <label for="comments">Comentarios</label>
+      <textarea id="comments" class="form-control" rows="15"></textarea>
+    </div>
+
+    <button type="submit" id="submit" class="btn btn-primary">Finalizar</button>
   </form>
 </template>
 

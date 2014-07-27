@@ -52,9 +52,12 @@ http://circles-experiment.meteor.com/
 
 ### TODO
 
-- Make it look better (try layout framework like boostrap or gumby)
-- Allow viewing results graphically (toDataURL)
+- Check that form fields are present
+- Use layout with navbar, title, etc
+- Replace "how forced" questions with bootstrap-slider in the same page as "questions_ending"
+- Add "touch*" events so it works on tablets
 
+- Allow viewing results graphically (toDataURL)
 - Add password or token to /reports
 - Restrict db access
 - Allow downloading (not the subject) as CSV or any tabulated format

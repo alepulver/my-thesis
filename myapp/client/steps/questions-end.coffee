@@ -15,8 +15,8 @@ class QuestionsEnd
     event.preventDefault()
 
     results = {}
-    results['daynight'] = template.find("select[name=daynight]").value
-    results['comments'] = template.find("textarea[name=comments]").value
+    results['daynight'] = template.find("select[id=daynight]").value
+    results['comments'] = template.find("textarea[id=comments]").value
     
     @workflow.stepFinished(results)
 
