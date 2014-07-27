@@ -1,5 +1,6 @@
 <head>
   <title>Experimentos sobre la representación del tiempo en el espacio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
@@ -15,12 +16,20 @@
 </template>
 
 <template name="introduction">
-  <h1>Experimentos sobre la representación del tiempo en el espacio</h1>
-  <p>A continuación se presentarán distintos experimentos. Al finalizar cada uno, comenzárá el siguiente, y luego del último se presentará una encuesta. No hay respuestas correctas o incorrectas, siendo las mismas de carácter subjetivo.</p>
-  {{> agreement}}
-  <h2>
-    <a href="#" id="start">CONTINUAR</a>
-  </h2>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
+        <h1>Experimentos sobre la representación del tiempo en el espacio</h1>
+        <p>A continuación se presentarán distintos experimentos. Al finalizar cada uno, comenzárá el siguiente, y luego del último se presentará una encuesta. No hay respuestas correctas o incorrectas, siendo las mismas de carácter subjetivo.</p>
+        {{> agreement}}
+        <h2>
+          <a href="#" id="start">CONTINUAR</a>
+        </h2>
+      </div>
+      <div class="col-md-1"></div>
+    </div>
+  </div>
 </template>
 
 <template name="thanks">

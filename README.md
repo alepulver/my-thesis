@@ -58,6 +58,7 @@ http://circles-experiment.meteor.com/
 - Add password or token to /reports
 - Restrict db access
 - Allow downloading (not the subject) as CSV or any tabulated format
+- Deploy to openshift for production
 
 #### Ideas
 
