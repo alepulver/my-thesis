@@ -27,9 +27,8 @@ class ChoosePanel
       			y: self.layer.getHeight()*p,
       			width: 100
 			})
-			button.on('mousedown', ->
-				self.itemStarted(key)
-			)
+			button.on('mousedown', -> self.itemStarted(key))
+			button.on('tap', ->	self.itemStarted(key))
 			data.button = button
 			self.layer.add button
 
@@ -90,6 +89,7 @@ class DrawingPanel
 			text: 'Aceptar'
 		})
 		@button.on('mousedown', -> self.acceptedShape())
+		@button.on('tap', -> self.acceptedShape())
 
 		@layer.add @button
 		@layer.add @current.group
@@ -124,6 +124,7 @@ class DrawingPanel
 			text: 'Finalizar'
 		})
 		@button.on('mousedown', -> self.finishClicked())
+		@button.on('tap', -> self.finishClicked())
 
 		@layer.add @button
 		@layer.draw()
@@ -190,6 +191,7 @@ class ColorsPanel
 				fill: color
 			})
 			rect.on('mousedown', -> self.notify(color))
+			rect.on('tap', -> self.notify(color))
 			rect.on('mouseover', ->
 				rect.setStroke('black')
 				rect.setStrokeWidth(3)

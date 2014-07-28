@@ -4,7 +4,7 @@
 
 Neuroscience experiments for my thesis project.
 
-There is a Python and a Javascript (web, both client and server) version.
+There is an old Python version, and the current one written in Javascript.
 
 ## Javascript version
 
@@ -53,7 +53,8 @@ http://circles-experiment.meteor.com/
 ### TODO
 
 - Replace "how forced" questions with bootstrap-slider in the same page as "questions_ending" (needs modernizr for tablets?)
-- Add "touch*" events so it works on tablets
+- Make anchors larger for tablets, show tooltip always (there is no "mouseover")
+- Fix canvas centering issue in tablets
 - Scale down canvas if screen space is too small, using setScale to avoid changing pixel values
 
 - Allow viewing results graphically (toDataURL)
