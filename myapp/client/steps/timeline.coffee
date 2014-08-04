@@ -13,10 +13,7 @@ class HandleTimelineCF
 		@state.start()
 
 	start: (@workflow) ->
-		@stage = new Kinetic.Stage({
-			container: 'container',
-			width: 800,	height: 800
-		})
+		@stage = Steps.createStage()
 		@layer = new Kinetic.Layer({
 			x: 0,
 			y: 0,
@@ -167,7 +164,7 @@ class HandleTimelineCF
 			x: 50,
 			y: 50,
 			width: 100,
-			text: 'Finalizar'
+			text: 'Continuar'
 		})
 		@button.on('mousedown', -> self.finishedShowingFinalPicture())
 		@layer.add @button

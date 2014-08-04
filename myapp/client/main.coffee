@@ -7,13 +7,12 @@ startMainApp = ->
 
 	steps = [
 		new Steps.Introduction(),
-		new Steps.QuestionsBegin(),
+		#new Steps.QuestionsBegin(),
 		Steps.presentPastFuture(),
-		Steps.seasonsOfYear(),
-		Steps.daysOfWeek(),
-		Steps.partsOfDay(),
-		Steps.timeline(),
-		new Steps.QuestionsHowForced(),
+		#Steps.seasonsOfYear(),
+		#Steps.daysOfWeek(),
+		#Steps.partsOfDay(),
+		#Steps.timeline(),
 		new Steps.QuestionsEnd()
 	]
 
@@ -51,6 +50,9 @@ class Workflow
 			@current_start_time = Steps.currentTime()
 
 			Template[@current_step.name].rendered = () ->
+				if ($('.navbar').height() > 60)
+					$('.navbar').hide()
+					$('body').css('padding-top', 0)
 				self.current_step.start(self)
 
 			Session.set("active_stage", @current_step.name)

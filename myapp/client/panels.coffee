@@ -121,7 +121,7 @@ class DrawingPanel
 			x: 50,
 			y: -100,
 			width: 100,
-			text: 'Finalizar'
+			text: 'Continuar'
 		})
 		@button.on('mousedown', -> self.finishClicked())
 		@button.on('tap', -> self.finishClicked())

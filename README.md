@@ -52,26 +52,27 @@ http://circles-experiment.meteor.com/
 
 ### TODO
 
-- Replace "how forced" questions with bootstrap-slider in the same page as "questions_ending" (needs modernizr for tablets?)
 - Restrict db access
 - Deploy to openshift for production
+- Move buttons and color bar outside canvas (easier and saves space)
 - Add message box responding to current mouse position outside canvas
 - Refactor widgets in a wrapper and decorator objects
 - Save when color changed and resized, moved as an event list with timestamps
 
 #### Admin panel
+
 - Allow viewing results graphically (toDataURL)
 - Add password or token to /reports
 - Allow downloading as CSV or any tabulated format
 - Maybe displaying online with d3/vega/etc
 
 #### Tablet / Mobile
+
 - Make anchors larger for tablets, show tooltip always (there is no "mouseover")
-- Fix canvas centering issue in (some) tablets
 - Scale down canvas if screen space is too small, using setScale to avoid changing pixel values
-- Make buttons and color bar horizontal to save space
 
 #### Ideas
+
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
 
 ### References

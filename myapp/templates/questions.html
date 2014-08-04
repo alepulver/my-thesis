@@ -54,10 +54,35 @@
 </template>
 
 <template name="questions_ending">
-  <h1>Preguntas finales</h1>
+  <h1>¡MUCHAS GRACIAS!</h1>
   <p>Muchas gracias por participar en el experimento. Antes de que te vayas, te pedimos que respondas las siguientes preguntas.</p>
 
   <form id="myform">
+    <div class="form-group">
+      <label>¿En tu vida cotidiana, sentís que representás (en alguna medida) el tiempo espacialmente?</label>
+      <select id="represents_time" name="represents_time" class="form-control">
+        <option disabled selected> -- elija una opción -- </option>
+        <option value="much">Mucho</option>
+        <option value="little">Poco</option>
+        <option value="nothing">Nada</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <p>En las tareas que terminaste de completar elegiste <b>COLORES</b>, <b>TAMAÑOS</b> y <b>UBICACIONES</b> para distintos eventos temporales.</p>
+      <label>¿Qué tan forzada te pareció la elección de cada una de las características?</label>
+      <div class="well">
+        {{#each items_forced}}
+          <label>{{name}}</label>
+          <p>
+            Fácil
+            <div class="slider" style="width: 200px;" id="slider-{{code}}"></div>
+            Difícil
+          </p>
+        {{/each}}
+      </div>
+    </div>
+
     <div class="form-group">
       <label for="daynight">Me definiría como una persona...</label>
       <select id="daynight" name="daynight" class="form-control">
@@ -72,16 +97,10 @@
 
     <div class="form-group">
       <label for="comments">Comentarios</label>
-      <textarea id="comments" name="comments" class="form-control" rows="10" placeholder="Algo que nos quieras contar..."></textarea>
+      <p>Algunas personas representan naturalmente el tiempo de alguna manera concreta en el espacio, y les resulta muy natural. Esto depende de cómo es cada uno. En este experimento intentamos entender alguna de ellas, pero al ser tan restringido puede ser que tengas alguna no contemplada en los casos mostrados. Te dejamos este espacio para que en ese caso puedas contarnos al respecto.</p>
+      <textarea id="comments" name="comments" class="form-control" rows="10" placeholder="..."></textarea>
     </div>
 
     <button type="submit" id="finish" class="btn btn-primary">Finalizar</button>
   </form>
-</template>
-
-<template name="questions_how_forced">
-  <h1>¡MUCHAS GRACIAS!</h1>
-  <p>En las tareas que acabas de completar elegiste <b>COLORES</b>, <b>TAMAÑOS</b> y <b>POSICIONES</b> para distintos eventos temporales.</p>
-  <p>¿Qué tan forzada te pareció la elección de cada una de las características?</p>
-  <div id="container"></div>
 </template>

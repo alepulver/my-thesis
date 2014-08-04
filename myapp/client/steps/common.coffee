@@ -120,11 +120,22 @@ class CFSStateFinish extends CFState
 		@handler.finish_selectExit()
 
 
-createPanels = (choices, colors, drawingPanelClass, createShape) ->
-	stage = new Kinetic.Stage({
+createStage = () ->
+	width = $('#main-content').width()
+	height = $(window).height() - 150
+	#size = Math.min(width, height)
+	# FIXME: need proportions instead of pixels to be used when drawing
+	size = 800
+
+	new Kinetic.Stage({
 		container: 'container',
-		width: 800,	height: 800
+		width: size, height: size,
+		scale: {x: size/800, y: size/800}
 	})
+
+
+createPanels = (choices, colors, drawingPanelClass, createShape) ->
+	stage = createStage()
 
 	choose_layer = new Kinetic.Layer({
 		x: 0,
@@ -193,4 +204,5 @@ _.merge(@Steps, {
 	colors
 	create_handler_default
 	currentTime
+	createStage
 })
