@@ -1,34 +1,75 @@
-<template name="present_past_future">
-  <h1>Referencias temporales</h1>
-  <p>Dibujá tres círculos que representen las referencias temporales. Podés ubicarlos donde quieras en la región siguiente (aunque se superpongan). Pueden tener distintos tamaños y colores.</p>
+<template name="canvas_experiment">
+  <h1>
+    {{> yield region="title"}}
+  </h1>
+  <div id="instructions">
+    {{> yield}}
+  </div>
+
+  <button type="button" id="start" class="btn btn-primary btn-lg">Comenzar</button>
+
+  <div id="finished" style="display:none">
+    <p>Ha terminado esta etapa del experimento, para pasar al siguiente presioná el botón <b>CONTINUAR</b>.</p>
+  </div>
+
   <div id="container"></div>
+</template>
+
+<template name="present_past_future">
+  {{#Layout template="canvas_experiment"}}
+    <p>Dibujá tres círculos que representen las referencias temporales. Podés ubicarlos donde quieras en la región siguiente (aunque se superpongan). Pueden tener distintos tamaños y colores.</p>
+
+    {{#contentFor region="title"}}
+      Referencias temporales
+    {{/contentFor}}
+  {{/Layout}}
 </template>
 
 <template name="seasons_of_year">
-  <h1>Estaciones del año</h1>
-  <p>Dibujá 4 rectángulos que representen las estaciones del año. Podés ubicarlos donde quieras, aunque se superpongan unos con otros. Pueden tener distintos tamaños y colores.</p>
-  <div id="container"></div>
+  {{#Layout template="canvas_experiment"}}
+    <p>Dibujá 4 rectángulos que representen las estaciones del año. Podés ubicarlos donde quieras, aunque se superpongan unos con otros. Pueden tener distintos tamaños y colores.</p>
+
+    {{#contentFor region="title"}}
+      Estaciones del año
+    {{/contentFor}}
+  {{/Layout}}
 </template>
 
 <template name="days_of_week">
-  <h1>Días de la semana</h1>
-  <p>Deberás ubicar 7 rectángulos que representan los días de la semana. Los mismos no pueden superponerse, y su ancho no puede ajustarse (sólo la altura). No hay restricciones sobre la elección de colores.</p>
-  <div id="container"></div>
+  {{#Layout template="canvas_experiment"}}
+    <p>Deberás ubicar 7 rectángulos que representan los días de la semana. Los mismos no pueden superponerse, y su ancho no puede ajustarse (sólo la altura). No hay restricciones sobre la elección de colores.</p>
+
+    {{#contentFor region="title"}}
+      Días de la semana
+    {{/contentFor}}
+  {{/Layout}}
 </template>
 
 <template name="parts_of_day">
-  <h1>Partes del día</h1>
-  <p>El siguiente círculo representa un día completo, y la tarea consiste en marcar cada una de sus partes con sectores. Se puede elegir cuánto abarca cada una, y su posición, así como el color. También puede haber superposición entre los sectores.</p>
-  <div id="container"></div>
+  {{#Layout template="canvas_experiment"}}
+    <p>El siguiente círculo representa un día completo, y la tarea consiste en marcar cada una de sus partes con sectores. Se puede elegir cuánto abarca cada una, y su posición, así como el color. También puede haber superposición entre los sectores.</p>
+
+    {{#contentFor region="title"}}
+      Partes del día
+    {{/contentFor}}
+  {{/Layout}}
 </template>
 
 <template name="timeline">
-  <h1>Eventos en el tiempo</h1>
-  <p>Primero elegí la orientación y longitud de la línea, y luego aparecerán los siguientes eventos (uno tras otro) para que los ubiques a lo largo de ella.</p>
-  <ul style="column-count:3; -webkit-column-count:3; -moz-column-count:3; -ms-column-count:3; -o-column-count:3;">
-    {{#each items}}
-      <li>{{this}}</li>
-    {{/each}}
-  </ul>
-  <div id="container"></div>
+  {{#Layout template="canvas_experiment"}}
+    <p>Primero elegí la orientación y longitud de la línea, y luego aparecerán los siguientes eventos (uno tras otro) para que los ubiques a lo largo de ella.</p>
+    <div id="selection_panel" style="display:none">
+      <div class="row">
+        {{#each items}}
+          <div class="col-md-3">
+            <button type="button" id="{{code}}" class="btn btn-primary">{{name}}</button>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+
+    {{#contentFor region="title"}}
+      Eventos en el tiempo
+    {{/contentFor}}
+  {{/Layout}}
 </template>

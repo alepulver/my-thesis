@@ -13,6 +13,16 @@ class HandleTimelineCF
 		@state.start()
 
 	start: (@workflow) ->
+		self = this
+		button = $('#start')
+		button.click(() ->
+			self.begin_click_time = Steps.currentTime()
+			button.hide()
+			$('#buttons_panel').show()
+			self.beginExperiment()
+		)
+
+	beginExperiment: ->
 		@stage = Steps.createStage()
 		@layer = new Kinetic.Layer({
 			x: 0,
@@ -33,6 +43,19 @@ class HandleTimelineCF
 			choices: @choices
 		}
 		this.askLineAdjustments()
+
+	finish: ->
+		if (@done)
+			return
+		@done = true
+		@workflow.stepFinished({
+			results: @results,
+			line: @result_line,
+			#color_order: @show_order.colors,
+			show_order: @show_order.choices,
+			stage_as_json: @stage.toJSON(),
+			begin_click_time: @begin_click_time
+		})
 
 	askLineAdjustments: ->
 		self = this
@@ -178,18 +201,6 @@ class HandleTimelineCF
 		@layer.draw()
 
 		this.finish()
-
-	finish: ->
-		if (@done)
-			return
-		@done = true
-		@workflow.stepFinished({
-			results: @results,
-			line: @result_line,
-			#color_order: @show_order.colors,
-			show_order: @show_order.choices,
-			stage_as_json: @stage.toJSON()
-		})
 
 
 timeline = () ->

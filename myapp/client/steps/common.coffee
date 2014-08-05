@@ -16,6 +16,15 @@ class HandleCF
 		@state.start()
 
 	start: (@workflow) ->
+		self = this
+		button = $('#start')
+		button.click(() ->
+			self.begin_click_time = currentTime()
+			button.hide()
+			self.beginExperiment()
+		)
+
+	beginExperiment: ->
 		@panels = @create_panels()
 		@epochs = @panels.choices
 		@results = {}
@@ -39,7 +48,8 @@ class HandleCF
 			show_order: @show_order.choices,
 			color_order: @show_order.colors,
 			selected_order: @selected_order,
-			stage_as_json: @panels.stage.toJSON()
+			stage_as_json: @panels.stage.toJSON(),
+			begin_click_time: @begin_click_time
 		})
 
 	choose_selectPeriod: (epoch) ->
@@ -115,6 +125,10 @@ class CFSStateFinish extends CFState
 		panels.choose.setNotifier(null)
 		panels.color.setNotifier(null)
 		panels.shapes.askFinish(-> handler.state.selectExit())
+
+		$('#instructions').hide()
+		$('#finished').show()
+		window.scrollTo(0,0)
 
 	selectExit: ->
 		@handler.finish_selectExit()

@@ -4,6 +4,15 @@ randBetween = (min, max) ->
 	Math.floor(Math.random() * (max - min + 1)) + min
 
 
+sign = (x) ->
+	if (x > 0)
+		1
+	else if (x < 0)
+		-1
+	else
+		0
+
+
 class Shape
 	width: ->
 		this.size().width
@@ -131,6 +140,12 @@ class InteractiveShape
 class SquareBoundedIS extends InteractiveShape
 	constructor: (@commonShape, @layer) ->
 		@anchorNames = ['topLeft', 'topRight', 'bottomLeft', 'bottomRight']
+		@anchorOpposites = {
+			'topLeft': 'bottomRight',
+			'topRight': 'bottomLeft',
+			'bottomLeft': 'topRight',
+			'bottomRight': 'topLeft'
+		}
 		@anchorMargin = {x: 20, y: 20}
 		self = this
 
@@ -195,7 +210,7 @@ class SquareBoundedIS extends InteractiveShape
 		Widgets.makeHoverable anchor, anchor
 		
 		anchor.dragBoundFunc((newPos) ->
-			self.anchorDragBound this.getAbsolutePosition(), newPos
+			self.anchorDragBound this.getAbsolutePosition(), newPos, this.name()
 		)
 		anchor.on('dragmove', ->
 			self.updateAllAnchors()
@@ -213,7 +228,8 @@ class SquareBoundedIS extends InteractiveShape
 		container = this.getContainer()
 		Widgets.constrainedPosUpdate shape, container, newPos
 
-	anchorDragBound: (oldPos, newPos) ->
+	anchorDragBound: (oldPos, newPos, name) ->
+		self = this
 		center = {
 			x: @group.getAbsolutePosition().x,
 			y: @group.getAbsolutePosition().y
@@ -222,20 +238,55 @@ class SquareBoundedIS extends InteractiveShape
 			x: Math.abs(newPos.x - center.x) - Math.abs(oldPos.x - center.x),
 			y: Math.abs(newPos.y - center.y) - Math.abs(oldPos.y - center.y)
 		}
+		signedDiff = {
+			x: sign((newPos.x - center.x) - (oldPos.x - center.x)),
+			y: sign((newPos.y - center.y) - (oldPos.y - center.y))
+		}
 		shape = {
-			x: @group.getAbsolutePosition().x,
-			y: @group.getAbsolutePosition().y,
-			width: @commonShape.width() + diff.x + @anchorMargin.x
-			height: @commonShape.height() + diff.y + @anchorMargin.y
+			x: @group.getAbsolutePosition().x + signedDiff.x/2,
+			y: @group.getAbsolutePosition().y + signedDiff.y/2,
+			width: @commonShape.width() + diff.x/2 + @anchorMargin.x
+			height: @commonShape.height() + diff.y/2 + @anchorMargin.y
 		}
 		container = this.getContainer()
 
 		fits = Widgets.boundingBoxFits shape, container
+
+		oldShape = shape = {
+			x: @group.getAbsolutePosition().x,
+			y: @group.getAbsolutePosition().y,
+			width: @commonShape.width() + @anchorMargin.x,
+			height: @commonShape.height() + @anchorMargin.y
+		}
+		oldBBox = Widgets.boundingBoxPositionsFor oldShape
+
 		if fits.all
+			oldSize = @commonShape.size()
 			@commonShape.setSize {
-				width: @commonShape.width() + diff.x,
-				height: @commonShape.height() + diff.y
+				width: @commonShape.width() + diff.x/2,
+				height: @commonShape.height() + diff.y/2
 			}
+			newSize = @commonShape.size()
+
+			newBBox = Widgets.boundingBoxPositionsFor {
+				x: @group.getAbsolutePosition().x,
+				y: @group.getAbsolutePosition().y,
+				width: newSize.width + @anchorMargin.x
+				height: newSize.height + @anchorMargin.y
+			}
+			oppositeCorner = self.anchorOpposites[name]
+			diffPos = {
+				x: oldBBox[oppositeCorner].x - newBBox[oppositeCorner].x,
+				y: oldBBox[oppositeCorner].y - newBBox[oppositeCorner].y
+			}
+
+			###
+			diffSize = {
+				x: signedDiff.x * Math.abs(newSize.width - oldSize.width)/2,
+				y: signedDiff.y * Math.abs(newSize.height - oldSize.height)/2
+			}
+			###
+			self.group.move(diffPos)
 			newPos
 		else
 			oldPos
