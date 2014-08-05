@@ -580,8 +580,9 @@ class LineInLayerIS extends InteractiveShape
 		oldPolar = cartesianToPolar(oldVector)
 		diffAngle = newPolar.angle - oldPolar.angle
 
+		length = Math.max(newPolar.length, 100)
 		@group.rotate(diffAngle)
-		@shape.points([-newPolar.length, 0, newPolar.length, 0])
+		@shape.points([-length, 0, length, 0])
 
 		newPos
 
