@@ -11,7 +11,7 @@ class QuestionsEnd
     @choices = {
       size: 'Tamaño',
       position: 'Ubicación',
-      cololr: 'Color'
+      color: 'Color'
     }
     @questions = _.shuffle(_.keys(@choices))
     Template.questions_ending.items_forced = () ->

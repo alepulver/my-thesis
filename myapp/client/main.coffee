@@ -34,12 +34,12 @@ class Workflow
 	start: ->
 		@local_id = ReactiveStore.get("local_id")
 		@current_index = -1
-		@results = {}
-		@results['start_time'] = Steps.currentTime()
+		@results = []
 		this.nextStep()
 
 	finish: ->
-		@results['finish_time'] = Steps.currentTime()
+		#HTTP.call("POST", "http://api.twitter.com/xyz",
+		#	{data: @results}, (error, result) -> true)
 		@finishNotifier(@results)
 
 	preStart: ->
@@ -63,14 +63,16 @@ class Workflow
 	stepFinished: (results) ->
 		end_time = Steps.currentTime()
 
-		Results.insert({
+		step_results = {
 			participant: Session.get("current_user"),
 			stage: @current_step.name,
 			start_time: @current_start_time,
 			end_time: end_time,
 			local_id: @local_id,
 			results: results
-		})
+		}
+		Results.insert(step_results)
+		@results.push(step_results)
 
 		if @current_index >= _.size(@steps)-1
 			this.finish()
