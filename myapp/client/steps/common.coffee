@@ -23,6 +23,8 @@ class HandleCF
 			button.hide()
 			self.beginExperiment()
 		)
+		# XXX: just to fill space so that screen elements don't resize later
+		Steps.createStage()
 
 	beginExperiment: ->
 		@panels = @create_panels()
@@ -128,7 +130,7 @@ class CFSStateFinish extends CFState
 
 		$('#instructions').hide()
 		$('#finished').show()
-		window.scrollTo(0,0)
+		#window.scrollTo(0,0)
 
 	selectExit: ->
 		@handler.finish_selectExit()

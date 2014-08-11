@@ -42,6 +42,8 @@ class HandleTimelineCF
 				self.askToPositionEvent key
 			)
 		)
+		# XXX: just to fill space so that screen elements don't resize later
+		Steps.createStage()
 
 	beginExperiment: ->
 		#$('#start').hide()
@@ -227,7 +229,7 @@ class HandleTimelineCF
 
 		$('#instructions').hide()
 		$('#finished').show()
-		window.scrollTo(0,0)
+		#window.scrollTo(0,0)
 
 	finishedShowingFinalPicture: ->
 		# XXX: avoid error when mouseout arrives later

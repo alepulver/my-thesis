@@ -32,7 +32,7 @@ class QuestionsBegin
 				age:
 					validators:
 						notEmpty:
-							message: 'Por favor ingresá su edad'
+							message: 'Por favor ingresá tu edad'
 				sex:
 					validators:
 						callback: notSelected
