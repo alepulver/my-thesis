@@ -292,13 +292,30 @@ class SquareBoundedIS extends InteractiveShape
 			oldPos
 
 	fixState: ->
+		self = this
+
+		###
 		shape = @commonShape.shape
 		shape.remove()
 		@group.remove()
 		shape.setPosition(@group.getPosition())
+		#shape.draggable(true)
 		@layer.add shape
 		@layer.draw()
+		###
 
+		this.unselect()
+
+		this
+
+	unselect: ->
+		_.forEach(@anchorNames, (name) ->
+			anchor = self.group.find(".#{name}")[0]
+			anchor.visible(false)
+		)
+		@group.draggable(false)
+
+	results: ->
 		data = {
 			position: @group.getPosition(),
 		}
@@ -480,12 +497,27 @@ class RadialSectorIS extends InteractiveShape
 		@layer.draw()
 
 	fixState: ->
-		@shape.remove()
-		@group.remove()
-		@shape.setPosition(@group.getPosition())
-		@layer.add @shape
-		@layer.draw()
+		self = this
+		#@shape.remove()
+		#@group.remove()
+		#@shape.setPosition(@group.getPosition())
+		#@layer.add @shape
+		#@layer.draw()
+		
+		_.forEach(["angleOne", "angleTwo"], (name) ->
+			anchor = self.group.find(".#{name}")[0]
+			anchor.visible(false)
+		)
 
+		this
+
+	unselect: ->
+		_.forEach(@anchorNames, (name) ->
+			anchor = self.group.find(".#{name}")[0]
+			anchor.visible(false)
+		)
+
+	results: ->
 		{
 			rotation: @shape.rotation(),
 			angle: @shape.angle(),

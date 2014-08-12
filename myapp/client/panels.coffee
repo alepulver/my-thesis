@@ -27,8 +27,7 @@ class ChoosePanel
       			y: self.layer.getHeight()*p,
       			width: 100
 			})
-			button.on('mousedown', -> self.itemStarted(key))
-			button.on('tap', ->	self.itemStarted(key))
+			button.on('mousedown tap', -> self.itemStarted(key))
 			data.button = button
 			self.layer.add button
 
@@ -75,6 +74,15 @@ class DrawingPanel
 		@current = null
 		@shapes = []
 
+	###
+	selectItem: (@name, tooltip) ->
+		if (_.has(@shapes, @name))
+			@addShape @name, tooltip
+		else
+			@current = @shapes[@name]
+
+	###
+
 	addShape: (@name, tooltip) ->
 		self = this
 	
@@ -88,8 +96,7 @@ class DrawingPanel
 			width: 100,
 			text: 'Aceptar'
 		})
-		@button.on('mousedown', -> self.acceptedShape())
-		@button.on('tap', -> self.acceptedShape())
+		@button.on('mousedown tap', -> self.acceptedShape())
 
 		@layer.add @button
 		@layer.add @current.group
@@ -106,6 +113,19 @@ class DrawingPanel
 		result = @current.fixState()
 		@notifier(@name, result) # if @notifier != null
 
+	###
+	askAccept: ->
+		@button = Widgets.createButton({
+			x: 450,
+			y: -100,
+			width: 100,
+			text: 'Aceptar'
+		})
+		@button.on('mousedown tap', -> self.acceptedShape())
+
+		@layer.add @button		
+	###
+
 	setColor: (color) ->
 		@current.setColor color
 		@layer.draw()
@@ -116,6 +136,10 @@ class DrawingPanel
 
 	askFinish: (@end_notifier) ->
 		self = this
+
+		_.forEach(@shapes, (x) ->
+			x.unselect()
+		)
 		
 		@button = Widgets.createButton({
 			x: 50,
@@ -123,8 +147,7 @@ class DrawingPanel
 			width: 100,
 			text: 'Continuar'
 		})
-		@button.on('mousedown', -> self.finishClicked())
-		@button.on('tap', -> self.finishClicked())
+		@button.on('mousedown tap', -> self.finishClicked())
 
 		@layer.add @button
 		@layer.draw()
@@ -190,8 +213,7 @@ class ColorsPanel
 				width: 30, height: 30,
 				fill: color
 			})
-			rect.on('mousedown', -> self.notify(color))
-			rect.on('tap', -> self.notify(color))
+			rect.on('mousedown tap', -> self.notify(color))
 			rect.on('mouseover', ->
 				rect.setStroke('black')
 				rect.setStrokeWidth(3)

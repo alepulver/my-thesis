@@ -30,11 +30,13 @@ class HandleCF
 		@panels = @create_panels()
 		@epochs = @panels.choices
 		@results = {}
+		@results_old = {}
 		@show_order = {
 			colors: @panels.color.colors,
 			choices: @panels.choose.keys
 		}
 		@selected_order = []
+		@shapes = []
 		this.next()
 
 	next: ->
@@ -42,9 +44,13 @@ class HandleCF
 		@state.start()
 
 	finish: ->
+		self = this
 		if (@done)
 			return
 		@done = true
+		_.forEach(_.keys(@shapes), (name) ->
+			_.merge(self.results[name], self.shapes[name].results())
+		)
 		@workflow.stepFinished({
 			results: @results,
 			show_order: @show_order.choices,
@@ -66,8 +72,11 @@ class HandleCF
 
 	modify_acceptCurrent: (name, data) ->
 		@current_result['end_time'] = currentTime()
-		_.merge(@current_result, data)
+		#_.merge(@current_result, data)
+		@shapes[name] = data
 		@results[name] = @current_result
+
+		@results_old[name] = data.results()
 		
 		if @panels.choose.remaining > 0
 			this.next()
