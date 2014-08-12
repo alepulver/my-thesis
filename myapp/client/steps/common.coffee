@@ -53,6 +53,7 @@ class HandleCF
 		)
 		@workflow.stepFinished({
 			results: @results,
+			results_old: @results_old,
 			show_order: @show_order.choices,
 			color_order: @show_order.colors,
 			selected_order: @selected_order,

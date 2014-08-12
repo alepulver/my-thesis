@@ -304,11 +304,16 @@ class SquareBoundedIS extends InteractiveShape
 		@layer.draw()
 		###
 
-		this.unselect()
+		self = this
+		_.forEach(@anchorNames, (name) ->
+			anchor = self.group.find(".#{name}")[0]
+			anchor.visible(false)
+		)
 
 		this
 
 	unselect: ->
+		self = this
 		_.forEach(@anchorNames, (name) ->
 			anchor = self.group.find(".#{name}")[0]
 			anchor.visible(false)
@@ -512,6 +517,7 @@ class RadialSectorIS extends InteractiveShape
 		this
 
 	unselect: ->
+		self = this
 		_.forEach(@anchorNames, (name) ->
 			anchor = self.group.find(".#{name}")[0]
 			anchor.visible(false)

@@ -165,26 +165,28 @@ class DrawingPanel
 class DrawingPanelNoOverlap extends DrawingPanel
 	noIntersections: ->
 		self = this
-		rectOne = {
-			x: @current.commonShape.shape.getAbsolutePosition().x,
-			y: @current.commonShape.shape.getAbsolutePosition().y,
-			width: @current.commonShape.width(),
-			height: @current.commonShape.height()
-		}
+
+		rectForShape = (thing) ->
+			cs = thing.commonShape
+			{
+				x: cs.shape.getAbsolutePosition().x,
+				y: cs.shape.getAbsolutePosition().y,
+				width: cs.width(),
+				height: cs.height()
+			}
 
 		haveToExit = false
-		_.forEach(@shapes, (shape) ->
-			if (shape != self.current)
-				rectTwo = {
-					x: shape.commonShape.shape.getAbsolutePosition().x,
-					y: shape.commonShape.shape.getAbsolutePosition().y,
-					width: shape.commonShape.width(),
-					height: shape.commonShape.height()
-				}
-				if (Widgets.rectCollision rectOne, rectTwo)
-					# XXX: return binds locally
-					haveToExit = true
-					return
+		_.forEach(self.shapes, (shapeOne) ->
+			rectOne = rectForShape shapeOne
+
+			_.forEach(self.shapes, (shapeTwo) ->
+				if (shapeOne != shapeTwo)
+					rectTwo = rectForShape shapeTwo
+					if (Widgets.rectCollision rectOne, rectTwo)
+						# XXX: return binds locally
+						haveToExit = true
+						return
+			)
 		)
 		!haveToExit
 

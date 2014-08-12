@@ -7,9 +7,9 @@ startMainApp = ->
 
 	steps = [
 		new Steps.Introduction(),
-		new Steps.QuestionsBegin(),
-		Steps.presentPastFuture(),
-		Steps.seasonsOfYear(),
+		#new Steps.QuestionsBegin(),
+		#Steps.presentPastFuture(),
+		#Steps.seasonsOfYear(),
 		Steps.daysOfWeek(),
 		Steps.partsOfDay(),
 		Steps.timeline(),
