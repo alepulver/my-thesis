@@ -169,6 +169,7 @@ class DrawingPanelNoOverlap extends DrawingPanel
 		rectForShape = (thing) ->
 			cs = thing.commonShape
 			{
+				# try group instead of shape
 				x: cs.shape.getAbsolutePosition().x,
 				y: cs.shape.getAbsolutePosition().y,
 				width: cs.width(),

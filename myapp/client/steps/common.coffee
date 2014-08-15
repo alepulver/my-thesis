@@ -1,7 +1,8 @@
 _ = lodash
 
 currentTime = () ->
-	(new Date()).getTime()
+	now = new Date()
+	now.getTime()
 
 
 colors = ['black', 'yellow', 'saddlebrown', 'darkviolet', 'grey', 'red', 'green', 'blue']
@@ -27,123 +28,40 @@ class HandleCF
 		Steps.createStage()
 
 	beginExperiment: ->
-		@panels = @create_panels()
-		@epochs = @panels.choices
-		@results = {}
-		@results_old = {}
-		@show_order = {
-			colors: @panels.color.colors,
-			choices: @panels.choose.keys
-		}
-		@selected_order = []
-		@shapes = []
-		this.next()
-
-	next: ->
-		@state = new CFStateChoose this
-		@state.start()
+		self = this
+		@panels = @create_panels(self)
+		@panels.color.show()
+		@panels.choose.show()
+		@panels.shapes.show()
 
 	finish: ->
-		self = this
+		# XXX: avoid double entry in case template events collide
 		if (@done)
 			return
 		@done = true
-		_.forEach(_.keys(@shapes), (name) ->
-			_.merge(self.results[name], self.shapes[name].results())
-		)
+
 		@workflow.stepFinished({
-			results: @results,
-			results_old: @results_old,
-			show_order: @show_order.choices,
-			color_order: @show_order.colors,
-			selected_order: @selected_order,
+			colors: @panels.color.results(),
+			choose: @paners.choose.results(),
+			shapes: @panels.shapes.results(),
 			stage_as_json: @panels.stage.toJSON(),
 			begin_click_time: @begin_click_time
 		})
 
-	choose_selectPeriod: (epoch) ->
-		@current_result = {
-			start_time: currentTime()
-		}
-		@selected_order.push(epoch)
+	itemAdded: (item) ->
+		@panels.shapes.addShape item
 
-		@panels.shapes.addShape(epoch, @epochs[epoch])
-		@state = new CFStateModify this
-		@state.start()
-
-	modify_acceptCurrent: (name, data) ->
-		@current_result['end_time'] = currentTime()
-		#_.merge(@current_result, data)
-		@shapes[name] = data
-		@results[name] = @current_result
-
-		@results_old[name] = data.results()
-		
-		if @panels.choose.remaining > 0
-			this.next()
-		else
-			@state = new CFSStateFinish this
-			@state.start()
-
-	modify_changeColor: (color) ->
+	colorSelected: (color) ->
 		@panels.shapes.setColor color
 		@panels.choose.colorSelected color
 
-	finish_selectExit: ->
-		this.finish()
-
-
-class CFState
-	constructor: (@handler) ->
-		# do nothing
-
-
-class CFStateChoose extends CFState
-	start: ->
-		panels = @handler.panels
-		handler = @handler
-		
-		panels.choose.setNotifier(
-			(epoch) -> handler.state.selectPeriod epoch)
-		panels.color.setNotifier(null)
-		panels.shapes.setNotifier(null)
-
-	selectPeriod: (epoch) ->
-		@handler.choose_selectPeriod epoch
-
-
-class CFStateModify extends CFState
-	start: ->
-		panels = @handler.panels
-		handler = @handler
-
-		panels.choose.setNotifier(null)
-		panels.color.setNotifier((x) -> handler.state.changeColor x)
-		panels.shapes.setNotifier(
-			(name, data) -> handler.state.acceptCurrent(name, data))
-
-	changeColor: (color) ->
-		@handler.modify_changeColor color
-	
-	acceptCurrent: (name, data) ->
-		@handler.modify_acceptCurrent name, data
-
-
-class CFSStateFinish extends CFState
-	start: ->
-		panels = @handler.panels
-		handler = @handler
-
-		panels.choose.setNotifier(null)
-		panels.color.setNotifier(null)
-		panels.shapes.askFinish(-> handler.state.selectExit())
-
+	drawingAccepted: ->
 		$('#instructions').hide()
 		$('#finished').show()
 		#window.scrollTo(0,0)
 
-	selectExit: ->
-		@handler.finish_selectExit()
+	continuePressed: ->
+		@finish()
 
 
 createStage = () ->
