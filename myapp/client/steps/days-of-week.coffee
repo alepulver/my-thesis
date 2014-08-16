@@ -20,15 +20,15 @@ daysOfWeek = () ->
 		sunday: "Domingo"
 	}
 
-	create_shape = (layer) ->
+	create_shape = (item, panel) ->
 		shape = new Widgets.FilledRect()
-		interactive_shape = new Widgets.SquareBoundedIS(shape, layer)
+		interactive_shape = new Widgets.SquareBoundedIS(shape, item, panel)
 		interactive_shape
 	
-	create_panels = create_handler_default(choices, create_shape)
+	panels = Steps.createPanels(choices, Steps.colors, Panels.Drawing, create_shape)
+	
+	new Steps.HandleControlFlow("days_of_week", panels)
 
-	step = new Steps.HandleControlFlow(create_panels, "days_of_week")
-	step
 
 @Steps ?= {}
 _.merge(@Steps, {

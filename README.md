@@ -52,12 +52,13 @@ http://circles-experiment.meteor.com/
 
 ### TODO
 
+- Refactor widgets in a wrapper and decorator objects
+- Save when color changed and resized, moved as an event list with timestamps
+
 - Restrict db access
 - Deploy to openshift for production
 - Move buttons and color bar outside canvas (easier and saves space)
 - Add message box responding to current mouse position outside canvas
-- Refactor widgets in a wrapper and decorator objects
-- Save when color changed and resized, moved as an event list with timestamps
 
 #### Admin panel
 

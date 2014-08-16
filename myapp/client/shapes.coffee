@@ -138,7 +138,8 @@ class InteractiveShape
 	#
 
 class SquareBoundedIS extends InteractiveShape
-	constructor: (@commonShape, @layer) ->
+	constructor: (@commonShape, @item, @panel) ->
+		@layer = @panel.layer
 		@anchorNames = ['topLeft', 'topRight', 'bottomLeft', 'bottomRight']
 		@anchorOpposites = {
 			'topLeft': 'bottomRight',
@@ -170,6 +171,9 @@ class SquareBoundedIS extends InteractiveShape
 		_.forEach(@anchorNames, (name) -> self.addAnchor name)
 
 		this.updateAllAnchors()
+
+		@addTooltip(@item.description)
+		@panel.layer.add @group
 
 	addTooltip: (name) ->
 		Widgets.addTooltip @commonShape.shape, name
@@ -291,34 +295,24 @@ class SquareBoundedIS extends InteractiveShape
 		else
 			oldPos
 
-	fixState: ->
-		self = this
-
-		###
-		shape = @commonShape.shape
-		shape.remove()
-		@group.remove()
-		shape.setPosition(@group.getPosition())
-		#shape.draggable(true)
-		@layer.add shape
-		@layer.draw()
-		###
-
-		self = this
-		_.forEach(@anchorNames, (name) ->
-			anchor = self.group.find(".#{name}")[0]
-			anchor.visible(false)
-		)
-
-		this
+	select: ->
+		@selectState(true)
 
 	unselect: ->
 		self = this
+		@selectState(false)
+		@group.on('mousedown tap', ->
+			self.panel.selectItem self.item
+			self.group.off('mousedown tap')
+		)
+
+	selectState: (state) ->
+		self = this
 		_.forEach(@anchorNames, (name) ->
 			anchor = self.group.find(".#{name}")[0]
-			anchor.visible(false)
+			anchor.visible(state)
 		)
-		@group.draggable(false)
+		@group.draggable(state)
 
 	results: ->
 		data = {

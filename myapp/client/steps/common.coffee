@@ -9,30 +9,26 @@ colors = ['black', 'yellow', 'saddlebrown', 'darkviolet', 'grey', 'red', 'green'
 
 
 class HandleCF
-	constructor: (@create_panels, @name) ->
+	constructor: (@name, @panels) ->
 		@done = false
-
-	changeState: (stateClass) ->
-		@state = new stateClass this
-		@state.start()
 
 	start: (@workflow) ->
 		self = this
-		button = $('#start')
-		button.click(() ->
+
+		# XXX: fill space now so that screen elements don't resize later
+		@stage = Steps.createStage()
+
+		$('#start').click(() ->
 			self.begin_click_time = currentTime()
-			button.hide()
+			$('#start').hide()
 			self.beginExperiment()
 		)
-		# XXX: just to fill space so that screen elements don't resize later
-		Steps.createStage()
 
 	beginExperiment: ->
-		self = this
-		@panels = @create_panels(self)
-		@panels.color.show()
-		@panels.choose.show()
-		@panels.shapes.show()
+		@panels.color.start(this)
+		@panels.choose.start(this)
+		@panels.drawing.start(this)
+		@stage.draw()
 
 	finish: ->
 		# XXX: avoid double entry in case template events collide
@@ -42,23 +38,30 @@ class HandleCF
 
 		@workflow.stepFinished({
 			colors: @panels.color.results(),
-			choose: @paners.choose.results(),
-			shapes: @panels.shapes.results(),
-			stage_as_json: @panels.stage.toJSON(),
-			begin_click_time: @begin_click_time
+			choose: @panels.choose.results(),
+			drawing: @panels.drawing.results(),
+			stage_as_json: @stage.toJSON(),
+			begin_click_time: @begin_click_time,
+			accept_click_time: @accept_click_time
 		})
 
 	itemAdded: (item) ->
-		@panels.shapes.addShape item
+		@panels.drawing.addItem item
 
 	colorSelected: (color) ->
-		@panels.shapes.setColor color
+		@panels.drawing.setColor color
 		@panels.choose.colorSelected color
 
 	drawingAccepted: ->
+		@accept_click_time = currentTime()
+		self = this
 		$('#instructions').hide()
 		$('#finished').show()
 		#window.scrollTo(0,0)
+		@panels.choose.hide()
+		@panels.color.hide()
+		@panels.drawing.freeze()
+		$('#next').click(-> self.continuePressed())
 
 	continuePressed: ->
 		@finish()
@@ -79,66 +82,41 @@ createStage = () ->
 
 
 createPanels = (choices, colors, drawingPanelClass, createShape) ->
-	stage = createStage()
-
-	choose_layer = new Kinetic.Layer({
-		x: 0,
-		y: 0,
-		width: 400,
-		height: 200
-	})
-	choose_panel = new Panels.Choose(choices, choose_layer)
-	stage.add(choose_layer)
-
-	color_layer = new Kinetic.Layer({
-		x: 400,
-		y: 0,
-		width: 400,
-		height: 200
-	})
-
-	colors = _.shuffle(colors)
-	color_menu = new Panels.Colors(colors, color_layer)
-	stage.add(color_layer)
-
-	shapes_layer = new Kinetic.Layer({
-		x: 0,
-		y: 200,
-		width: 800,
-		height: 500
-	})
-	shapes_panel = new drawingPanelClass(shapes_layer, createShape)
-	stage.add(shapes_layer)
-
-	text_layer = new Kinetic.Layer({
-		x: 0,
-		y: 200,
-		width: 800,
-		height: 100
-	})
-	text_canvas = new Panels.Text(text_layer)
-	#stage.add(text_layer)
-
-	stage.draw()
+	layout = new Layout()
+	choose = new Panels.Choose(choices, layout)
+	color = new Panels.Colors(colors, layout)
+	drawing = new drawingPanelClass(createShape, layout)
 
 	{
-		choose: choose_panel,
-		color: color_menu,
-		shapes: shapes_panel,
-		text: text_canvas,
-		choices: choices,
-		stage: stage
+		choose
+		color
+		drawing
 	}
 
 
-create_handler_default = (choices, create_shape) ->
-	() ->
-		panels = Steps.createPanels choices, Steps.colors, Panels.Drawing, create_shape
-		
-		layer = panels.shapes.layer
-		Widgets.addBorder layer
-
-		panels
+class Layout
+	constructor: ->
+		@data =
+			choose:
+				x: 0
+				y: 0
+				width: 400
+				height: 200
+			color:
+				x: 400
+				y: 0
+				width: 400
+				height: 200
+			drawing:
+				x: 0
+				y: 200
+				width: 800
+				height: 500
+			text:
+				x: 0
+				y: 200
+				width: 800
+				height: 100
 
 
 @Steps ?= {}
@@ -146,7 +124,6 @@ _.merge(@Steps, {
 	HandleControlFlow: HandleCF
 	createPanels
 	colors
-	create_handler_default
 	currentTime
 	createStage
 })
