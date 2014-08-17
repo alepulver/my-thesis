@@ -53,18 +53,10 @@ class HandleCF
 		@panels.choose.colorSelected color
 
 	drawingAccepted: ->
-		@accept_click_time = currentTime()
-		self = this
-		$('#instructions').hide()
-		$('#finished').show()
-		#window.scrollTo(0,0)
-		@panels.choose.hide()
-		@panels.color.hide()
-		@panels.drawing.freeze()
-		$('#next').click(-> self.continuePressed())
-
-	continuePressed: ->
-		@finish()
+		if (@panels.drawing.arrangementValid())
+			@accept_click_time = currentTime()
+			self = this
+			@finish()
 
 
 createStage = () ->

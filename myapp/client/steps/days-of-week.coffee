@@ -25,7 +25,7 @@ daysOfWeek = () ->
 		interactive_shape = new Widgets.SquareBoundedIS(shape, item, panel)
 		interactive_shape
 	
-	panels = Steps.createPanels(choices, Steps.colors, Panels.Drawing, create_shape)
+	panels = Steps.createPanels(choices, Steps.colors, Panels.DrawingNoOverlap, create_shape)
 	
 	new Steps.HandleControlFlow("days_of_week", panels)
 

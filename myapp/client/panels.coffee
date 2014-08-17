@@ -92,11 +92,13 @@ class ChoosePanel extends Panel
 		@layer.draw()
 
 	finishClicked: ->
+		###
 		# XXX: avoid error when mouseout arrives later
 		@button.off('mouseover')
 		@button.off('mouseout')
 		@button.remove()
 		@layer.draw()
+		###
 
 		@handler.drawingAccepted()
 
@@ -157,6 +159,9 @@ class DrawingPanel extends Panel
 			shapes: data
 		}
 
+	arrangementValid: ->
+		true
+
 
 class DrawingPanelNoOverlap extends DrawingPanel
 	noIntersections: ->
@@ -165,9 +170,8 @@ class DrawingPanelNoOverlap extends DrawingPanel
 		rectForShape = (thing) ->
 			cs = thing.commonShape
 			{
-				# try group instead of shape
-				x: cs.shape.getAbsolutePosition().x,
-				y: cs.shape.getAbsolutePosition().y,
+				x: thing.group.getAbsolutePosition().x,
+				y: thing.group.getAbsolutePosition().y,
 				width: cs.width(),
 				height: cs.height()
 			}
@@ -187,12 +191,12 @@ class DrawingPanelNoOverlap extends DrawingPanel
 		)
 		!haveToExit
 
-
-	acceptedShape: ->
+	arrangementValid: ->
 		if (this.noIntersections())
-			super()
+			true
 		else
 			alert("Las figuras no pueden superponerse, por favor ubícala en otro lugar")
+			false
 
 
 class ColorsPanel extends Panel
