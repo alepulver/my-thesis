@@ -52,13 +52,17 @@ http://circles-experiment.meteor.com/
 
 ### TODO
 
-- Refactor widgets in a wrapper and decorator objects
-- Save when color changed and resized, moved as an event list with timestamps
+- Save when moved and resized, and if possible all positions between with timestamps
+- Allow directly dragging shapes (automatic selection and move to top when dragstart)
+- Allow moving events in timeline
 
 - Restrict db access
 - Deploy to openshift for production
-- Move buttons and color bar outside canvas (easier and saves space)
-- Add message box responding to current mouse position outside canvas
+
+#### Tablet / Mobile
+
+- Make anchors larger for tablets, show tooltip always (there is no "mouseover")
+- Scale down canvas if screen space is too small, using setScale to avoid changing pixel values; if it doesn't work just use percentage for dimensions
 
 #### Admin panel
 
@@ -67,13 +71,11 @@ http://circles-experiment.meteor.com/
 - Allow downloading as CSV or any tabulated format
 - Maybe displaying online with d3/vega/etc
 
-#### Tablet / Mobile
-
-- Make anchors larger for tablets, show tooltip always (there is no "mouseover")
-- Scale down canvas if screen space is too small, using setScale to avoid changing pixel values
-
 #### Ideas
 
+- Move buttons and color bar outside canvas (easier and saves space)
+- Add message box responding to current mouse position outside canvas
+- Refactor widgets in a wrapper and decorator objects
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
 
 ### References

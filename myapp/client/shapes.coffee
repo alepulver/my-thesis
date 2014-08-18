@@ -1,17 +1,5 @@
 _ = lodash
 
-randBetween = (min, max) ->
-	Math.floor(Math.random() * (max - min + 1)) + min
-
-
-sign = (x) ->
-	if (x > 0)
-		1
-	else if (x < 0)
-		-1
-	else
-		0
-
 
 class Shape
 	width: ->
@@ -156,8 +144,8 @@ class SquareBoundedIS extends InteractiveShape
 		}
 
 		@group = new Kinetic.Group({
-			x: @layer.width()/2 + randBetween(-posMax.x, posMax.x),
-			y: @layer.height()/2 + randBetween(-posMax.y, posMax.y),
+			x: @layer.width()/2 + Tools.randBetween(-posMax.x, posMax.x),
+			y: @layer.height()/2 + Tools.randBetween(-posMax.y, posMax.y),
 			draggable: true
 		})
 
@@ -176,7 +164,7 @@ class SquareBoundedIS extends InteractiveShape
 		@panel.layer.add @group
 
 	addTooltip: (name) ->
-		Widgets.addTooltip @commonShape.shape, name
+		Tools.addTooltip @commonShape.shape, name
 
 	getContainer: ->
 		{
@@ -194,7 +182,7 @@ class SquareBoundedIS extends InteractiveShape
 			width: @commonShape.width() + @anchorMargin.x,
 			height: @commonShape.height() + @anchorMargin.y
 		}			
-		newPositions = Widgets.boundingBoxPositionsFor shape
+		newPositions = Tools.boundingBoxPositionsFor shape
 
 		_.forEach(@anchorNames, (name) ->
 			pos = newPositions[name]
@@ -211,7 +199,7 @@ class SquareBoundedIS extends InteractiveShape
 			name: name,
 			draggable: true
 		})
-		Widgets.makeHoverable anchor, anchor
+		Tools.makeHoverable anchor, anchor
 		
 		anchor.dragBoundFunc((newPos) ->
 			self.anchorDragBound this.getAbsolutePosition(), newPos, this.name()
@@ -230,7 +218,7 @@ class SquareBoundedIS extends InteractiveShape
 			height: @commonShape.height() + @anchorMargin.y
 		}
 		container = this.getContainer()
-		Widgets.constrainedPosUpdate shape, container, newPos
+		Tools.constrainedPosUpdate shape, container, newPos
 
 	anchorDragBound: (oldPos, newPos, name) ->
 		self = this
@@ -243,8 +231,8 @@ class SquareBoundedIS extends InteractiveShape
 			y: Math.abs(newPos.y - center.y) - Math.abs(oldPos.y - center.y)
 		}
 		signedDiff = {
-			x: sign((newPos.x - center.x) - (oldPos.x - center.x)),
-			y: sign((newPos.y - center.y) - (oldPos.y - center.y))
+			x: Tools.sign((newPos.x - center.x) - (oldPos.x - center.x)),
+			y: Tools.sign((newPos.y - center.y) - (oldPos.y - center.y))
 		}
 		shape = {
 			x: @group.getAbsolutePosition().x + signedDiff.x/2,
@@ -254,7 +242,7 @@ class SquareBoundedIS extends InteractiveShape
 		}
 		container = this.getContainer()
 
-		fits = Widgets.boundingBoxFits shape, container
+		fits = Tools.boundingBoxFits shape, container
 
 		oldShape = shape = {
 			x: @group.getAbsolutePosition().x,
@@ -262,7 +250,7 @@ class SquareBoundedIS extends InteractiveShape
 			width: @commonShape.width() + @anchorMargin.x,
 			height: @commonShape.height() + @anchorMargin.y
 		}
-		oldBBox = Widgets.boundingBoxPositionsFor oldShape
+		oldBBox = Tools.boundingBoxPositionsFor oldShape
 
 		if fits.all
 			oldSize = @commonShape.size()
@@ -272,7 +260,7 @@ class SquareBoundedIS extends InteractiveShape
 			}
 			newSize = @commonShape.size()
 
-			newBBox = Widgets.boundingBoxPositionsFor {
+			newBBox = Tools.boundingBoxPositionsFor {
 				x: @group.getAbsolutePosition().x,
 				y: @group.getAbsolutePosition().y,
 				width: newSize.width + @anchorMargin.x
@@ -325,52 +313,9 @@ class SquareBoundedIS extends InteractiveShape
 		@commonShape.setColor color
 
 
-degreesInRange = (degrees) ->
-	# XXX: KineticJS angles can be negative
-	while (degrees < 0)
-		degrees += 360
-	while (degrees >= 360)
-		degrees -= 360
-	degrees
-
-
-angleDifference = (one, two) ->
-	diffAngle = two - one
-	while (diffAngle < -180)
-		diffAngle += 360
-	while (diffAngle > 180)
-		diffAngle -= 360
-	diffAngle
-
-
-degreesToRadians = (degrees) ->
-	degrees = degreesInRange degrees
-
-	(degrees / 360) * 2*Math.PI
-
-
-radiansToDegrees = (radians) ->
-	result = (radians / (2*Math.PI)) * 360
-	degreesInRange result
-
-
-cartesianToPolar = (coords) ->
-	{
-		angle: radiansToDegrees(Math.atan2(coords.y, coords.x)),
-		length: Math.sqrt(Math.pow(coords.x, 2) + Math.pow(coords.y, 2))
-	}
-
-
-polarToCartesian = (coords) ->
-	angle = degreesToRadians(coords.angle)
-	{
-		x: coords.length * Math.cos(angle),
-		y: coords.length * Math.sin(angle)
-	}
-
-
 class RadialSectorIS extends InteractiveShape
-	constructor: (@shape, @layer, @length) ->
+	constructor: (@shape, @item, @panel, @length) ->
+		@layer = @panel.layer
 		@anchors = {}
 		@anchorAngleDist = @length * 0.8
 		@anchorRotateDist = @length * 0.5
@@ -390,6 +335,9 @@ class RadialSectorIS extends InteractiveShape
 
 		this.updateAllAnchors()
 
+		@addTooltip(@item.description)
+		@panel.layer.add @group
+
 	addTooltip: (name) ->
 		self = this
 
@@ -398,13 +346,13 @@ class RadialSectorIS extends InteractiveShape
 				angle: shape.rotation() + shape.angle()/2,
 				length: self.length * 1.25
 			}
-			offset = polarToCartesian(vector)
+			offset = Tools.polarToCartesian(vector)
 			{
 				x: shape.x() + offset.x,
 				y: shape.y() + offset.y
 			}
 
-		Widgets.addTooltip @shape, name, positionFunc
+		Tools.addTooltip @shape, name, positionFunc
 
 	addAnchor: (name, dragBoundFunc) ->
 		self = this
@@ -416,7 +364,7 @@ class RadialSectorIS extends InteractiveShape
 			name: name,
 			draggable: true
 		})
-		Widgets.makeHoverable anchor, anchor
+		Tools.makeHoverable anchor, anchor
 		
 		anchor.dragBoundFunc((newPos) ->
 			self[dragBoundFunc] this.getAbsolutePosition(), newPos, this
@@ -437,17 +385,17 @@ class RadialSectorIS extends InteractiveShape
 			x: oldPos.x - center.x,
 			y: oldPos.y - center.y
 		}
-		newPolar = cartesianToPolar(newVector)
-		oldPolar = cartesianToPolar(oldVector)
-		diffAngle = angleDifference oldPolar.angle, newPolar.angle
+		newPolar = Tools.cartesianToPolar(newVector)
+		oldPolar = Tools.cartesianToPolar(oldVector)
+		diffAngle = Tools.angleDifference oldPolar.angle, newPolar.angle
 
 		if (obj.name() == "angleOne")
 			otherAngle = @shape.rotation() + @shape.angle()
 		else
 			otherAngle = @shape.rotation()
 
-		da = angleDifference(oldPolar.angle, otherAngle)
-		db = angleDifference(newPolar.angle, otherAngle)
+		da = Tools.angleDifference(oldPolar.angle, otherAngle)
+		db = Tools.angleDifference(newPolar.angle, otherAngle)
 
 		if (Math.abs(da) < 90 && da * db < 0)
 			return oldPos
@@ -460,7 +408,7 @@ class RadialSectorIS extends InteractiveShape
 		else
 			@shape.angle(@shape.angle() + diffAngle)
 
-		tmp = polarToCartesian({angle: newPolar.angle, length: @anchorAngleDist})
+		tmp = Tools.polarToCartesian({angle: newPolar.angle, length: @anchorAngleDist})
 		{x: tmp.x + center.x, y: tmp.y + center.y}
 
 	anchorRotateDragBound: (oldPos, newPos, obj) ->
@@ -469,9 +417,9 @@ class RadialSectorIS extends InteractiveShape
 			x: newPos.x - center.x,
 			y: newPos.y - center.y
 		}
-		polar = cartesianToPolar(vector)
+		polar = Tools.cartesianToPolar(vector)
 		@shape.rotation(polar.angle - @shape.angle()/2)
-		tmp = polarToCartesian({angle: polar.angle, length: @anchorRotateDist})
+		tmp = Tools.polarToCartesian({angle: polar.angle, length: @anchorRotateDist})
 		{x: tmp.x + center.x, y: tmp.y + center.y}
 
 	updateAllAnchors: ->
@@ -479,43 +427,40 @@ class RadialSectorIS extends InteractiveShape
 			angle: @shape.rotation() + @shape.angle()/2,
 			length: @anchorRotateDist
 		}
-		@anchors['rotation'].setPosition(polarToCartesian(pos))
+		@anchors['rotation'].setPosition(Tools.polarToCartesian(pos))
 
 		pos = {
 			angle: @shape.rotation(),
 			length: @anchorAngleDist
 		}
-		@anchors['angleOne'].setPosition(polarToCartesian(pos))
+		@anchors['angleOne'].setPosition(Tools.polarToCartesian(pos))
 		
 		pos = {
 			angle: @shape.rotation() + @shape.angle(),
 			length: @anchorAngleDist
 		}
-		@anchors['angleTwo'].setPosition(polarToCartesian(pos))
+		@anchors['angleTwo'].setPosition(Tools.polarToCartesian(pos))
 		
 		@layer.draw()
 
-	fixState: ->
-		self = this
-		#@shape.remove()
-		#@group.remove()
-		#@shape.setPosition(@group.getPosition())
-		#@layer.add @shape
-		#@layer.draw()
-		
-		_.forEach(["angleOne", "angleTwo"], (name) ->
-			anchor = self.group.find(".#{name}")[0]
-			anchor.visible(false)
-		)
-
-		this
+	select: ->
+		@selectState(true)
 
 	unselect: ->
 		self = this
-		_.forEach(@anchorNames, (name) ->
-			anchor = self.group.find(".#{name}")[0]
-			anchor.visible(false)
+		@selectState(false)
+		@group.on('mousedown tap', ->
+			self.panel.selectItem self.item
+			self.group.off('mousedown tap')
 		)
+
+	selectState: (state) ->
+		self = this
+		_.forEach(['rotation', 'angleOne', 'angleTwo'], (name) ->
+			anchor = self.group.find(".#{name}")[0]
+			anchor.visible(state)
+		)
+		@group.draggable(state)
 
 	results: ->
 		{
@@ -528,15 +473,6 @@ class RadialSectorIS extends InteractiveShape
 		@shape.fill color
 		# XXX: for tooltip, which takes color from "stroke"
 		@shape.stroke color
-
-
-constrainBetween = (x, min, max) ->
-	if (x < min)
-		min
-	else if (x > max)
-		max
-	else
-		x
 
 
 class LineInLayerIS extends InteractiveShape
@@ -572,7 +508,7 @@ class LineInLayerIS extends InteractiveShape
 		this.updateAllAnchors()
 
 	addTooltip: (name) ->
-		Widgets.addTooltip @shape, name
+		Tools.addTooltip @shape, name
 
 	addAnchor: (name, dragBoundFunc) ->
 		self = this
@@ -584,7 +520,7 @@ class LineInLayerIS extends InteractiveShape
 			name: name,
 			draggable: true
 		})
-		Widgets.makeHoverable anchor, anchor
+		Tools.makeHoverable anchor, anchor
 		
 		anchor.dragBoundFunc((newPos) ->
 			self.anchorDragBound this.getAbsolutePosition(), newPos, this
@@ -605,11 +541,11 @@ class LineInLayerIS extends InteractiveShape
 			x: oldPos.x - center.x,
 			y: oldPos.y - center.y
 		}
-		newVector.x = constrainBetween(newVector.x, -@box.width()/2, @box.width()/2)
-		newVector.y = constrainBetween(newVector.y, -@box.height()/2, @box.height()/2)
-		newPolar = cartesianToPolar(newVector)
+		newVector.x = Tools.constrainBetween(newVector.x, -@box.width()/2, @box.width()/2)
+		newVector.y = Tools.constrainBetween(newVector.y, -@box.height()/2, @box.height()/2)
+		newPolar = Tools.cartesianToPolar(newVector)
 		#newPolar.length = Math.min(newPolar.length, @max_length)
-		oldPolar = cartesianToPolar(oldVector)
+		oldPolar = Tools.cartesianToPolar(oldVector)
 		diffAngle = newPolar.angle - oldPolar.angle
 
 		length = Math.max(newPolar.length, 100)
@@ -623,13 +559,13 @@ class LineInLayerIS extends InteractiveShape
 			angle: 0,
 			length: @shape.points()[2]
 		}
-		@anchors['one'].setPosition(polarToCartesian(pos))
+		@anchors['one'].setPosition(Tools.polarToCartesian(pos))
 
 		pos = {
 			angle: 180,
 			length: @shape.points()[2]
 		}
-		@anchors['two'].setPosition(polarToCartesian(pos))
+		@anchors['two'].setPosition(Tools.polarToCartesian(pos))
 
 		@layer.draw()
 
@@ -644,6 +580,81 @@ class LineInLayerIS extends InteractiveShape
 		}
 
 
+class EventInTimelineIS extends InteractiveShape
+	constructor: (@layer) ->
+		group = new Kinetic.Group({
+		})
+		bar = new Kinetic.Rect({
+			x: 0, y: -15,
+			width: 5,
+			height: 30,
+			fill: 'red'
+		})
+		rightSide = (Math.random() < 0.5)
+		text = new Kinetic.Text({
+			text: @choices[name],
+			fontSize: 15,
+			fontFamily: 'Calibri',
+			fill: '#555',
+			width: 200,
+			align: if (rightSide) then 'left' else 'right'
+		})
+
+		transform = text.getTransform()
+		rotation = Widgets.degreesInRange @line.group.rotation()
+		invert = if (rotation > 0 && rotation < 180) then -1 else 1
+		transform.rotate(Widgets.degreesToRadians(90*invert))
+		if (rightSide)
+			transform.translate(30, 0)
+		else
+			transform.translate(-30-text.width(), 0)
+		transform.translate(0, -10)
+
+		group.add bar
+		group.add text
+		@current = group
+
+		@line.group.add @current
+		@correct = false
+		@layer.draw()
+
+		@background.moveToTop()
+		@background.on('mousemove', ->
+			stage = this.getStage()
+			pos = stage.getPointerPosition()
+
+			center = self.line.group.getAbsolutePosition()
+			vector = {
+				x: pos.x - center.x,
+				y: pos.y - center.y
+			}
+			polarVector = Widgets.cartesianToPolar vector
+			projection = Widgets.polarToCartesian({
+				angle: polarVector.angle - self.line.group.rotation(),
+				length: polarVector.length
+			}).x
+			###
+			inRange = (x) ->
+				dist = self.line.shape.points()[2]
+				(-dist < projection and dist > projection)
+			###
+			inRange = (x) -> true
+			dist = self.line.shape.points()[2]
+			projection = Widgets.constrainBetween(projection, -dist, dist)
+
+			if (inRange(projection))
+				self.correct = true
+				self.current.x(projection)
+				self.layer.draw()
+			else
+				self.correct = false
+		)
+		@background.on('mousedown', ->
+			if (self.correct)
+				self.finishedPositioningEvent()
+		)
+
+
 @Widgets ?= {}
 _.merge(@Widgets, {
 	Circle
@@ -652,10 +663,4 @@ _.merge(@Widgets, {
 	SquareBoundedIS
 	RadialSectorIS
 	LineInLayerIS
-	cartesianToPolar
-	polarToCartesian
-	degreesToRadians
-	radiansToDegrees
-	degreesInRange
-	constrainBetween
 })

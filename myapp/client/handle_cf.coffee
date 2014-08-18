@@ -1,9 +1,5 @@
 _ = lodash
 
-currentTime = () ->
-	now = new Date()
-	now.getTime()
-
 
 colors = ['black', 'yellow', 'saddlebrown', 'darkviolet', 'grey', 'red', 'green', 'blue']
 
@@ -16,10 +12,10 @@ class HandleCF
 		self = this
 
 		# XXX: fill space now so that screen elements don't resize later
-		@stage = Steps.createStage()
+		@stage = createStage()
 
 		$('#start').click(() ->
-			self.begin_click_time = currentTime()
+			self.begin_click_time = Tools.currentTime()
 			$('#start').hide()
 			self.beginExperiment()
 		)
@@ -47,14 +43,67 @@ class HandleCF
 
 	itemAdded: (item) ->
 		@panels.drawing.addItem item
+		@current_item = item
+
+	itemSelected: (item) ->
+		@current_item = item
 
 	colorSelected: (color) ->
-		@panels.drawing.setColor color
-		@panels.choose.colorSelected color
+		@panels.drawing.setColor @current_item, color
+		@panels.choose.colorSelected @current_item, color
 
 	drawingAccepted: ->
 		if (@panels.drawing.arrangementValid())
-			@accept_click_time = currentTime()
+			@accept_click_time = Tools.currentTime()
+			self = this
+			@finish()
+
+
+class HandleTimelineCF
+	constructor: (@name, @panels) ->
+		@done = false
+
+	start: (@workflow) ->
+		self = this
+
+		# XXX: fill space now so that screen elements don't resize later
+		@stage = createStage()
+
+		$('#start').click(() ->
+			self.begin_click_time = Tools.currentTime()
+			$('#start').hide()
+			self.beginExperiment()
+		)
+
+	beginExperiment: ->
+		@panels.choose.start(this)
+		@panels.timeline.start(this)
+		@stage.draw()
+
+	finish: ->
+		# XXX: avoid double entry in case template events collide
+		if (@done)
+			return
+		@done = true
+
+		@workflow.stepFinished({
+			timeline: @panels.timeline.results(),
+			drawing: @panels.drawing.results(),
+			stage_as_json: @stage.toJSON(),
+			begin_click_time: @begin_click_time,
+			accept_click_time: @accept_click_time
+		})
+
+	timelineAccepted: ->
+		@panels.timeline.hide()
+		@panels.drawing.start(this)
+
+	itemAdded: (item) ->
+		@panels.drawing.addItem item
+
+	drawingAccepted: ->
+		if (@panels.drawing.arrangementValid())
+			@accept_click_time = Tools.currentTime()
 			self = this
 			@finish()
 
@@ -114,8 +163,7 @@ class Layout
 @Steps ?= {}
 _.merge(@Steps, {
 	HandleControlFlow: HandleCF
+	HandleTimelineControlFlow: HandleTimelineCF
 	createPanels
 	colors
-	currentTime
-	createStage
 })

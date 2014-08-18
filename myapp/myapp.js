@@ -1,3 +1,11 @@
+assert = function(condition, message) {
+  if (!condition) {
+    str = message || "Assertion failed";
+    console.log(str);
+    throw str;
+  }
+};
+
 Results = new Meteor.Collection("results");
 
 Router.map(function() {

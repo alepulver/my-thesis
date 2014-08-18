@@ -10,7 +10,7 @@ partsOfDay = () ->
 		night: "Noche",
 	}
 
-	create_shape = (layer) ->
+	create_shape = (item, panel) ->
 		shape = new Kinetic.Wedge({
 			x: 0, y: 0,
 			radius: 200, angle: randBetween(30, 80),
@@ -18,13 +18,11 @@ partsOfDay = () ->
 			rotation: randBetween(0, 360),
 			opacity: 0.85
 		})
-		interactive_shape = new Widgets.RadialSectorIS(shape, layer, 200)
+		interactive_shape = new Widgets.RadialSectorIS(shape, item, panel, 200)
 		interactive_shape
 
-	create_panels = () ->
-		panels = Steps.createPanels choices, Steps.colors, Panels.Drawing, create_shape
-		
-		layer = panels.shapes.layer
+	add_circle = (panel) ->
+		layer = panel.layer
 		circle = new Kinetic.Circle({
 			x: layer.width()/2, y: layer.height()/2,
 			radius: 200,
@@ -33,10 +31,11 @@ partsOfDay = () ->
 		})
 		layer.add circle
 
-		panels
+	panels = Steps.createPanels(choices, Steps.colors, Panels.Drawing, create_shape)
+	add_circle panels.drawing
+	
+	new Steps.HandleControlFlow("parts_of_day", panels)
 
-	step = new Steps.HandleControlFlow(create_panels, "parts_of_day")
-	step
 
 @Steps ?= {}
 _.merge(@Steps, {

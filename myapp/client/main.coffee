@@ -10,8 +10,8 @@ startMainApp = ->
 		#new Steps.QuestionsBegin(),
 		#Steps.presentPastFuture(),
 		#Steps.seasonsOfYear(),
-		#Steps.daysOfWeek(),
-		Steps.partsOfDay(),
+		Steps.daysOfWeek(),
+		#Steps.partsOfDay(),
 		Steps.timeline(),
 		#new Steps.QuestionsEnd()
 	]
@@ -52,7 +52,7 @@ class Workflow
 			@current_index++
 			assert(@current_index < _.size(@steps), "Workflow: nextStep index")
 			@current_step = @steps[@current_index]
-			@current_start_time = Steps.currentTime()
+			@current_start_time = Tools.currentTime()
 
 			Template[@current_step.name].rendered = () ->
 				self.preStart()
@@ -61,7 +61,7 @@ class Workflow
 			Session.set("active_stage", @current_step.name)
 
 	stepFinished: (results) ->
-		end_time = Steps.currentTime()
+		end_time = Tools.currentTime()
 
 		step_results = {
 			participant: Session.get("current_user"),

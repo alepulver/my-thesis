@@ -36,90 +36,6 @@ createButton = (parameters) ->
 	group
 
 
-class inputSlider
-	constructor: (@group, @text) ->
-		commonText = (moreParams) ->
-			localParams = {
-				fontSize: 20, fontFamily: 'Calibri',
-				fill: '#555',
-				width: 200,
-				align: 'center'
-			}
-			params = _.merge({}, localParams, moreParams)
-			new Kinetic.Text(params)
-
-		line = new Kinetic.Line({
-			points: [0, 0, 500, 0],
-			offsetX: 250,
-			stroke: 'black', strokeWidth: 2
-		})
-		@background = new Kinetic.Rect({
-			x: 0, y: 0,
-			width: 540,	height: 30,
-			offsetX: 270, offsetY: 15,
-			fill: 'transparent'
-		})
-		textLeft = commonText({
-			text: 'Nada forzado',
-			x: -250-100, y: 20
-		})
-		textRight = commonText({
-			text: 'Muy forzado',
-			x: 250-100, y: 20
-		})
-		textTop = commonText({
-			text: text,
-			fontSize: 25,
-			fill: '#555',
-			offsetX: 100,
-			x: 0, y: -60
-		})
-		@bar = new Kinetic.Rect({
-			x: 0, y: 0,
-			width: 6, height: 30,
-			offsetX: 3, offsetY: 15,
-			fill: 'grey'
-		})
-		@group.add line
-		@group.add textLeft
-		@group.add textRight
-		@group.add textTop
-		@group.add @bar
-		@group.add @background
-
-	enable: (@notifier) ->
-		self = this
-		@bar.fill('brown')
-		@bar.getLayer().draw()
-		@background.on('mousemove', ->
-			stage = this.getStage()
-			pos = stage.getPointerPosition()
-
-			center = self.group.getAbsolutePosition()
-			vector = {
-				x: pos.x - center.x,
-				y: pos.y - center.y
-			}
-			self.bar.x(Widgets.constrainBetween(vector.x, -250, 250))
-			self.group.getLayer().draw()
-		)
-		@background.on('mousedown', ->
-			self.clickHandler()
-		)
-
-	clickHandler: ->
-		# XXX: avoid error when mouseout arrives later
-		@background.off('mousemove')
-		@background.off('mousedown')
-
-		@bar.fill('black')
-		@bar.getLayer().draw()
-
-		value = (@bar.x()+250)/500
-		console.log(value)
-		@notifier value
-
-
 addBorder = (layer) ->
 	###
 	border = new Kinetic.Line({
@@ -258,15 +174,95 @@ makeHoverable = (group, shape) ->
 	)
 
 
-@Widgets ?= {}
-_.merge(@Widgets, {
-	createButton: createButton
-	inputSlider: inputSlider
-	addBorder: addBorder
-	addTooltip: addTooltip
-	boundingBoxPositionsFor: boundingBoxPositionsFor
-	boundingBoxFits: boundingBoxFits
-	constrainedPosUpdate: constrainedPosUpdate
-	makeHoverable: makeHoverable
-	rectCollision: rectCollision
+constrainBetween = (x, min, max) ->
+	if (x < min)
+		min
+	else if (x > max)
+		max
+	else
+		x
+
+
+degreesInRange = (degrees) ->
+	# XXX: KineticJS angles can be negative
+	while (degrees < 0)
+		degrees += 360
+	while (degrees >= 360)
+		degrees -= 360
+	degrees
+
+
+angleDifference = (one, two) ->
+	diffAngle = two - one
+	while (diffAngle < -180)
+		diffAngle += 360
+	while (diffAngle > 180)
+		diffAngle -= 360
+	diffAngle
+
+
+degreesToRadians = (degrees) ->
+	degrees = degreesInRange degrees
+
+	(degrees / 360) * 2*Math.PI
+
+
+radiansToDegrees = (radians) ->
+	result = (radians / (2*Math.PI)) * 360
+	degreesInRange result
+
+
+cartesianToPolar = (coords) ->
+	{
+		angle: radiansToDegrees(Math.atan2(coords.y, coords.x)),
+		length: Math.sqrt(Math.pow(coords.x, 2) + Math.pow(coords.y, 2))
+	}
+
+
+polarToCartesian = (coords) ->
+	angle = degreesToRadians(coords.angle)
+	{
+		x: coords.length * Math.cos(angle),
+		y: coords.length * Math.sin(angle)
+	}
+
+
+randBetween = (min, max) ->
+	Math.floor(Math.random() * (max - min + 1)) + min
+
+
+sign = (x) ->
+	if (x > 0)
+		1
+	else if (x < 0)
+		-1
+	else
+		0
+
+
+currentTime = () ->
+	now = new Date()
+	now.getTime()
+
+
+@Tools ?= {}
+_.merge(@Tools, {
+	createButton
+	addBorder
+	addTooltip
+	boundingBoxPositionsFor
+	boundingBoxFits
+	constrainedPosUpdate
+	makeHoverable
+	rectCollision
+	constrainBetween
+	degreesInRange
+	angleDifference
+	degreesToRadians
+	radiansToDegrees
+	cartesianToPolar
+	polarToCartesian
+	randBetween
+	sign
+	currentTime
 })
