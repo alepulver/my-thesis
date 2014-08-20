@@ -117,7 +117,7 @@ class DrawingPanel extends Panel
 		@events = []
 
 	addItem: (item) ->
-		@events.push({time: Tools.currentTime(), type: 'add', arg: item.name})
+		time = Tools.currentTime()
 
 		if (@current != null)
 			@current.unselect()
@@ -125,6 +125,8 @@ class DrawingPanel extends Panel
 		@current = @createShape(item, this)
 		@shapes[item.name] = @current
 		@layer.draw()
+
+		@events.push({time: time, type: 'add', arg: item.name, data: @current.results()})
 
 		@current
 

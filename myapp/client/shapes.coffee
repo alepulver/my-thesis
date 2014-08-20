@@ -601,12 +601,13 @@ class EventInTimelineIS extends InteractiveShape
 		@group = new Kinetic.Group({
 			draggable: true
 		})
+		@group.x(Tools.randBetween(-@line.shape.points()[2], @line.shape.points()[2]))
 		@group.on('dragmove', ->
 			time = Tools.currentTime()
 			position = self.group.x() / self.line.shape.points()[2]
 			self.panel.dragItem(self.item, {position: position, time: time})
 		)
-		bar = new Kinetic.Rect({
+		@bar = new Kinetic.Rect({
 			x: 0, y: -15,
 			width: 5,
 			height: 30,
@@ -632,7 +633,7 @@ class EventInTimelineIS extends InteractiveShape
 			transform.translate(-30-text.width(), 0)
 		transform.translate(0, -10)
 
-		@group.add bar
+		@group.add @bar
 		@group.add text
 		@group.dragBoundFunc((newPos) ->
 			self.dragBoundFunc this.getAbsolutePosition(), newPos, this
@@ -661,11 +662,16 @@ class EventInTimelineIS extends InteractiveShape
 		#self.layer.draw()
 		@group.getAbsolutePosition()
 
-	unselect: ->
-		#
-
 	select: ->
-		#
+		@bar.fill('red')
+
+	unselect: ->
+		self = this
+		@bar.fill('black')
+		@group.on('dragstart.select click.select tap.select', ->
+			self.panel.selectItem self.item
+			self.group.off('.select')
+		)
 
 	results: ->
 		{

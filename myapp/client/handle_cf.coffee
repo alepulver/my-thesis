@@ -88,6 +88,9 @@ class HandleTimelineCF
 	itemAdded: (item) ->
 		@panels.drawing.addItem item
 
+	itemSelected: (item) ->
+		#
+
 	drawingAccepted: ->
 		if (@panels.drawing.arrangementValid())
 			@accept_click_time = Tools.currentTime()
