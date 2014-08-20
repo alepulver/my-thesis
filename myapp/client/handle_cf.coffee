@@ -79,20 +79,6 @@ class HandleTimelineCF
 		@panels.timeline.start(this)
 		@stage.draw()
 
-	finish: ->
-		# XXX: avoid double entry in case template events collide
-		if (@done)
-			return
-		@done = true
-
-		@workflow.stepFinished({
-			timeline: @panels.timeline.results(),
-			drawing: @panels.drawing.results(),
-			stage_as_json: @stage.toJSON(),
-			begin_click_time: @begin_click_time,
-			accept_click_time: @accept_click_time
-		})
-
 	timelineAccepted: ->
 		#@panels.timeline.hide()
 		@panels.drawing.start(this)
@@ -107,6 +93,21 @@ class HandleTimelineCF
 			@accept_click_time = Tools.currentTime()
 			self = this
 			@finish()
+
+	finish: ->
+		# XXX: avoid double entry in case template events collide
+		if (@done)
+			return
+		@done = true
+
+		@workflow.stepFinished({
+			choose: @panels.choose.results(),
+			timeline: @panels.timeline.results(),
+			drawing: @panels.drawing.results(),
+			stage_as_json: @stage.toJSON(),
+			begin_click_time: @begin_click_time,
+			accept_click_time: @accept_click_time
+		})
 
 
 createStage = () ->

@@ -532,7 +532,14 @@ class LineInLayerIS extends InteractiveShape
 			self.anchorDragBound this.getAbsolutePosition(), newPos, this
 		)
 		anchor.on('dragmove', ->
+			time = Tools.currentTime()
 			self.updateAllAnchors()
+			
+			self.panel.changeLine({
+				length: self.shape.points()[2] * 2,
+				time: time,
+				orientation: self.group.rotation()
+			})
 		)
 		@anchors[name] = anchor
 		@group.add anchor
@@ -594,6 +601,11 @@ class EventInTimelineIS extends InteractiveShape
 		@group = new Kinetic.Group({
 			draggable: true
 		})
+		@group.on('dragmove', ->
+			time = Tools.currentTime()
+			position = self.group.x() / self.line.shape.points()[2]
+			self.panel.dragItem(self.item, {position: position, time: time})
+		)
 		bar = new Kinetic.Rect({
 			x: 0, y: -15,
 			width: 5,

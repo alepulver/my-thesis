@@ -149,6 +149,9 @@ class DrawingPanel extends Panel
 		@events.push({type: 'resize', arg: item.name, data: data})
 
 	setColor: (item, color) ->
+		if (@current == null)
+			return
+
 		@current.setColor color
 		@layer.draw()
 
@@ -277,6 +280,9 @@ class TimelinePanel extends Panel
 		@layer.add @line.group
 		@layer.add @button
 		@layer.draw()
+
+	changeLine: (element) ->
+		@events.push element
 
 	finishedLineAdjustments: ->
 		#@end_time = Tools.currentTime()

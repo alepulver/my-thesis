@@ -6,7 +6,8 @@ assert = function(condition, message) {
   }
 };
 
-Results = new Meteor.Collection("results");
+Results = new Meteor.Collection("Results");
+//CompleteResults = new Meteor.Collection("CompleteResults");
 
 Router.map(function() {
   this.route('experiments', {path: '/'});

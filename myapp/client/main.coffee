@@ -7,13 +7,13 @@ startMainApp = ->
 
 	steps = [
 		new Steps.Introduction(),
-		#new Steps.QuestionsBegin(),
-		#Steps.presentPastFuture(),
-		#Steps.seasonsOfYear(),
-		#Steps.daysOfWeek(),
-		#Steps.partsOfDay(),
+		new Steps.QuestionsBegin(),
+		Steps.presentPastFuture(),
+		Steps.seasonsOfYear(),
+		Steps.daysOfWeek(),
+		Steps.partsOfDay(),
 		Steps.timeline(),
-		#new Steps.QuestionsEnd()
+		new Steps.QuestionsEnd()
 	]
 
 	workflow = new Workflow(steps, finishedMainApp)
@@ -22,6 +22,7 @@ startMainApp = ->
 
 finishedMainApp = (results) ->
 	Session.set("active_stage", "thanks")
+	Results.insert({complete: true, results: results})
 
 
 @startMainApp = startMainApp
