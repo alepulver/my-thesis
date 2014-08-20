@@ -22,7 +22,7 @@ startMainApp = ->
 
 finishedMainApp = (results) ->
 	Session.set("active_stage", "thanks")
-	Results.insert({complete: true, results: results})
+	#Results.insert({complete: true, results: results})
 
 
 @startMainApp = startMainApp

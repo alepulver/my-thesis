@@ -24,7 +24,7 @@ class QuestionsBegin
 				name:
 					validators:
 						notEmpty:
-							message: 'Por favor ingresá su nombre, no es necesario el apellido'
+							message: 'Por favor ingresá tu nombre, no es necesario el apellido'
 				email:
 					validators:
 						emailAddress:
@@ -57,10 +57,14 @@ class QuestionsBegin
 			results[field] = template.find("select[id=#{field}]").value
 		)
 
+		###
 		if (@alreadyDone results.email)
 			Session.set("active_stage", "already_completed")
 		else
 			@workflow.stepFinished(results)
+		###
+
+		@workflow.stepFinished(results)
 
 	alreadyDone: (email) ->
 		if (email == "")
