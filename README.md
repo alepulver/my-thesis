@@ -52,10 +52,7 @@ http://circles-experiment.meteor.com/
 
 ### TODO
 
-- Save when moved and resized, and if possible all positions between with timestamps
-- Allow directly dragging shapes (automatic selection and move to top when dragstart)
-- Allow moving events in timeline
-
+- Use millisecond timestamps in Tools.currentTime
 - Restrict db access
 - Deploy to openshift for production
 

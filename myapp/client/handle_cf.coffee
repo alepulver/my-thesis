@@ -76,7 +76,6 @@ class HandleTimelineCF
 		)
 
 	beginExperiment: ->
-		@panels.choose.start(this)
 		@panels.timeline.start(this)
 		@stage.draw()
 
@@ -95,8 +94,10 @@ class HandleTimelineCF
 		})
 
 	timelineAccepted: ->
-		@panels.timeline.hide()
+		#@panels.timeline.hide()
 		@panels.drawing.start(this)
+		@panels.drawing.layer.remove()
+		@panels.choose.start(this)
 
 	itemAdded: (item) ->
 		@panels.drawing.addItem item

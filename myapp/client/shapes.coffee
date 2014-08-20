@@ -148,7 +148,10 @@ class SquareBoundedIS extends InteractiveShape
 			y: @layer.height()/2 + Tools.randBetween(-posMax.y, posMax.y),
 			draggable: true
 		})
-
+		@group.on('dragmove', ->
+			time = Tools.currentTime()
+			self.panel.dragItem(self.item, {position: self.group.getPosition(), time: time})
+		)
 		@group.dragBoundFunc((newPos) ->
 			self.mainDragBound newPos
 		)
@@ -205,6 +208,8 @@ class SquareBoundedIS extends InteractiveShape
 			self.anchorDragBound this.getAbsolutePosition(), newPos, this.name()
 		)
 		anchor.on('dragmove', ->
+			time = Tools.currentTime()
+			self.panel.resizeItem(self.item, {size: self.commonShape.size(), time: time})
 			self.updateAllAnchors()
 			self.layer.draw()
 		)
@@ -289,9 +294,9 @@ class SquareBoundedIS extends InteractiveShape
 	unselect: ->
 		self = this
 		@selectState(false)
-		@group.on('mousedown tap', ->
+		@group.on('dragstart.select click.select tap.select', ->
 			self.panel.selectItem self.item
-			self.group.off('mousedown tap')
+			self.group.off('.select')
 		)
 
 	selectState: (state) ->
@@ -300,7 +305,6 @@ class SquareBoundedIS extends InteractiveShape
 			anchor = self.group.find(".#{name}")[0]
 			anchor.visible(state)
 		)
-		@group.draggable(state)
 
 	results: ->
 		data = {
@@ -370,6 +374,11 @@ class RadialSectorIS extends InteractiveShape
 			self[dragBoundFunc] this.getAbsolutePosition(), newPos, this
 		)
 		anchor.on('dragmove', ->
+			time = Tools.currentTime()
+			if (name == "rotation")
+				self.panel.dragItem(self.item, {rotation: self.shape.rotation(), time: time})
+			else
+				self.panel.resizeItem(self.item, {angle: self.shape.angle(), time: time})
 			self.updateAllAnchors()
 		)
 		@anchors[name] = anchor
@@ -449,9 +458,9 @@ class RadialSectorIS extends InteractiveShape
 	unselect: ->
 		self = this
 		@selectState(false)
-		@group.on('mousedown tap', ->
+		@group.on('dragstart.select click.select tap.select', ->
 			self.panel.selectItem self.item
-			self.group.off('mousedown tap')
+			self.group.off('.select')
 		)
 
 	selectState: (state) ->
@@ -460,7 +469,6 @@ class RadialSectorIS extends InteractiveShape
 			anchor = self.group.find(".#{name}")[0]
 			anchor.visible(state)
 		)
-		@group.draggable(state)
 
 	results: ->
 		{
@@ -476,7 +484,8 @@ class RadialSectorIS extends InteractiveShape
 
 
 class LineInLayerIS extends InteractiveShape
-	constructor: (@layer) ->
+	constructor: (@panel) ->
+		@layer = @panel.layer
 		@anchors = {}
 		self = this
 
@@ -506,9 +515,6 @@ class LineInLayerIS extends InteractiveShape
 		this.addAnchor 'two'
 
 		this.updateAllAnchors()
-
-	addTooltip: (name) ->
-		Tools.addTooltip @shape, name
 
 	addAnchor: (name, dragBoundFunc) ->
 		self = this
@@ -569,20 +575,24 @@ class LineInLayerIS extends InteractiveShape
 
 		@layer.draw()
 
-	fixState: ->
-		@anchors['one'].remove()
-		@anchors['two'].remove()
+	freeze: ->
+		@anchors['one'].visible(false)
+		@anchors['two'].visible(false)
 		@layer.draw()
 
+	results: ->
 		{
 			length: @shape.points()[2] * 2,
 			rotation: @group.rotation()
-		}
+		}		
 
 
 class EventInTimelineIS extends InteractiveShape
-	constructor: (@layer) ->
-		group = new Kinetic.Group({
+	constructor: (@item, @timeline, @panel) ->
+		self = this
+		@line = @timeline.line
+		@group = new Kinetic.Group({
+			draggable: true
 		})
 		bar = new Kinetic.Rect({
 			x: 0, y: -15,
@@ -592,7 +602,7 @@ class EventInTimelineIS extends InteractiveShape
 		})
 		rightSide = (Math.random() < 0.5)
 		text = new Kinetic.Text({
-			text: @choices[name],
+			text: @item.description,
 			fontSize: 15,
 			fontFamily: 'Calibri',
 			fill: '#555',
@@ -601,58 +611,54 @@ class EventInTimelineIS extends InteractiveShape
 		})
 
 		transform = text.getTransform()
-		rotation = Widgets.degreesInRange @line.group.rotation()
+		rotation = Tools.degreesInRange @line.group.rotation()
 		invert = if (rotation > 0 && rotation < 180) then -1 else 1
-		transform.rotate(Widgets.degreesToRadians(90*invert))
+		transform.rotate(Tools.degreesToRadians(90*invert))
 		if (rightSide)
 			transform.translate(30, 0)
 		else
 			transform.translate(-30-text.width(), 0)
 		transform.translate(0, -10)
 
-		group.add bar
-		group.add text
-		@current = group
-
-		@line.group.add @current
-		@correct = false
-		@layer.draw()
-
-		@background.moveToTop()
-		@background.on('mousemove', ->
-			stage = this.getStage()
-			pos = stage.getPointerPosition()
-
-			center = self.line.group.getAbsolutePosition()
-			vector = {
-				x: pos.x - center.x,
-				y: pos.y - center.y
-			}
-			polarVector = Widgets.cartesianToPolar vector
-			projection = Widgets.polarToCartesian({
-				angle: polarVector.angle - self.line.group.rotation(),
-				length: polarVector.length
-			}).x
-			###
-			inRange = (x) ->
-				dist = self.line.shape.points()[2]
-				(-dist < projection and dist > projection)
-			###
-			inRange = (x) -> true
-			dist = self.line.shape.points()[2]
-			projection = Widgets.constrainBetween(projection, -dist, dist)
-
-			if (inRange(projection))
-				self.correct = true
-				self.current.x(projection)
-				self.layer.draw()
-			else
-				self.correct = false
+		@group.add bar
+		@group.add text
+		@group.dragBoundFunc((newPos) ->
+			self.dragBoundFunc this.getAbsolutePosition(), newPos, this
 		)
-		@background.on('mousedown', ->
-			if (self.correct)
-				self.finishedPositioningEvent()
-		)
+
+		@line.group.add @group
+		#@panel.layer.add @group
+		@timeline.layer.draw()
+
+	dragBoundFunc: (oldPos, newPos, obj) ->
+		center = @line.group.getAbsolutePosition()
+		vector = {
+			x: newPos.x - center.x,
+			y: newPos.y - center.y
+		}
+		polarVector = Tools.cartesianToPolar vector
+		projection = Tools.polarToCartesian({
+			angle: polarVector.angle - @line.group.rotation(),
+			length: polarVector.length
+		}).x
+
+		dist = @line.shape.points()[2]
+		projection = Tools.constrainBetween(projection, -dist, dist)
+
+		@group.x(projection)
+		#self.layer.draw()
+		@group.getAbsolutePosition()
+
+	unselect: ->
+		#
+
+	select: ->
+		#
+
+	results: ->
+		{
+			position: @group.x() / @line.shape.points()[2]
+		}
 
 
 @Widgets ?= {}
@@ -663,4 +669,5 @@ _.merge(@Widgets, {
 	SquareBoundedIS
 	RadialSectorIS
 	LineInLayerIS
+	EventInTimelineIS
 })

@@ -21,7 +21,6 @@ class ChoosePanel extends Panel
 			{text: text, button: null, dot: null}
 		)
 		@remaining = _.size(@choices)
-		@current = null
 		@events = []
 		
 		p = 0.1
@@ -103,6 +102,7 @@ class ChoosePanel extends Panel
 
 	results: ->
 		{
+			show_order: @keys,
 			events: @events
 		}
 
@@ -142,7 +142,13 @@ class DrawingPanel extends Panel
 		@layer.draw()
 		@handler.itemSelected item
 
-	setColor: (color) ->
+	dragItem: (item, data) ->
+		@events.push({type: 'drag', arg: item.name, data: data})
+
+	resizeItem: (item, data) ->
+		@events.push({type: 'resize', arg: item.name, data: data})
+
+	setColor: (item, color) ->
 		@current.setColor color
 		@layer.draw()
 
@@ -257,8 +263,8 @@ class TimelinePanel extends Panel
 
 	askLineAdjustments: ->
 		self = this
-		@position = 0
-		@line = new Widgets.LineInLayerIS(@layer)
+		@events = []
+		@line = new Widgets.LineInLayerIS(this)
 		@button = Tools.createButton({
 			x: 50,
 			y: 50,
@@ -273,61 +279,73 @@ class TimelinePanel extends Panel
 		@layer.draw()
 
 	finishedLineAdjustments: ->
-		@end_time = Tools.currentTime()
-
-		data = @line.fixState()
+		#@end_time = Tools.currentTime()
+		@line.freeze()
+		@data = @line.results()
 		@line.box.remove()
-		_.merge(@result_line, data)
+		@button.visible(false)
+		@layer.draw()
+
 		@handler.timelineAccepted()
 		
 	results: ->
-		@data
+		{
+			events: @events,
+			results: @data
+		}
 
 
-class ChooseExternalPanel extends Panel
-	constructor: (choices) ->
+class ChooseExternalPanel
+	constructor: (@choices, orders) ->
 		self = this
 
-		@choices = _.mapValues(choices, (text) ->
-			0
-		)
+		@show_order = Tools.randBetween(0, _.size(orders)-1)
+		@questions = orders[@show_order]
 		@remaining = _.size(@choices)
-		@current = null
 		@events = []
 		
-		# ...
+		Template['timeline'].items = () ->
+			_.map(self.questions, (key) ->
+				{code: key, name: self.choices[key]})
+
+	start: (@handler) ->
+		self = this
+
+		_.forEach(_.keys(@choices), (key) ->
+			$("button##{key}").click(() ->
+				#$("button##{key}").hide()
+				$("button##{key}").css('visibility', 'hidden')
+				self.itemStarted key
+			)
+		)
+
+		$('#selection_panel').show()
 
 	itemStarted: (key) ->
-		@events.push({time: Tools.currentTime(), type: 'choose', arg: key})
-
 		@remaining--
-
-		@choices[key].dot.fill('black')
-		@choices[key].button.listening(false)
-		@choices[key].button.find('.background')[0].fill('#bbb')
-		@layer.draw()
-
-		@handler.itemAdded({name: key, description: @choices[key].text})
+		@events.push({time: Tools.currentTime(), type: 'choose', arg: key})
+		@handler.itemAdded({name: key, description: @choices[key]})
 
 		if (@remaining == 0)
 			@showFinish()
 
 	colorSelected: (color) ->
-		shape = @choices[@active_item].dot
-		shape.fill(color)
-		shape.getParent().draw()
+		#
 
 	showFinish: ->
 		self = this
 		@button = Tools.createButton({
 			x: 450,
-			y: 135,
+			y: 50,
 			width: 100,
 			text: 'Aceptar'
 		})
 		@button.on('mousedown tap', -> self.finishClicked())
-		@layer.add @button
-		@layer.draw()
+
+		# FIXME: make this better
+		layer = @handler.panels.timeline.layer
+		layer.add @button
+		layer.draw()
 
 	finishClicked: ->
 		###
@@ -342,6 +360,7 @@ class ChooseExternalPanel extends Panel
 
 	results: ->
 		{
+			show_order: @show_order,
 			events: @events
 		}
 
