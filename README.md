@@ -53,6 +53,9 @@ http://circles-experiment.meteor.com/
 ### TODO
 
 - Use millisecond timestamps in Tools.currentTime
+- Check data size for storage, and maybe js gzip stream
+- Better format for saving changes (either full state compressed on each change, or incremental but with more information)
+
 - Restrict db access
 - Deploy to openshift for production
 
