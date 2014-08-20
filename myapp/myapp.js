@@ -1,4 +1,13 @@
-Results = new Meteor.Collection("results");
+assert = function(condition, message) {
+  if (!condition) {
+    str = message || "Assertion failed";
+    console.log(str);
+    throw str;
+  }
+};
+
+Results = new Meteor.Collection("Results");
+//CompleteResults = new Meteor.Collection("CompleteResults");
 
 Router.map(function() {
   this.route('experiments', {path: '/'});

@@ -7,15 +7,14 @@ presentPastFuture = () ->
 		future: "Futuro"
 	}
 	
-	create_shape = (layer) ->
+	create_shape = (item, panel) ->
 		shape = new Widgets.Circle()
-		interactive_shape = new Widgets.SquareBoundedIS(shape, layer)
+		interactive_shape = new Widgets.SquareBoundedIS(shape, item, panel)
 		interactive_shape
 
-	create_panels = Steps.create_handler_default(choices, create_shape)
+	panels = Steps.createPanels(choices, Steps.colors, Panels.Drawing, create_shape)
 	
-	step = new Steps.HandleControlFlow(create_panels, "present_past_future")
-	step
+	new Steps.HandleControlFlow("present_past_future", panels)
 
 
 @Steps ?= {}

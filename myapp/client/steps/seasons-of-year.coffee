@@ -8,15 +8,15 @@ seasonsOfYear = () ->
 		autum: "Otoño"
 	}
 
-	create_shape = (layer) ->
+	create_shape = (item, panel) ->
 		shape = new Widgets.Rect()
-		interactive_shape = new Widgets.SquareBoundedIS(shape, layer)
+		interactive_shape = new Widgets.SquareBoundedIS(shape, item, panel)
 		interactive_shape
 	
-	create_panels = Steps.create_handler_default(choices, create_shape)
+	panels = Steps.createPanels(choices, Steps.colors, Panels.Drawing, create_shape)
+	
+	new Steps.HandleControlFlow("seasons_of_year", panels)
 
-	step = new Steps.HandleControlFlow(create_panels, "seasons_of_year")
-	step
 
 @Steps ?= {}
 _.merge(@Steps, {

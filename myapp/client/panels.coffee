@@ -1,14 +1,27 @@
 _ = lodash
 
-class ChoosePanel
-	constructor: (choices, @layer) ->
+
+class Panel
+	start: (@handler) ->
+		@handler.stage.add @layer
+
+	hide: ->
+		@layer.visible(false)
+
+	show: ->
+		@layer.visible(true)
+
+
+class ChoosePanel extends Panel
+	constructor: (choices, @layout) ->
 		self = this
+
+		@layer = new Kinetic.Layer(@layout.data.choose)
 		@choices = _.mapValues(choices, (text) ->
 			{text: text, button: null, dot: null}
 		)
 		@remaining = _.size(@choices)
-		@current = null
-		@notifier = null
+		@events = []
 		
 		p = 0.1
 		px = 0
@@ -21,7 +34,7 @@ class ChoosePanel
 				p = 0.1
 				total -= 4
 			data = self.choices[key]
-			button = Widgets.createButton({
+			button = Tools.createButton({
       			text: data.text,
       			x: px + 30,
       			y: self.layer.getHeight()*p,
@@ -44,13 +57,9 @@ class ChoosePanel
 			total++
 		)
 
-	setNotifier: (@notifier) ->
-		#@layer.listening(@notifier != null)
-		@layer.visible(@notifier != null)
-		@layer.draw()
-
 	itemStarted: (key) ->
-		@active_item = key
+		@events.push({time: Tools.currentTime(), type: 'choose', arg: key})
+
 		@remaining--
 
 		@choices[key].dot.fill('black')
@@ -58,108 +67,109 @@ class ChoosePanel
 		@choices[key].button.find('.background')[0].fill('#bbb')
 		@layer.draw()
 
-		@notifier(key) if @notifier != null
+		@handler.itemAdded({name: key, description: @choices[key].text})
 
-	itemEnded: ->
+		if (@remaining == 0)
+			@showFinish()
 
-
-	colorSelected: (color) ->
-		shape = @choices[@active_item].dot
+	colorSelected: (item, color) ->
+		shape = @choices[item.name].dot
 		shape.fill(color)
 		shape.getParent().draw()
 
-
-class DrawingPanel
-	constructor: (@layer, @createShape) ->
-		@current = null
-		@shapes = []
-
-	###
-	selectItem: (@name, tooltip) ->
-		if (_.has(@shapes, @name))
-			@addShape @name, tooltip
-		else
-			@current = @shapes[@name]
-
-	###
-
-	addShape: (@name, tooltip) ->
+	showFinish: ->
 		self = this
-	
-		@current = @createShape(@layer)
-		@shapes.push @current
-		@current.addTooltip(tooltip)
-		
-		@button = Widgets.createButton({
-			x: 50,
-			y: -100,
-			width: 100,
-			text: 'Aceptar'
-		})
-		@button.on('mousedown tap', -> self.acceptedShape())
-
-		@layer.add @button
-		@layer.add @current.group
-		@layer.draw()
-
-		@current
-
-	acceptedShape: ->
-		# XXX: avoid error when mouseout arrives later
-		@button.off('mouseover')
-		@button.off('mouseout')
-		@button.remove()
-
-		result = @current.fixState()
-		@notifier(@name, result) # if @notifier != null
-
-	###
-	askAccept: ->
-		@button = Widgets.createButton({
+		@button = Tools.createButton({
 			x: 450,
-			y: -100,
+			y: 135,
 			width: 100,
 			text: 'Aceptar'
-		})
-		@button.on('mousedown tap', -> self.acceptedShape())
-
-		@layer.add @button		
-	###
-
-	setColor: (color) ->
-		@current.setColor color
-		@layer.draw()
-
-	setNotifier: (@notifier) ->
-		@layer.listening(@notifier != null)
-		@layer.draw()
-
-	askFinish: (@end_notifier) ->
-		self = this
-
-		_.forEach(@shapes, (x) ->
-			x.unselect()
-		)
-		
-		@button = Widgets.createButton({
-			x: 50,
-			y: -100,
-			width: 100,
-			text: 'Continuar'
 		})
 		@button.on('mousedown tap', -> self.finishClicked())
-
 		@layer.add @button
 		@layer.draw()
 
 	finishClicked: ->
+		###
 		# XXX: avoid error when mouseout arrives later
 		@button.off('mouseover')
 		@button.off('mouseout')
 		@button.remove()
 		@layer.draw()
+		###
 
-		@end_notifier()
+		@handler.drawingAccepted()
+
+	results: ->
+		{
+			show_order: @keys,
+			events: @events
+		}
+
+
+class DrawingPanel extends Panel
+	constructor: (@createShape, @layout) ->
+		@layer = new Kinetic.Layer(@layout.data.drawing)
+		Tools.addBorder @layer
+		@current = null
+		@ignore_select = false
+		@shapes = {}
+		@events = []
+
+	addItem: (item) ->
+		@events.push({time: Tools.currentTime(), type: 'add', arg: item.name})
+
+		if (@current != null)
+			@current.unselect()
+
+		@current = @createShape(item, this)
+		@shapes[item.name] = @current
+		@layer.draw()
+
+		@current
+
+	selectItem: (item) ->
+		if (@ignore_select)
+			return
+
+		@events.push({time: Tools.currentTime(), type: 'select', arg: item.name})
+
+		if (@current != null)
+			@current.unselect()
+
+		@current = @shapes[item.name]
+		@current.select()
+		@layer.draw()
+		@handler.itemSelected item
+
+	dragItem: (item, data) ->
+		@events.push({type: 'drag', arg: item.name, data: data})
+
+	resizeItem: (item, data) ->
+		@events.push({type: 'resize', arg: item.name, data: data})
+
+	setColor: (item, color) ->
+		if (@current == null)
+			return
+
+		@current.setColor color
+		@layer.draw()
+
+	freeze: ->
+		@current.unselect()
+		@current = null
+		@ignore_select = true
+		@layer.draw()
+
+	results: ->
+		data = _.mapValues(@shapes, (shape) -> shape.results())
+		{
+			events: @events,
+			shapes: data
+		}
+
+	arrangementValid: ->
+		true
 
 
 class DrawingPanelNoOverlap extends DrawingPanel
@@ -169,8 +179,8 @@ class DrawingPanelNoOverlap extends DrawingPanel
 		rectForShape = (thing) ->
 			cs = thing.commonShape
 			{
-				x: cs.shape.getAbsolutePosition().x,
-				y: cs.shape.getAbsolutePosition().y,
+				x: thing.group.getAbsolutePosition().x,
+				y: thing.group.getAbsolutePosition().y,
 				width: cs.width(),
 				height: cs.height()
 			}
@@ -182,7 +192,7 @@ class DrawingPanelNoOverlap extends DrawingPanel
 			_.forEach(self.shapes, (shapeTwo) ->
 				if (shapeOne != shapeTwo)
 					rectTwo = rectForShape shapeTwo
-					if (Widgets.rectCollision rectOne, rectTwo)
+					if (Tools.rectCollision rectOne, rectTwo)
 						# XXX: return binds locally
 						haveToExit = true
 						return
@@ -190,17 +200,18 @@ class DrawingPanelNoOverlap extends DrawingPanel
 		)
 		!haveToExit
 
-
-	acceptedShape: ->
+	arrangementValid: ->
 		if (this.noIntersections())
-			super()
+			true
 		else
 			alert("Las figuras no pueden superponerse, por favor ubícala en otro lugar")
+			false
 
 
-class ColorsPanel
-	constructor: (@colors, @layer) ->
-		@notifier = null
+class ColorsPanel extends Panel
+	constructor: (@colors, @layout) ->
+		@layer = new Kinetic.Layer(@layout.data.color)
+		@events = []
 		@buttons = []
 
 		position = 0
@@ -208,14 +219,17 @@ class ColorsPanel
 		currentHoriz = 0
 		offsetY = 0
 
-		self = this;
+		self = this
 		_.each(@colors, (color) ->
 			rect = new Kinetic.Rect({
 				x: position, y: offsetY + 10,
 				width: 30, height: 30,
 				fill: color
 			})
-			rect.on('mousedown tap', -> self.notify(color))
+			rect.on('mousedown tap', ->
+				self.events.push({time: Tools.currentTime(), type: 'color', arg: color})
+				self.handler.colorSelected(color)
+			)
 			rect.on('mouseover', ->
 				rect.setStroke('black')
 				rect.setStrokeWidth(3)
@@ -239,85 +253,130 @@ class ColorsPanel
 
 		@layer.draw()
 
-	notify: (color) ->
-		if (@notifier != null)
-			@notifier(color)
+	results: ->
+		{
+			events: @events
+		}
 
-	setNotifier: (@notifier) ->
-		if (@notifier != null)
-			@layer.show()
-		else
-			@layer.hide()
+
+class TimelinePanel extends Panel
+	constructor: (@layout) ->
+		@layer = new Kinetic.Layer(@layout.data.timeline)
+		@askLineAdjustments()
+
+	askLineAdjustments: ->
+		self = this
+		@events = []
+		@line = new Widgets.LineInLayerIS(this)
+		@button = Tools.createButton({
+			x: 50,
+			y: 50,
+			width: 100,
+			text: 'Aceptar'
+		})
+		@button.on('mousedown', -> self.finishedLineAdjustments())
+
+		@layer.add @line.box
+		@layer.add @line.group
+		@layer.add @button
 		@layer.draw()
 
+	changeLine: (element) ->
+		@events.push element
 
-class SliderChoosePanel
-	constructor: (@questions, @layer) ->
-		@current_index = 0
-		@choices = _.shuffle(@questions)
-		@remaining = _.size(@choices)
-		@data = {
-			show_order: @choices,
-			results: {}
-		}
-	
-	start: (@notifier) ->
-		self = this
-		@gui_items = []
-		offset = 0
+	finishedLineAdjustments: ->
+		#@end_time = Tools.currentTime()
+		@line.freeze()
+		@data = @line.results()
+		@line.box.remove()
+		@button.visible(false)
+		@layer.draw()
+
+		@handler.timelineAccepted()
 		
-		_.forEach(@choices, (choice) ->
-			group = new Kinetic.Group({
-				x: self.layer.width()/2,
-				y: offset + 75
-			})
-
-			item = new Widgets.inputSlider(group, choice)
-
-			self.layer.add group
-			self.gui_items.push(item)
-			offset += 160
-		)
-		self.layer.draw()
-
-		this.askForClick()
-
-	finish: ->
-		@notifier(@data)
-
-	askForClick: ->
-		self = this
-		@current_result = {
-			start_time: Steps.currentTime()
+	results: ->
+		{
+			events: @events,
+			results: @data
 		}
-		@gui_items[@current_index].enable((position) -> self.sliderClicked position)
 
-	sliderClicked: (position) ->
-		_.merge(@current_result, {
-			end_time: Steps.currentTime(),
-			value: position
-		})
-		@data.results[@choices[@current_index]] = @current_result
 
-		@current_index++
+class ChooseExternalPanel
+	constructor: (@choices, orders) ->
+		self = this
+
+		@show_order = Tools.randBetween(0, _.size(orders)-1)
+		@questions = orders[@show_order]
+		@remaining = _.size(@choices)
+		@events = []
+		
+		Template['timeline'].items = () ->
+			_.map(self.questions, (key) ->
+				{code: key, name: self.choices[key]})
+
+	start: (@handler) ->
+		self = this
+
+		_.forEach(_.keys(@choices), (key) ->
+			$("button##{key}").click(() ->
+				#$("button##{key}").hide()
+				$("button##{key}").css('visibility', 'hidden')
+				self.itemStarted key
+			)
+		)
+
+		$('#selection_panel').show()
+
+	itemStarted: (key) ->
 		@remaining--
+		@events.push({time: Tools.currentTime(), type: 'choose', arg: key})
+		@handler.itemAdded({name: key, description: @choices[key]})
 
-		if (@remaining > 0)
-			this.askForClick()
-		else
-			this.finish()
+		if (@remaining == 0)
+			@showFinish()
 
+	colorSelected: (color) ->
+		#
 
-class TextPanel
-	constructor: (@layer) ->
+	showFinish: ->
+		self = this
+		@button = Tools.createButton({
+			x: 450,
+			y: 50,
+			width: 100,
+			text: 'Aceptar'
+		})
+		@button.on('mousedown tap', -> self.finishClicked())
+
+		# FIXME: make this better
+		layer = @handler.panels.timeline.layer
+		layer.add @button
+		layer.draw()
+
+	finishClicked: ->
+		###
+		# XXX: avoid error when mouseout arrives later
+		@button.off('mouseover')
+		@button.off('mouseout')
+		@button.remove()
+		@layer.draw()
+		###
+
+		@handler.drawingAccepted()
+
+	results: ->
+		{
+			show_order: @show_order,
+			events: @events
+		}
 
 
 @Panels ?= {}
 _.merge(@Panels,
 	Choose: ChoosePanel
+	ChooseExternal: ChooseExternalPanel
 	Drawing: DrawingPanel
 	DrawingNoOverlap: DrawingPanelNoOverlap
 	Colors: ColorsPanel
-	Text: TextPanel
-	SliderChoose: SliderChoosePanel
+	Timeline: TimelinePanel
 )
