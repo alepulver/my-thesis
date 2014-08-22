@@ -154,6 +154,7 @@ class DrawingPanel extends Panel
 		if (@current == null)
 			return
 
+		@events.push({time: Tools.currentTime(), type: 'color', arg: item.name, color: color})
 		@current.setColor color
 		@layer.draw()
 
