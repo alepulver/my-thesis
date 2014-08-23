@@ -115,6 +115,7 @@ class DrawingPanel extends Panel
 		@ignore_select = false
 		@shapes = {}
 		@events = []
+		@last_event_time = 0
 
 	addItem: (item) ->
 		time = Tools.currentTime()
@@ -145,9 +146,19 @@ class DrawingPanel extends Panel
 		@handler.itemSelected item
 
 	dragItem: (item, data) ->
+		curr_time = data.time
+		prev_time = @last_event_time
+		@last_event_time = curr_time
+		if (curr_time - prev_time < Config.max_event_rate)
+			return
 		@events.push({type: 'drag', arg: item.name, data: data})
 
 	resizeItem: (item, data) ->
+		curr_time = data.time
+		prev_time = @last_event_time
+		@last_event_time = curr_time
+		if (curr_time - prev_time < Config.max_event_rate)
+			return
 		@events.push({type: 'resize', arg: item.name, data: data})
 
 	setColor: (item, color) ->

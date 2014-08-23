@@ -52,10 +52,6 @@ http://circles-experiment.meteor.com/
 
 ### TODO
 
-- Check data size for storage, and maybe js gzip stream
-- Better format for saving changes (either full state compressed on each change, or incremental but with more information)
-- From where the figures were dragged and resized (not important)
-
 - Restrict db access
 - Deploy to openshift for production
 

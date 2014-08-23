@@ -7,6 +7,8 @@ class QuestionsBegin
 		Template.questions_begining.events({
 			'success.form.bv': (event, template) -> self.formSubmitted(event, template)
 		})
+		Template.questions_begining.askAddresses = ->
+			return Config.askAddresses
 
 	start: (@workflow) ->
 		notSelected =
@@ -48,7 +50,10 @@ class QuestionsBegin
 		event.preventDefault()
 
 		results = {}
-		variables = ['name', 'age', 'email', 'facebook', 'twitter']
+		variables = ['name', 'age']
+		if (Config.askAddresses)
+			variables += ['email', 'facebook', 'twitter']
+
 		_.each(variables, (field) ->
 			results[field] = template.find("input[id=#{field}]").value
 		)

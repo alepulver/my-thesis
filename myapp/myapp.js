@@ -1,3 +1,5 @@
+_ = lodash;
+
 assert = function(condition, message) {
   if (!condition) {
     str = message || "Assertion failed";
@@ -6,17 +8,36 @@ assert = function(condition, message) {
   }
 };
 
+Config = {
+  askAddresses: false,
+  max_event_rate: 30
+}
+
 Results = new Meteor.Collection("Results");
 //CompleteResults = new Meteor.Collection("CompleteResults");
 
 Router.map(function() {
-  this.route('experiments', {path: '/'});
+  this.route('experiments', {
+    path: '/',
+    data: function() {
+      if (_.isUndefined(this.params.tedx_user_id)) {
+        user_id = Meteor.uuid();
+      } else {
+        user_id = this.params.tedx_user_id;
+      }
+
+      // FIXME: find a cleaner way to do this
+      Session.set("current_user", user_id);
+
+      return {user_id: user_id};
+    }
+  });
   this.route('results');
 });
 
 if (Meteor.isClient) {
   Session.set("active_stage", "loading");
-  Session.set("current_user", Meteor.uuid());
+  //Session.set("current_user", Meteor.uuid());
   
   Template.experiments.active_stage = function() {
     return Template[Session.get("active_stage")];
@@ -37,6 +58,5 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
-    _ = lodash;
   });
 }
