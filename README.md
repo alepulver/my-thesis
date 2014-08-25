@@ -53,7 +53,8 @@ http://circles-experiment.meteor.com/
 ### TODO
 
 - Restrict db access
-- Deploy to openshift for production
+- Allow viewing results graphically (toDataURL)
+- Add password or token to /reports
 
 #### Tablet / Mobile
 
@@ -62,17 +63,17 @@ http://circles-experiment.meteor.com/
 
 #### Admin panel
 
-- Allow viewing results graphically (toDataURL)
-- Add password or token to /reports
 - Allow downloading as CSV or any tabulated format
 - Maybe displaying online with d3/vega/etc
 
 #### Ideas
 
+- Deploy to openshift for production
 - Move buttons and color bar outside canvas (easier and saves space)
 - Add message box responding to current mouse position outside canvas
 - Refactor widgets in a wrapper and decorator objects
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
+
 
 ### References
 
@@ -84,3 +85,15 @@ http://circles-experiment.meteor.com/
 - [Rotate example](http://codepen.io/ArtemGr/pen/ociAD)
 - [Javascript promises](http://www.html5rocks.com/en/tutorials/es6/promises/)
 - [regenerator](http://facebook.github.io/regenerator/) (generator functions for current Javascript)
+
+#### Import and export data
+
+- [Export from server](https://gist.github.com/olizilla/5209369)
+- [Import from server](https://gist.github.com/IslamMagdy/5519514)
+- Delete remote database: `meteor deploy ... --delete`
+
+#### Deploy to OpenShift
+
+- https://www.openshift.com/blogs/cloudy-with-a-chance-of-meteorjs
+- https://www.openshift.com/blogs/any-version-of-nodejs-you-want-in-the-cloud-openshift-does-it-paas-style
+- https://github.com/ramr/nodejs-custom-version-openshift
