@@ -26,20 +26,17 @@ And even if Wacom tablets aren't natively supported in Javascript, there is an o
 curl https://raw.github.com/creationix/nvm/master/install.sh | sh
 
 # Install Node.js
-nvm install v0.11.9
+nvm install v0.10.31
 
 # Install meteor
 curl https://install.meteor.com/ | sh
-
-# Install meteorite (package manager)
-npm install -g meteorite
 ```
 
 ### Run locally
 
 ```
 cd myapp
-mrt
+meteor
 ```
 
 And enter the following url: http://localhost:3000/
