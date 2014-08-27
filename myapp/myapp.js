@@ -20,6 +20,7 @@ Router.map(function() {
   this.route('experiments', {
     path: '/',
     data: function() {
+      var user_id;
       if (_.isUndefined(this.params.tedx_user_id)) {
         user_id = Meteor.uuid();
       } else {
@@ -28,6 +29,16 @@ Router.map(function() {
 
       // FIXME: find a cleaner way to do this
       Session.set("current_user", user_id);
+
+      var group;
+      if (_.isUndefined(this.params.group)) {
+        group = 'none';
+      } else {
+        group = this.params.group;
+      }
+
+            // FIXME: find a cleaner way to do this
+      Session.set("group", group);
 
       return {user_id: user_id};
     }

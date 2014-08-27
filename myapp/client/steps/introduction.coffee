@@ -16,7 +16,8 @@ class Introduction
 
 		results = {
 			ip_address: headers.getClientIP(),
-			user_agent: navigator.userAgent
+			user_agent: navigator.userAgent,
+			group: Session.get("group")
 		}
 		###
 		geo = Geolocation.getInstance()
