@@ -44,6 +44,15 @@ Router.map(function() {
     }
   });
   this.route('results');
+  this.route('results_json', {
+    path: '/results_json',
+    where: 'server',
+    action: function () {
+      var json = Results.find().fetch();
+      this.response.setHeader('Content-Type', 'application/json');
+      this.response.end(JSON.stringify(json));
+    }
+  });
 });
 
 if (Meteor.isClient) {
