@@ -23,26 +23,27 @@ createPanelsTimeline = (choices, orders, createShape) ->
 
 timeline = () ->
 	choices = {
-		universe: "el origen del universo",
-		life: "el origen de la vida",
-		year_one: "el año 1 (hoy es 2014)",
-		renaissance: "el Renacimiento",
-		beatles: "los Beatles",
-		my_birth: "mi nacimiento",
-		my_childhood: "mi niñez",
-		my_youth: "mi juventud",
-		today: "hoy",
-		my_third_age: "mi vejez"
+		year_1900: "Año 1900",
+		the_beatles: "The Beatles",
+		my_birth: "Mi nacimiento",
+		my_childhood: "Mi niñez",
+		my_youth: "Mi juventud",
+		today: "Hoy",
+		my_third_age: "Mi vejez",
+		year_2100: "Año 2100",
+		wwii: "2da guerra mundial"
 	}
 
 	orders = [
 		[
-			'universe', 'life', 'year_one', 'renaissance', 'beatles', 'my_birth',
-			'my_childhood', 'my_youth', 'today', 'my_third_age'
+			'year_1900', 'wwii', 'the_beatles',
+			'my_birth', 'my_childhood', 'my_youth',
+			'today', 'my_third_age', 'year_2100'
 		],
 		[
-			'today', 'life', 'my_birth', 'renaissance', 'universe',
-			'my_childhood', 'year_one', 'my_youth', 'beatles', 'my_third_age'
+			'today', 'wwii', 'my_youth',
+			'my_birth', 'year_2100', 'the_beatles',
+			'year_1900', 'my_childhood', 'my_third_age',
 		]
 	]
 

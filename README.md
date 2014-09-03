@@ -56,7 +56,7 @@ http://circles-experiment.meteor.com/
 #### Tablet / Mobile
 
 - Make anchors larger for tablets, show tooltip always (there is no "mouseover")
-- Scale down canvas if screen space is too small, using setScale to avoid changing pixel values; if it doesn't work just use percentage for dimensions
+- setScale doesn't work, we have to calculate sizes manually
 
 #### Admin panel
 
