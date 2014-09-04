@@ -20,27 +20,23 @@ Router.map(function() {
   this.route('experiments', {
     path: '/',
     data: function() {
-      var user_id;
-      if (_.isUndefined(this.params.tedx_user_id)) {
-        user_id = Meteor.uuid();
-      } else {
-        user_id = this.params.tedx_user_id;
-      }
+      var params = this.params;
+      var read_var = function(param_name, session_name, default_value) {
+        var value;
+        if (_.isUndefined(params[param_name])) {
+          value = default_value;
+        } else {
+          value = params[param_name];
+        }
 
-      // FIXME: find a cleaner way to do this
-      Session.set("current_user", user_id);
+        // FIXME: find a cleaner way to do this
+        Session.set(session_name, value);
+      };
 
-      var group;
-      if (_.isUndefined(this.params.group)) {
-        group = 'none';
-      } else {
-        group = this.params.group;
-      }
+      read_var('tedx_user_id', 'current_user', 'none');
+      read_var('group_id', 'current_group', 'none');
 
-            // FIXME: find a cleaner way to do this
-      Session.set("group", group);
-
-      return {user_id: user_id};
+      return {};
     }
   });
   this.route('results');

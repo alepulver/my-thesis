@@ -17,7 +17,9 @@ class Introduction
 		results = {
 			ip_address: headers.getClientIP(),
 			user_agent: navigator.userAgent,
-			group: Session.get("group")
+			group: Session.get("current_group"),
+			participant: Session.get("current_user"),
+			local_id: ReactiveStore.get("local_id")
 		}
 		###
 		geo = Geolocation.getInstance()

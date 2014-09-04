@@ -5,6 +5,8 @@ startMainApp = ->
 	if (local_id == "")
 		ReactiveStore.set("local_id", Random.secret())
 
+	Session.set("current_experiment", Meteor.uuid())
+
 	steps = [
 		new Steps.Introduction(),
 		new Steps.QuestionsBegin(),
@@ -33,7 +35,6 @@ class Workflow
 		# do nothing
 
 	start: ->
-		@local_id = ReactiveStore.get("local_id")
 		@current_index = -1
 		@results = []
 		this.nextStep()
@@ -65,11 +66,12 @@ class Workflow
 		end_time = Tools.currentTime()
 
 		step_results = {
+			# FIXME: remove "participant", as it can be obtained from the introduction of every experiment
 			participant: Session.get("current_user"),
+			experiment: Session.get("current_experiment"),
 			stage: @current_step.name,
 			start_time: @current_start_time,
 			end_time: end_time,
-			local_id: @local_id,
 			results: results
 		}
 		Results.insert(step_results)
