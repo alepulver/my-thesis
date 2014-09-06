@@ -53,11 +53,6 @@ http://circles-experiment.meteor.com/
 - Allow viewing results graphically (toDataURL)
 - Add password or token to /reports
 
-#### Tablet / Mobile
-
-- Make anchors larger for tablets, show tooltip always (there is no "mouseover")
-- setScale doesn't work, we have to calculate sizes manually
-
 #### Admin panel
 
 - Allow downloading as CSV or any tabulated format

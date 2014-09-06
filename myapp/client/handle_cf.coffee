@@ -122,8 +122,8 @@ createStage = () ->
 
 	new Kinetic.Stage({
 		container: 'container',
-		width: size, height: size,
-		scale: {x: size/800, y: size/800}
+		width: size, height: size
+		#scale: {x: size/800, y: size/800}
 	})
 
 

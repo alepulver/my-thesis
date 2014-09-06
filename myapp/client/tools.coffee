@@ -71,7 +71,7 @@ addTooltip = (shape, text, positionFunc = defaultPosFunc) ->
 		offsetX: 50
 	})
 
-	shape.on('mouseover', ->
+	shape.on('mouseover dragstart', ->
 		parent = this.getParent()
 		widget.setPosition(positionFunc(widget, this))
 		color = this.stroke()
@@ -82,7 +82,7 @@ addTooltip = (shape, text, positionFunc = defaultPosFunc) ->
 		parent.draw()
 	)
 
-	shape.on('mouseout', ->
+	shape.on('mouseout dragend', ->
 		widget.remove()
 		this.getParent().getParent().draw()
 	)
@@ -245,6 +245,31 @@ currentTime = () ->
 	now.getTime()
 
 
+createAnchor = (name) ->
+	group = new Kinetic.Group({
+		draggable: true,
+		name: name
+	})
+
+	background = new Kinetic.Circle({
+		stroke: 'transparent',
+		fill: 'transparent',
+		radius: 32
+	})
+
+	anchor = new Kinetic.Circle({
+		stroke: '#666',
+		fill: '#ddd',
+		strokeWidth: 2,
+		radius: 8
+	})
+	Tools.makeHoverable background, anchor
+
+	group.add background
+	group.add anchor
+	group
+
+
 @Tools ?= {}
 _.merge(@Tools, {
 	createButton
@@ -265,4 +290,5 @@ _.merge(@Tools, {
 	randBetween
 	sign
 	currentTime
+	createAnchor
 })

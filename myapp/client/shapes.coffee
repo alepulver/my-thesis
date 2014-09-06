@@ -112,18 +112,9 @@ class FilledRect extends Shape
 		}
 
 
-###
-	anchor.on('mousedown touchstart', ->
-		group.setDraggable(false)
-	)
-	anchor.on('dragend', ->
-		group.setDraggable(true)
-	)
-###
-
-
 class InteractiveShape
 	#
+
 
 class SquareBoundedIS extends InteractiveShape
 	constructor: (@commonShape, @item, @panel) ->
@@ -194,15 +185,7 @@ class SquareBoundedIS extends InteractiveShape
 
 	addAnchor: (name) ->
 		self = this
-		anchor = new Kinetic.Circle({
-			stroke: '#666',
-			fill: '#ddd',
-			strokeWidth: 2,
-			radius: 8,
-			name: name,
-			draggable: true
-		})
-		Tools.makeHoverable anchor, anchor
+		anchor = Tools.createAnchor name
 		
 		anchor.dragBoundFunc((newPos) ->
 			self.anchorDragBound this.getAbsolutePosition(), newPos, this.name()
@@ -360,15 +343,7 @@ class RadialSectorIS extends InteractiveShape
 
 	addAnchor: (name, dragBoundFunc) ->
 		self = this
-		anchor = new Kinetic.Circle({
-			stroke: '#666',
-			fill: '#ddd',
-			strokeWidth: 2,
-			radius: 8,
-			name: name,
-			draggable: true
-		})
-		Tools.makeHoverable anchor, anchor
+		anchor = Tools.createAnchor name
 		
 		anchor.dragBoundFunc((newPos) ->
 			self[dragBoundFunc] this.getAbsolutePosition(), newPos, this
@@ -518,15 +493,7 @@ class LineInLayerIS extends InteractiveShape
 
 	addAnchor: (name, dragBoundFunc) ->
 		self = this
-		anchor = new Kinetic.Circle({
-			stroke: '#666',
-			fill: '#ddd',
-			strokeWidth: 2,
-			radius: 8,
-			name: name,
-			draggable: true
-		})
-		Tools.makeHoverable anchor, anchor
+		anchor = Tools.createAnchor name
 		
 		anchor.dragBoundFunc((newPos) ->
 			self.anchorDragBound this.getAbsolutePosition(), newPos, this

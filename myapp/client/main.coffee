@@ -66,8 +66,6 @@ class Workflow
 		end_time = Tools.currentTime()
 
 		step_results = {
-			# FIXME: remove "participant", as it can be obtained from the introduction of every experiment
-			participant: Session.get("current_user"),
 			experiment: Session.get("current_experiment"),
 			stage: @current_step.name,
 			start_time: @current_start_time,
