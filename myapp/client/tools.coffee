@@ -265,8 +265,8 @@ createAnchor = (name) ->
 	})
 	Tools.makeHoverable background, anchor
 
-	group.add background
 	group.add anchor
+	group.add background
 	group
 
 
