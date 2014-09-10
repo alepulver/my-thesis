@@ -60,6 +60,7 @@ http://circles-experiment.meteor.com/
 
 #### Ideas
 
+- Check why it works so slow on Firefox
 - Deploy to openshift for production
 - Move buttons and color bar outside canvas (easier and saves space)
 - Add message box responding to current mouse position outside canvas
