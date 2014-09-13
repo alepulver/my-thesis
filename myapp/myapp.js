@@ -36,6 +36,9 @@ Router.map(function() {
       read_var('tedx_user_id', 'current_user', 'none');
       read_var('group_id', 'current_group', 'none');
 
+      // XXX: why on Earth do we have to do this instead of cloning or just passing?
+      Session.set("url_params", _.zipObject(_.keys(params), _.values(params)));
+
       return {};
     }
   });

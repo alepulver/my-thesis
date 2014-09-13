@@ -51,18 +51,13 @@ http://circles-experiment.meteor.com/
 
 - Restrict db access
 - Allow viewing results graphically (toDataURL)
+- Display result summary online with d3/vega/etc
 - Add password or token to /reports
-
-#### Admin panel
-
-- Allow downloading as CSV or any tabulated format
-- Maybe displaying online with d3/vega/etc
 
 #### Ideas
 
 - Check why it works so slow on Firefox
 - Deploy to openshift for production
-- Move buttons and color bar outside canvas (easier and saves space)
 - Add message box responding to current mouse position outside canvas
 - Refactor widgets in a wrapper and decorator objects
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor

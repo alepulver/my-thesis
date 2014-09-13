@@ -1,5 +1,13 @@
 _ = lodash
 
+
+questionsBegin = ->
+	if (Session.get("current_user") == "none")
+		new QuestionsBegin()
+	else
+		new QuestionsBeginTEDX()
+
+
 class QuestionsBegin
 	constructor: ->
 		@name = "questions_begining"
@@ -50,9 +58,9 @@ class QuestionsBegin
 		event.preventDefault()
 
 		results = {}
-		variables = ['name', 'age']
+		variables = ['name', 'age', 'email']
 		if (Config.askAddresses)
-			variables += ['email', 'facebook', 'twitter']
+			variables += ['facebook', 'twitter']
 
 		_.each(variables, (field) ->
 			results[field] = template.find("input[id=#{field}]").value
@@ -80,7 +88,32 @@ class QuestionsBegin
 			_.size(already_done) > 0
 
 
+class QuestionsBeginTEDX
+	constructor: ->
+		@name = "questions_begining"
+
+	start: (@workflow) ->
+		@readVariables()
+
+	readVariables: ->
+		url_params = Session.get("url_params")
+		console.log(url_params)
+
+		get_param = (name) ->
+			if (_.isUndefined(url_params[name]))
+				"none"
+			else
+				url_params[name]
+
+		variables = {'name': 'name', 'age': 'age', 'sex': 'sex', 'studying': 'study', 'working': 'work'}
+		results = {}
+		_.forEach(_.keys(variables), (key) ->
+			results[key] = get_param variables[key]
+		)
+		@workflow.stepFinished(results)
+
+
 @Steps ?= {}
 _.merge(@Steps, {
-	QuestionsBegin: QuestionsBegin
+	questionsBegin
 })
