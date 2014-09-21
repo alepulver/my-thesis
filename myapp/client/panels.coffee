@@ -288,7 +288,7 @@ class TimelinePanel extends Panel
 			width: 100,
 			text: 'Aceptar'
 		})
-		@button.on('mousedown', -> self.finishedLineAdjustments())
+		@button.on('mousedown tap', -> self.finishedLineAdjustments())
 
 		@layer.add @line.box
 		@layer.add @line.group

@@ -53,11 +53,12 @@ http://circles-experiment.meteor.com/
 - Allow viewing results graphically (toDataURL)
 - Display result summary online with d3/vega/etc
 - Add password or token to /reports
+- Post to external URL and log any upload failures
+- Add javascript to disallow advancing the stage until data is saved, or closing window
 
 #### Ideas
 
-- Check why it works so slow on Firefox
-- Deploy to openshift for production
+- Check why it works so slow on Firefox (search for related canvas questions)
 - Add message box responding to current mouse position outside canvas
 - Refactor widgets in a wrapper and decorator objects
 - Check this? https://github.com/HarvardEconCS/turkserver-meteor
