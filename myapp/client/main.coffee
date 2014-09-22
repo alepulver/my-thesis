@@ -40,8 +40,12 @@ class Workflow
 		this.nextStep()
 
 	finish: ->
-		#HTTP.call("POST", "http://api.twitter.com/xyz",
-		#	{data: @results}, (error, result) -> true)
+		if (Config.secondary_save)
+			jQuery.post('http://tedx.cloudapp.net/experiments/create/',
+				test_subject: "experimentos completos"
+				experiment_name: "tedxcircles_experiments"
+				experiment_log: JSON.stringify(@results)
+			)
 		@finishNotifier(@results)
 
 	preStart: ->
@@ -74,6 +78,13 @@ class Workflow
 		}
 		Results.insert(step_results)
 		@results.push(step_results)
+
+		if (Config.secondary_save)
+			jQuery.post('http://tedx.cloudapp.net/experiments/create/',
+				test_subject: "etapas intermedias de los experimentos"
+				experiment_name: "tedxcircles_stages"
+				experiment_log: JSON.stringify(step_results)
+			)
 
 		if @current_index >= _.size(@steps)-1
 			this.finish()

@@ -4,7 +4,6 @@
 # but you can also edit it by hand.
 
 standard-app-packages
-insecure
 brentjanderson:kinetic.js@5.1.0
 mquandalle:bower@0.1.10
 coffeescript

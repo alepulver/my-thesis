@@ -49,12 +49,10 @@ http://circles-experiment.meteor.com/
 
 ### TODO
 
-- Restrict db access
 - Allow viewing results graphically (toDataURL)
 - Display result summary online with d3/vega/etc
 - Add password or token to /reports
 - Post to external URL and log any upload failures
-- Add javascript to disallow advancing the stage until data is saved, or closing window
 
 #### Ideas
 

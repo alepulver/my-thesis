@@ -10,7 +10,8 @@ assert = function(condition, message) {
 
 Config = {
   askAddresses: false,
-  max_event_rate: 30
+  max_event_rate: 30,
+  secondary_save: false
 }
 
 Results = new Meteor.Collection("Results");
@@ -43,8 +44,8 @@ Router.map(function() {
     }
   });
   //this.route('results');
-  this.route('results_json_tusam', {
-    path: '/results_json_tusam',
+  this.route('results_json', {
+    path: '/results_json',
     where: 'server',
     action: function () {
       var json = Results.find().fetch();
@@ -77,5 +78,11 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
+  });
+
+  Results.allow({
+    insert: function (userId, experiment) {
+      return true;
+    }
   });
 }
