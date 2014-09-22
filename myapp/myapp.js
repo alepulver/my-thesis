@@ -42,9 +42,9 @@ Router.map(function() {
       return {};
     }
   });
-  this.route('results');
-  this.route('results_json', {
-    path: '/results_json',
+  //this.route('results');
+  this.route('results_json_tusam', {
+    path: '/results_json_tusam',
     where: 'server',
     action: function () {
       var json = Results.find().fetch();
