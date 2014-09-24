@@ -11,11 +11,11 @@ assert = function(condition, message) {
 Config = {
   askAddresses: false,
   max_event_rate: 30,
-  secondary_save: false
+  secondary_save: true
 }
 
 Results = new Meteor.Collection("Results");
-//CompleteResults = new Meteor.Collection("CompleteResults");
+//Errors = new Meteor.Collection("Errors");
 
 Router.map(function() {
   this.route('experiments', {
@@ -43,7 +43,9 @@ Router.map(function() {
       return {};
     }
   });
-  //this.route('results');
+
+  this.route('results');
+
   this.route('results_json', {
     path: '/results_json',
     where: 'server',
@@ -63,11 +65,6 @@ if (Meteor.isClient) {
     return Template[Session.get("active_stage")];
   };
 
-  Template.results.as_json = function() {
-    data = Results.find().fetch();
-    return JSON.stringify(data, null, 2);
-  };
-
   Meteor.startup(function() {
     // code to run on client at startup
     _ = lodash;
@@ -78,6 +75,20 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
+  });
+
+  Meteor.methods({
+    getSummary: function() {
+      var inital_time = 0;
+      var tedx_time = 0;
+      var fix_time = 0;
+
+      var summary = {};
+
+      summary['blah'] = Results.find().count();
+
+      return summary;
+    }
   });
 
   Results.allow({

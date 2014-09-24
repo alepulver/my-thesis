@@ -52,7 +52,6 @@ http://circles-experiment.meteor.com/
 - Allow viewing results graphically (toDataURL)
 - Display result summary online with d3/vega/etc
 - Add password or token to /reports
-- Post to external URL and log any upload failures
 
 #### Ideas
 
@@ -64,6 +63,7 @@ http://circles-experiment.meteor.com/
 
 ### References
 
+- Beware of *autopublish*, see [this post](http://blog.jerodsanto.net/2012/04/confessions-of-a-meteor-newb/)
 - Save experiment session graphically
   - [Stage data URL](http://www.html5canvastutorials.com/kineticjs/html5-canvas-stage-data-url-with-kineticjs/)
   - [Replay system for KineticJS](http://nightlycoding.com/index.php/2014/01/replay-system-for-kineticjs-and-html5-canvas/)

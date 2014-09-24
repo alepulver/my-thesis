@@ -7,6 +7,8 @@ startMainApp = ->
 
 	Session.set("current_experiment", Meteor.uuid())
 
+	startResultsThing()
+
 	steps = [
 		new Steps.Introduction(),
 		Steps.questionsBegin(),
@@ -20,6 +22,16 @@ startMainApp = ->
 
 	workflow = new Workflow(steps, finishedMainApp)
 	workflow.start()
+
+
+# XXX: ask why this does not work the "easy" way
+startResultsThing = ->
+	Template.results.rendered = ->
+		Meteor.call('getSummary', (err, val) ->
+			Session.set('summary', val))
+	
+	Template.results.data = ->
+		Session.get('summary')
 
 
 finishedMainApp = (results) ->
@@ -40,12 +52,7 @@ class Workflow
 		this.nextStep()
 
 	finish: ->
-		if (Config.secondary_save)
-			jQuery.post('http://tedx.cloudapp.net/experiments/create/',
-				test_subject: "experimentos completos"
-				experiment_name: "tedxcircles_experiments"
-				experiment_log: JSON.stringify(@results)
-			)
+		@externalSave('tedxcircles_experiments', @results)
 		@finishNotifier(@results)
 
 	preStart: ->
@@ -77,17 +84,27 @@ class Workflow
 			results: results
 		}
 		Results.insert(step_results)
+		@externalSave('tedxcircles_stages', step_results)
+		
 		@results.push(step_results)
 
-		if (Config.secondary_save)
-			jQuery.post('http://tedx.cloudapp.net/experiments/create/',
-				test_subject: "etapas intermedias de los experimentos"
-				experiment_name: "tedxcircles_stages"
-				experiment_log: JSON.stringify(step_results)
-			)
 
 		if @current_index >= _.size(@steps)-1
 			this.finish()
 		else
 			this.nextStep()
 
+	externalSave: (name, data) ->
+		if (Config.secondary_save)
+			contents =
+				test_subject: "no sirve"
+				experiment_name: name
+				experiment_log: JSON.stringify(data)
+
+			request = jQuery.ajax(
+				url: "http://tedx.cloudapp.net/experiments/create/"
+				type: "POST"
+				data: JSON.stringify(contents)
+				contentType: "application/json; charset=utf-8"
+			)
+			#request.fail((jqXHR, message) -> alert("Request failed: " + message))
