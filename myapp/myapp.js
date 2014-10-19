@@ -46,8 +46,8 @@ Router.map(function() {
 
   this.route('results');
 
-  this.route('results_json', {
-    path: '/results_json',
+  this.route('results_json_vivejaja', {
+    path: '/results_json_vivejaja',
     where: 'server',
     action: function () {
       var json = Results.find().fetch();

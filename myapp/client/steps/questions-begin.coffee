@@ -2,11 +2,15 @@ _ = lodash
 
 
 questionsBegin = ->
+  # FIXME: does not work because of updating later
+	###
 	current_user = Session.get("current_user") || "none"
 	if (current_user == "none")
 		new QuestionsBegin()
 	else
 		new QuestionsBeginTEDX()
+	###
+	new QuestionsBeginTEDX()
 
 
 class QuestionsBegin
