@@ -6,7 +6,12 @@ A script for analysis of the quantity and "completeness" of experiments is avail
 
 ...
 
-# Links
+## TODO
+
+- Use names instead of numeric codes for categorical variables
+- ...
+
+## Links
 
 - [Export from server](https://gist.github.com/olizilla/5209369)
 - [Import from server](https://gist.github.com/IslamMagdy/5519514)

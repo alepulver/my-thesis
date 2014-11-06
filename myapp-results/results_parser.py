@@ -29,6 +29,40 @@ class Stage:
         ]
 
 
+class QuestionsBeginTedx:
+    def name(self):
+        return self._data['name']
+
+    def age(self):
+        return self._data['age']
+
+    def sex(self):
+        return self._data['sex']
+
+    def working(self):
+        return 'none'
+
+    def studying(self):
+        return 'none'
+
+
+class QuestionsBeginExternal:
+    def name(self):
+        return self._data['name']
+
+    def age(self):
+        return self._data['age']
+
+    def sex(self):
+        return self._data['sex']
+
+    def studying(self):
+        return self._data['studying']
+
+    def working(self):
+        return self._data['working']
+
+
 class Experiment:
     def __init__(self, data):
         self._data = data
