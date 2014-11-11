@@ -6,61 +6,15 @@ from collections import defaultdict
 import csv
 
 
-class Stage:
-    def __init__(self, data, experiment):
-        self._data = data
-        self._experiment = experiment
+class StageSerializer:
+    def row_for(self, stage):
+        stage.visit(self)
 
-    @staticmethod
-    def row_header():
-        return ['exp_id', 'size', 'start_time', 'end_time', 'name', 'complete']
+    def case_questions_begining(self, stage):
+        pass
 
-    def size_in_bytes(self):
-        return len(json.dumps(self._data))
-
-    def row(self):
-        return [
-            self._data['experiment'],
-            self.size_in_bytes(),
-            self._data['start_time'],
-            self._data['end_time'],
-            self._data['stage'],
-            self._experiment.is_complete()
-        ]
-
-
-class QuestionsBeginTedx:
-    def name(self):
-        return self._data['name']
-
-    def age(self):
-        return self._data['age']
-
-    def sex(self):
-        return self._data['sex']
-
-    def working(self):
-        return 'none'
-
-    def studying(self):
-        return 'none'
-
-
-class QuestionsBeginExternal:
-    def name(self):
-        return self._data['name']
-
-    def age(self):
-        return self._data['age']
-
-    def sex(self):
-        return self._data['sex']
-
-    def studying(self):
-        return self._data['studying']
-
-    def working(self):
-        return self._data['working']
+    def case_questions_end(self, stage):
+        pass
 
 
 class Experiment:

@@ -8,7 +8,9 @@ A script for analysis of the quantity and "completeness" of experiments is avail
 
 ## TODO
 
-- Use names instead of numeric codes for categorical variables
+- Add 'superposition' percentage variable
+- Add space usage percentage
+- Make timestamps relative to start of stage
 - ...
 
 ## Links
