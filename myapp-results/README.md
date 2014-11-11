@@ -11,6 +11,7 @@ A script for analysis of the quantity and "completeness" of experiments is avail
 - Add 'superposition' percentage variable
 - Add space usage percentage
 - Make timestamps relative to start of stage
+- Return dates and handle them from R with "lubridate"
 - ...
 
 ## Links

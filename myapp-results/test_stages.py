@@ -49,7 +49,19 @@ def test_questions_begining():
 
 def test_present_past_future():
     stage = stages.stage_from(rows['present_past_future'])
+
     assert_equals(stage.stage_name(), 'present_past_future')
+    assert_equals(stage.element_data('present'), {
+        'center_x': 319.06804908294, 'center_y': 256.06804908294,
+        'color': 'green', 'radius': 152.93195091706
+    })
+    assert_equals(stage.element_data('past'), {
+        'center_x': 229, 'center_y': 282, 'color': 'blue', 'radius': 70
+    })
+    assert_equals(stage.element_data('future'), {
+        'center_x': 500.3393852926092, 'center_y': 231.6606147073908,
+        'color': 'darkviolet', 'radius': 146.6606147073908
+    })
 
 
 def test_seasons_of_year():
