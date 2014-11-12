@@ -11,18 +11,21 @@ def experiments_from(stages):
 
 class Experiment:
     def __init__(self, data):
+        # TODO: assert no duplicates
+        assert(len(data) <= 8)
         self._data = data
 
     def get_stage(self, name):
         return next(filter(lambda s: s['stage'] == name, self._data))
 
-    @staticmethod
-    def row_header():
-        return [
-            'exp_id', 'size', 'num_stages', 'start_time',
-            'end_time', 'participant', 'group',
-            'ip_address', 'user_agent', 'local_id', 'complete'
-        ]
+    def time_start(self):
+        pass
+
+    def time_duration(self):
+        pass
+
+    def num_stages(self):
+        pass
 
     def size_in_bytes(self):
         return len(json.dumps(self._data))
@@ -35,23 +38,5 @@ class Experiment:
         return len(self._data) == 8
 
     def stages(self):
-        return (Stage(s, self) for s in self._data)
-
-    def row(self):
-        introduction = self.get_stage("introduction")
-        results = introduction['results']
-
-        return [
-            self._data[0]['experiment'],
-            self.size_in_bytes(),
-            len(self._data),
-            introduction['start_time'],
-            self.end_time(),
-            results['participant'],
-            results['group'],
-            results['ip_address'],
-            results['user_agent'],
-            results['local_id'] if 'local_id' in results else 'unknown',
-            self.is_complete()
-        ]
+        return self._data
 

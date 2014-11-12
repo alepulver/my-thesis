@@ -20,17 +20,6 @@ def stage_from(stage_row):
         raise 'unknown stage'
 
 
-class Serializer:
-    def row_for(self, stage):
-        stage.visit(self)
-
-    def case_questions_begining(self, stage):
-        pass
-
-    def case_questions_end(self, stage):
-        pass
-
-
 class Stage:
     def __init__(self, data):
         self._data = data
@@ -168,6 +157,14 @@ class PartsOfDay(Stage):
     def stage_elements():
         return ['morning', 'afternoon', 'night']
 
+    def element_data(self, element):
+        section = self._data['results']['drawing']['shapes'][element]
+
+        return {
+            "rotation": section['rotation'],
+            "angle": section['angle']
+        }
+
 
 class Timeline(Stage):
     @staticmethod
@@ -176,7 +173,10 @@ class Timeline(Stage):
 
     @staticmethod
     def stage_elements():
-        return ['my_birth', 'my_childhood', 'my_youth', 'today', 'my_third_age', 'year_1900', 'year_2100', 'wwii', 'the_beatles']
+        return [
+            'my_birth', 'my_childhood', 'my_youth', 'today',
+            'my_third_age', 'year_1900', 'year_2100', 'wwii', 'the_beatles'
+        ]
 
     def element_data(self, element):
         section = self._data['results']['drawing']['shapes'][element]
@@ -205,3 +205,9 @@ class QuestionsEnd(Stage):
 
     def choice_position(self):
         return self._data['results']['slider-position'] / 10
+
+
+class EventAggregator:
+    def __init__(self, stage):
+        self._stage = stage
+
