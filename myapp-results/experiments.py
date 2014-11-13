@@ -27,6 +27,9 @@ class Experiment:
     def num_stages(self):
         pass
 
+    def experiment_id(self):
+        return self._data[0].experiment_id()
+
     def size_in_bytes(self):
         return len(json.dumps(self._data))
 

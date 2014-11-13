@@ -20,6 +20,14 @@ def stage_from(stage_row):
         raise 'unknown stage'
 
 
+def fix_angle(angle):
+    while angle < 0:
+        angle += 360
+    while angle >= 360:
+        angle -= 360
+    return angle
+
+
 class Stage:
     def __init__(self, data):
         self._data = data
@@ -159,10 +167,11 @@ class PartsOfDay(Stage):
 
     def element_data(self, element):
         section = self._data['results']['drawing']['shapes'][element]
-
+        rotation = section['rotation'] + fix_angle(section['angle']) / 2
+        
         return {
-            "rotation": section['rotation'],
-            "angle": section['angle']
+            "rotation": fix_angle(rotation),
+            "angle": fix_angle(section['angle'])
         }
 
 
@@ -182,8 +191,14 @@ class Timeline(Stage):
         section = self._data['results']['drawing']['shapes'][element]
 
         return {
-            "position": section['position']
+            "position": (section['position'] + 1) / 2
         }
+
+    def length(self):
+        return self._data['results']['timeline']['results']['length']
+    
+    def rotation(self):
+        return fix_angle(self._data['results']['timeline']['results']['rotation'])
 
 
 class QuestionsEnd(Stage):
