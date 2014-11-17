@@ -1,8 +1,8 @@
 class StageHeader:
     def row_for(self, stage):
-        stage.visit(self)
+        return stage.visit(self)
 
-    def common(self, stage):
+    def common_row_for(self, stage):
         return ['experiment_id', 'time_start', 'time_duration', 'size_in_bytes']
 
     def case_introduction(self, stage):
@@ -12,29 +12,36 @@ class StageHeader:
         return ['name', 'age', 'sex']
 
     def case_present_past_future(self, stage):
-        pass
+        return self.variables_for(stage, ['center_x', 'center_y', 'radius', 'color'])
 
     def case_seasons_of_year(self, stage):
-        pass
+        return self.variables_for(stage, ['center_x', 'center_y', 'size_x', 'size_y', 'color'])
 
     def case_days_of_week(self, stage):
-        pass
+        return self.variables_for(stage, ['center_x', 'center_y', 'size_y', 'color'])
 
     def case_parts_of_day(self, stage):
-        pass
+        return self.variables_for(stage, ['rotation', 'size', 'color'])
 
     def case_timeline(self, stage):
-        pass
+        result = ['line_rotation', 'line_length']
+        result.extend(self.variables_for(stage, ['position']))
+        return result
 
     def case_questions_ending(self, stage):
-        return ['represents_time', 'cronotype', 'choice_size', 'choice_color', 'choice_position']
+        return ['represents_time', 'cronotype', 'forced_size', 'forced_color', 'forced_position']
+
+    @staticmethod
+    def variables_for(stage, variables):
+        elements = type(stage).stage_elements()
+        return ['{}_{}'.format(var, elem) for var in variables for elem in elements]
 
 
 class StageData:
     def row_for(self, stage):
-        stage.visit(self)
+        return stage.visit(self)
 
-    def common(self, stage):
+    def common_row_for(self, stage):
         return [stage.experiment_id(), stage.time_start(), stage.time_duration(), stage.size_in_bytes()]
 
     def case_introduction(self, stage):
@@ -44,19 +51,21 @@ class StageData:
         return [stage.name(), stage.age(), stage.sex()]
 
     def case_present_past_future(self, stage):
-        pass
+        return self.variables_for(stage, ['center_x', 'center_y', 'radius', 'color'])
 
     def case_seasons_of_year(self, stage):
-        pass
+        return self.variables_for(stage, ['center_x', 'center_y', 'size_x', 'size_y', 'color'])
 
     def case_days_of_week(self, stage):
-        pass
+        return self.variables_for(stage, ['center_x', 'center_y', 'size_y', 'color'])
 
     def case_parts_of_day(self, stage):
-        pass
+        return self.variables_for(stage, ['rotation', 'size', 'color'])
 
     def case_timeline(self, stage):
-        pass
+        result = [stage.rotation(), stage.length()]
+        result.extend(self.variables_for(stage, ['position']))
+        return result
 
     def case_questions_ending(self, stage):
         return [
@@ -64,6 +73,10 @@ class StageData:
             stage.choice_size(), stage.choice_color(), stage.choice_position()
         ]
 
+    @staticmethod
+    def variables_for(stage, variables):
+        elements = type(stage).stage_elements()
+        return [stage.element_data(elem)[var] for var in variables for elem in elements]
 
 class ExperimentHeader:
     pass

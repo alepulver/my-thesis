@@ -101,13 +101,19 @@ def test_parts_of_day():
 
     assert_equals(stage.stage_name(), 'parts_of_day')
     assert_equals(stage.element_data('morning'), {
-        'angle': 76.41994897349244, 'rotation': 167.81246306668982
+        'color': 'green',
+        'size': 76.41994897349244,
+        'rotation': 167.81246306668982
     })
     assert_equals(stage.element_data('afternoon'), {
-        'angle': 137.1224927263627, 'rotation': 44.51096951035254
+        'color': 'blue',
+        'size': 137.1224927263627,
+        'rotation': 44.51096951035254
     })
     assert_equals(stage.element_data('night'), {
-        'angle': 168.7934961310493, 'rotation': 289.75028142222305
+        'color': 'black',
+        'size': 168.7934961310493,
+        'rotation': 289.75028142222305
     })
 
 
@@ -121,10 +127,10 @@ def test_parts_of_day_angles_should_wraparound():
     stage = stages.stage_from(my_row)
 
     assert_equals(stage.element_data('morning'), {
-        'angle': 350, 'rotation': 185
+        'color': 'green', 'size': 350, 'rotation': 185
     })
     assert_equals(stage.element_data('night'), {
-        'angle': 350, 'rotation': 185
+        'color': 'black', 'size': 350, 'rotation': 185
     })
 
 

@@ -168,10 +168,11 @@ class PartsOfDay(Stage):
     def element_data(self, element):
         section = self._data['results']['drawing']['shapes'][element]
         rotation = section['rotation'] + fix_angle(section['angle']) / 2
-        
+
         return {
             "rotation": fix_angle(rotation),
-            "angle": fix_angle(section['angle'])
+            "size": fix_angle(section['angle']),
+            "color": section['color']
         }
 
 
