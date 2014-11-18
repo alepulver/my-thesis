@@ -201,6 +201,14 @@ class Timeline(Stage):
     def rotation(self):
         return fix_angle(self._data['results']['timeline']['results']['rotation'])
 
+    def button_order(self):
+        value = self._data['results']['choose']['show_order']
+        if value == 0:
+            return 'chronological'
+        elif value == 1:
+            return 'unsorted'
+        else:
+            raise 'unsupported button show order'
 
 class QuestionsEnd(Stage):
     @staticmethod

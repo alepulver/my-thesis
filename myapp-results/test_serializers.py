@@ -6,11 +6,12 @@ from nose.tools import assert_equals
 
 rows = {}
 my_stages = {}
+stages_rows = []
 
 
 def setup_module():
     with open("examples/results.json", "r") as fp:
-        stages_rows = json.load(fp)
+        stages_rows.extend(json.load(fp))
 
     rows['introduction'] = stages_rows[0]
     rows['parts_of_day'] = stages_rows[1]
@@ -150,10 +151,67 @@ class TestStageData:
 
 class TestExperimentHeader:
     def setUp(self):
-        self.stages = my_stages
-        self.experiment = experiments.experiments_from(my_stages)[0]
         self.serializer = serializers.ExperimentHeader()
 
-    def test_header(self):
+    def test_complete(self):
+        self.experiment = experiments.experiments_from(my_stages.values())[0]
         result = self.serializer.row_for(self.experiment)
-        assert_equals(result, [])
+
+        assert_equals(len(result), 108)
+        assert_equals(result[::10], [
+            'introduction_duration', 'questions_begining_sex',
+            'present_past_future_radius_past',
+            'seasons_of_year_center_x_spring', 'seasons_of_year_size_y_autum',
+            'days_of_week_center_x_tuesday', 'days_of_week_center_y_friday', 'days_of_week_color_monday',
+            'parts_of_day_rotation_afternoon',
+            'timeline_line_rotation', 'timeline_position_the_beatles'
+        ])
+
+    def test_incomplete(self):
+        ss = [stages.stage_from(s) for s in stages_rows[8:]]
+        self.experiment = experiments.experiments_from(ss)[0]
+        result = self.serializer.row_for(self.experiment)
+
+        assert_equals(len(result), 108)
+        assert_equals(result[::10], [
+            'introduction_duration', 'questions_begining_sex',
+            'present_past_future_radius_past',
+            'seasons_of_year_center_x_spring', 'seasons_of_year_size_y_autum',
+            'days_of_week_center_x_tuesday', 'days_of_week_center_y_friday', 'days_of_week_color_monday',
+            'parts_of_day_rotation_afternoon',
+            'timeline_line_rotation', 'timeline_position_the_beatles'
+        ])
+
+
+class TestExperimentData:
+    def setUp(self):
+        self.serializer = serializers.ExperimentData()
+
+    def test_complete(self):
+        self.experiment = experiments.experiments_from(my_stages.values())[0]
+        result = self.serializer.row_for(self.experiment)
+        
+        assert_equals(len(result), 108)
+        assert_equals(result[::10], [
+            55448, 'female',
+            70,
+            431.0544780162724, 109.6894558668137,
+            123, 229.8177833557129, 'black',
+            44.51096951035254,
+            44.84884095673553, 0.9872686547323904
+        ])
+
+    def test_incomplete(self):
+        ss = [stages.stage_from(s) for s in stages_rows[8:]]
+        self.experiment = experiments.experiments_from(ss)[0]
+        result = self.serializer.row_for(self.experiment)
+        
+        assert_equals(len(result), 108)
+        assert_equals(result[::10], [
+            55448, 'female',
+            70,
+            431.0544780162724, 109.6894558668137,
+            123, 229.8177833557129, 'black',
+            44.51096951035254,
+            44.84884095673553, 0.9872686547323904
+        ])

@@ -98,8 +98,9 @@ class ExperimentHeader:
         result = []
         for sn in stage_names():
             stage = experiment.stage_named(sn)
-            # FIXME: add common fields
-            result.extend(serializer.row_for(stage))
+            fields = ['duration', 'size_in_bytes'] + serializer.row_for(stage)
+            fields = ["{}_{}".format(sn, f) for f in fields]
+            result.extend(fields)
         return result
 
 
@@ -109,6 +110,6 @@ class ExperimentData:
         result = []
         for sn in stage_names():
             stage = experiment.stage_named(sn)
-            # FIXME: add common fields
-            result.extend(serializer.row_for(stage))
+            fields = [stage.time_duration(), stage.size_in_bytes()] + serializer.row_for(stage)
+            result.extend(fields)
         return result

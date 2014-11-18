@@ -11,12 +11,11 @@ def experiments_from(stages):
 
 class Experiment:
     def __init__(self, data):
-        # TODO: assert no duplicates
         assert(len(data) <= 8)
         self._data = data
 
-    def get_stage(self, name):
-        return next(filter(lambda s: s['stage'] == name, self._data))
+    def stage_named(self, name):
+        return next(filter(lambda s: s.stage_name() == name, self._data))
 
     def time_start(self):
         pass

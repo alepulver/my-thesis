@@ -140,6 +140,7 @@ def test_timeline():
     assert_equals(stage.stage_name(), 'timeline')
     assert_equals(stage.length(), 724.8023584003396)
     assert_equals(stage.rotation(), 44.84884095673553)
+    assert_equals(stage.button_order(), 'chronological')
     assert_equals(stage.element_data('year_1900'), {
         'position': 0.7737157552273286
     })
