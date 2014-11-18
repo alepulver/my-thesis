@@ -70,7 +70,10 @@ class Introduction(Stage):
         return self._data['results']['participant']
 
     def local_id(self):
-        return self._data['results']['local_id']
+        if 'local_id' in self._data['results']:
+            return self._data['results']['local_id']
+        else:
+            return 'unknown'
 
 
 class QuestionsBegin(Stage):
