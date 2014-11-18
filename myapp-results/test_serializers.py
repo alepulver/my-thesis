@@ -146,3 +146,14 @@ class TestStageData:
             28.859375, 95.60205309838057, 155.41015625, 100, 272.3644332885742, 314.3408498764038, 146.6029052734375,
             'black', 'red', 'saddlebrown', 'blue', 'darkviolet', 'yellow', 'green'
         ])
+
+
+class TestExperimentHeader:
+    def setUp(self):
+        self.stages = my_stages
+        self.experiment = experiments.experiments_from(my_stages)[0]
+        self.serializer = serializers.ExperimentHeader()
+
+    def test_header(self):
+        result = self.serializer.row_for(self.experiment)
+        assert_equals(result, [])

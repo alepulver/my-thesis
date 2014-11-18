@@ -78,9 +78,37 @@ class StageData:
         elements = type(stage).stage_elements()
         return [stage.element_data(elem)[var] for var in variables for elem in elements]
 
+
+def stage_names():
+    return [
+        'introduction',
+        'questions_begining',
+        'present_past_future',
+        'seasons_of_year',
+        'days_of_week',
+        'parts_of_day',
+        'timeline',
+        'questions_ending'
+    ]
+
+
 class ExperimentHeader:
-    pass
+    def row_for(self, experiment):
+        serializer = StageHeader()
+        result = []
+        for sn in stage_names():
+            stage = experiment.stage_named(sn)
+            # FIXME: add common fields
+            result.extend(serializer.row_for(stage))
+        return result
 
 
 class ExperimentData:
-    pass
+    def row_for(self, experiment):
+        serializer = StageData()
+        result = []
+        for sn in stage_names():
+            stage = experiment.stage_named(sn)
+            # FIXME: add common fields
+            result.extend(serializer.row_for(stage))
+        return result

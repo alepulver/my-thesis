@@ -8,10 +8,12 @@ A script for analysis of the quantity and "completeness" of experiments is avail
 
 ## TODO
 
+- Add shown button order in timeline (chronological vs unsorted)
 - Add 'superposition' percentage variable
 - Add space usage percentage
 - Make timestamps relative to start of stage
 - Return dates and handle them from R with "lubridate"
+- Use HDF5 to export: http://en.wikipedia.org/wiki/Hierarchical_Data_Format
 - ...
 
 ## Links
@@ -19,3 +21,4 @@ A script for analysis of the quantity and "completeness" of experiments is avail
 - [Export from server](https://gist.github.com/olizilla/5209369)
 - [Import from server](https://gist.github.com/IslamMagdy/5519514)
 - [neuro-circles-json-to-csv](https://github.com/chudichudichudi/neuro-circles-json-to-csv)
+- http://pythontesting.net/framework/nose/nose-fixture-reference/
