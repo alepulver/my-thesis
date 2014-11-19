@@ -1,6 +1,8 @@
+import stages
+
 class StageHeader:
     def row_for(self, stage):
-        return stage.visit(self)
+        return stage.visit_header(self)
 
     def common_row_for(self, stage):
         return ['experiment_id', 'time_start', 'time_duration', 'size_in_bytes']
@@ -33,7 +35,7 @@ class StageHeader:
 
     @staticmethod
     def variables_for(stage, variables):
-        elements = type(stage).stage_elements()
+        elements = stage.stage_elements()
         return ['{}_{}'.format(var, elem) for var in variables for elem in elements]
 
 
@@ -79,25 +81,12 @@ class StageData:
         return [stage.element_data(elem)[var] for var in variables for elem in elements]
 
 
-def stage_names():
-    return [
-        'introduction',
-        'questions_begining',
-        'present_past_future',
-        'seasons_of_year',
-        'days_of_week',
-        'parts_of_day',
-        'timeline',
-        'questions_ending'
-    ]
-
-
 class ExperimentHeader:
-    def row_for(self, experiment):
+    def row(self):
         serializer = StageHeader()
         result = []
-        for sn in stage_names():
-            stage = experiment.stage_named(sn)
+        for stage in stages.all_stages():
+            sn = stage.stage_name()
             fields = ['duration', 'size_in_bytes'] + serializer.row_for(stage)
             fields = ["{}_{}".format(sn, f) for f in fields]
             result.extend(fields)
@@ -108,8 +97,11 @@ class ExperimentData:
     def row_for(self, experiment):
         serializer = StageData()
         result = []
-        for sn in stage_names():
-            stage = experiment.stage_named(sn)
-            fields = [stage.time_duration(), stage.size_in_bytes()] + serializer.row_for(stage)
+        for stageCls in stages.all_stages():
+            if experiment.has_stage(stageCls):
+                stage = experiment.stage_named(stageCls.stage_name())
+                fields = [stage.time_duration(), stage.size_in_bytes()] + serializer.row_for(stage)
+            else:
+                fields = ['missing'] * (len(StageHeader().row_for(stageCls)) + 2)
             result.extend(fields)
         return result

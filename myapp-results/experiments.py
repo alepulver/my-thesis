@@ -14,6 +14,9 @@ class Experiment:
         assert(len(data) <= 8)
         self._data = data
 
+    def has_stage(self, stage):
+        return len(list(filter(lambda s: s.stage_name() == stage.stage_name(), self._data))) > 0
+
     def stage_named(self, name):
         return next(filter(lambda s: s.stage_name() == name, self._data))
 
@@ -41,4 +44,3 @@ class Experiment:
 
     def stages(self):
         return self._data
-

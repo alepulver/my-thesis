@@ -2,7 +2,17 @@ import json
 
 
 def stage_from(stage_row):
-    stage_classes = [
+    stage_classes = all_stages()
+
+    cls = list(c for c in stage_classes if c.stage_name() == stage_row['stage'])
+    if len(cls) > 0:
+        return cls[0](stage_row)
+    else:
+        raise 'unknown stage'
+
+
+def all_stages():
+    return [
         Introduction,
         QuestionsBegin,
         PresentPastFuture,
@@ -12,12 +22,6 @@ def stage_from(stage_row):
         Timeline,
         QuestionsEnd
     ]
-
-    cls = list(c for c in stage_classes if c.stage_name() == stage_row['stage'])
-    if len(cls) > 0:
-        return cls[0](stage_row)
-    else:
-        raise 'unknown stage'
 
 
 def fix_angle(angle):

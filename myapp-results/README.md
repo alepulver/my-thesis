@@ -8,7 +8,7 @@ A script for analysis of the quantity and "completeness" of experiments is avail
 
 ## TODO
 
-- Allow printing rows with missing values
+- Return output in a subdirectory, separate data for each available stage, experiments (with is_complete), and stage metadata (common)
 - Ensure correct Experiment construction, use hashes for speed and check duplicates
 - Use HDF5 to export: http://en.wikipedia.org/wiki/Hierarchical_Data_Format
 
