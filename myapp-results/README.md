@@ -2,15 +2,13 @@
 
 The subjects' data can be accessed through the appropriate URL, but as it's not always fetched properly I recommend using `links`. Otherwise the database dump can be obtained with [db-tools](https://github.com/meteor-london/db-tools) in BJSON (Binary JSON) and converted to regular (plain text) JSON.
 
-A script for analysis of the quantity and "completeness" of experiments is available as `generate_stats.py`. To get the data as a CSV, use `generate_results.py`. 
-
-...
+A script for generating reports is available as `runner.py`. The tests can be run with `nosetests`.
 
 ## TODO
 
-- Return output in a subdirectory, separate data for each available stage, experiments (with is_complete), and stage metadata (common)
+- Add support for multiple input files to script, and gzipped
 - Ensure correct Experiment construction, use hashes for speed and check duplicates
-- Use HDF5 to export: http://en.wikipedia.org/wiki/Hierarchical_Data_Format
+- Use HDF5 to model and export: http://en.wikipedia.org/wiki/Hierarchical_Data_Format
 
 ### Variables
 

@@ -31,7 +31,7 @@ class TestStageHeader:
         self.serializer = serializers.StageHeader()
 
     def test_common(self):
-        result = self.serializer.common_row_for(stages.Introduction)
+        result = self.serializer.common_row()
         assert_equals(result, ['experiment_id', 'time_start', 'time_duration', 'size_in_bytes'])
 
     def test_introduction(self):

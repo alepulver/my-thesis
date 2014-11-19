@@ -4,7 +4,7 @@ class StageHeader:
     def row_for(self, stage):
         return stage.visit_header(self)
 
-    def common_row_for(self, stage):
+    def common_row(self):
         return ['experiment_id', 'time_start', 'time_duration', 'size_in_bytes']
 
     def case_introduction(self, stage):
