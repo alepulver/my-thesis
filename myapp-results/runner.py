@@ -33,8 +33,8 @@ def main(argv):
 
     exps = experiments.experiments_from(stgs)
     print("%s total experiments" % len(exps))
-    exps = [e for e in exps if e.is_complete()]
-    print("%s complete experiments" % len(exps))
+    exps_complete = [e for e in exps if e.is_complete()]
+    print("%s complete experiments" % len(exps_complete))
 
     output_experiments(output_dir, exps)
 
