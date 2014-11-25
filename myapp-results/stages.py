@@ -197,16 +197,28 @@ class Timeline(Stage):
 
     def element_data(self, element):
         section = self._data['results']['drawing']['shapes'][element]
+        position = (section['position'] + 1) / 2
+
+        if self.is_inverted():
+            position = 1 - position
 
         return {
-            "position": (section['position'] + 1) / 2
+            "position": position
         }
 
     def length(self):
         return self._data['results']['timeline']['results']['length']
-    
+
     def rotation(self):
-        return fix_angle(self._data['results']['timeline']['results']['rotation'])
+        angle = fix_angle(self._data['results']['timeline']['results']['rotation'])
+        if angle >= 0 and angle < 90:
+            return angle
+        if angle >= 90 and angle < 180:
+            return angle - 180
+        elif angle >= 180 and angle < 270:
+            return angle - 180
+        elif angle >= 270 and angle < 360:
+            return angle - 360
 
     def button_order(self):
         value = self._data['results']['choose']['show_order']
@@ -216,6 +228,11 @@ class Timeline(Stage):
             return 'unsorted'
         else:
             raise 'unsupported button show order'
+
+    def is_inverted(self):
+        angle = fix_angle(self._data['results']['timeline']['results']['rotation'])
+        return angle >= 90 and angle < 270
+
 
 class QuestionsEnd(Stage):
     @staticmethod
