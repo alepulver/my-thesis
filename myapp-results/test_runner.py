@@ -22,7 +22,7 @@ class TestRunner:
     @classmethod
     def setup_class(cls):
         os.system('mkdir {}'.format(cls.test_dir))
-        runner.main(['command', 'examples/results.json', 'output_test'])
+        runner.main(['command', '--output_dir', cls.test_dir,'examples/results.json'])
 
     def test_experiments(self):
         assert_equals(self.record_count('experiments.csv'), 3)

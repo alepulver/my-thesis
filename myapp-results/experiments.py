@@ -1,4 +1,5 @@
 from collections import defaultdict
+import stages
 
 
 def experiments_from(stages):
@@ -10,15 +11,20 @@ def experiments_from(stages):
 
 
 class Experiment:
-    def __init__(self, data):
-        assert(len(data) <= 8)
-        self._data = data
+    def __init__(self, stage_list):
+        assert(len(stage_list) > 0)
+
+        self._data = {}
+        for s in stage_list:
+            self._data[s.stage_name()] = s
+
+        assert(len(stage_list) == len(self._data))
 
     def has_stage(self, stage):
-        return len(list(filter(lambda s: s.stage_name() == stage.stage_name(), self._data))) > 0
+        return stage.stage_name() in self._data.keys()
 
     def stage_named(self, name):
-        return next(filter(lambda s: s.stage_name() == name, self._data))
+        return self._data[name]
 
     def time_start(self):
         pass
@@ -30,17 +36,17 @@ class Experiment:
         pass
 
     def experiment_id(self):
-        return self._data[0].experiment_id()
+        return self._data['introduction'].experiment_id()
 
     def size_in_bytes(self):
-        return len(json.dumps(self._data))
+        return sum(s.size_in_bytes() for s in self._data.values())
 
     def end_time(self):
         end_time = max(map(lambda s: s['end_time'], self._data))
         return end_time
 
     def is_complete(self):
-        return len(self._data) == 8
+        return len(self._data) == len(stages.all_stages())
 
     def stages(self):
         return self._data

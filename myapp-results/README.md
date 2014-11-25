@@ -6,8 +6,7 @@ A script for generating reports is available as `runner.py`. The tests can be ru
 
 ## TODO
 
-- Add support for multiple input files to script, and gzipped
-- Ensure correct Experiment construction, use hashes for speed and check duplicates
+- Different output with encoded variables for matlab, and table of number -> color
 - Use HDF5 to model and export: http://en.wikipedia.org/wiki/Hierarchical_Data_Format
 
 ### Variables

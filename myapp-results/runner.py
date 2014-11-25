@@ -4,42 +4,46 @@ import stages
 import experiments
 import serializers
 import csv
+import argparse
 
 
-def main(argv):
-    if len(argv) < 2:
-        print('please provide a path to the JSON results file')
-        return 1
+def main(arguments):
+    parser = argparse.ArgumentParser(description='Generate flat tables from structured results.')
+    parser.add_argument(
+        'input_files', metavar='FILE', type=str, nargs='+',
+        help='a JSON input file to read data from'
+    )
+    parser.add_argument(
+        '--output_dir', dest='output_dir', default='output',
+        help='output directory to write the results (default: "output")'
+    )
 
-    file_path = argv[1]
+    args = parser.parse_args(arguments[1:])
 
-    if len(argv) == 3:
-        output_dir = argv[2]
-    else:
-        output_dir = 'output'
+    # FIXME: create output dir if doesn't exist, fail if does
 
-
-    with open(file_path, "r") as fp:
-        rows = json.load(fp)
+    data_rows = []
+    for file_path in args.input_files:
+        with open(file_path, "r") as fp:
+            data_rows.extend(json.load(fp))
 
     # XXX: remove old versions with incomplete data
     tedx_start_date = 1410922800000
-    other_date = 1409788800000
+    #other_date = 1409788800000
     condition = lambda s: ('start_time' in s.keys()) and s['start_time'] > tedx_start_date
-    stgs = [stages.stage_from(r) for r in rows if condition(r)]
+    stgs = [stages.stage_from(r) for r in data_rows if condition(r)]
     print("%s stages" % len(stgs))
 
-    output_common_stages(output_dir, stgs)
+    output_common_stages(args.output_dir, stgs)
 
     exps = experiments.experiments_from(stgs)
     print("%s total experiments" % len(exps))
     exps_complete = [e for e in exps if e.is_complete()]
     print("%s complete experiments" % len(exps_complete))
 
-    output_experiments(output_dir, exps)
+    output_experiments(args.output_dir, exps)
 
-
-    output_individual_stages(output_dir, stgs)
+    output_individual_stages(args.output_dir, stgs)
 
     return 0
 
