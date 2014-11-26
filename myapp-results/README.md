@@ -4,17 +4,6 @@ The subjects' data can be accessed through the appropriate URL, but as it's not 
 
 A script for generating reports is available as `runner.py`. The tests can be run with `nosetests`.
 
-## TODO
-
-- Different output with encoded variables for matlab, and table of number -> color
-- Use HDF5 to model and export: http://en.wikipedia.org/wiki/Hierarchical_Data_Format
-
-### Variables
-
-- Add 'superposition' percentage variable
-- Add space usage percentage
-- Return dates and handle them from R with "lubridate"
-
 ## Links
 
 - [Export from server](https://gist.github.com/olizilla/5209369)
