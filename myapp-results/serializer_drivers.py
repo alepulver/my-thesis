@@ -16,6 +16,19 @@ class Experiments:
         self.output_dir = output_dir
 
     def serialize(self, experiments):
+        # FIXME: join all descriptions for each stage
+        with open('{}/experiments_description.csv'.format(self.output_dir), 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            header_serializer = serializers.ExperimentHeader()
+            data_serializer = serializers.ExperimentDescription()
+
+            one = header_serializer.row()
+            two = data_serializer.row()
+
+            writer.writerow(['variable_name', 'description'])
+            for r in zip(one, two):
+                writer.writerow(r)
+
         with open('{}/experiments.csv'.format(self.output_dir), 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(self.get_header())
@@ -53,6 +66,18 @@ class CommonStages:
         stgs = []
         for exp in experiments:
             stgs.extend(exp.stages())
+
+        with open('{}/stages_description.csv'.format(self.output_dir), 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            header_serializer = serializers.StageHeader()
+            data_serializer = serializers.StageDescription()
+
+            one = header_serializer.common_row()
+            two = data_serializer.common_row()
+
+            writer.writerow(['variable_name', 'description'])
+            for r in zip(one, two):
+                writer.writerow(r)
 
         with open('{}/stages.csv'.format(self.output_dir), 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)

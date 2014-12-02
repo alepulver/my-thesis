@@ -95,3 +95,95 @@ class ExperimentData:
             experiment.experiment_id(), experiment.num_stages(), experiment.time_start(),
             experiment.time_duration(), experiment.is_complete(), experiment.size_in_bytes()
         ]
+
+
+class StageDescription:
+    def row_for(self, stage):
+        return stage.visit_header(self)
+
+    def common_row(self):
+        return [
+            'ID único por experimento',
+            'Fecha del inicio de la etapa, en milisegundos desde 1/1/1970',
+            'Duración en milisegundos desde el inicio hasta su fin',
+            'Tamaño en bytes de la etapa, aumenta cuantos más clicks y movimientos hubo'
+        ]
+
+    def case_introduction(self, stage):
+        return [
+            'Dirección IP del sujeto, permite identificar región y suele ser la misma por oficinas',
+            'Navegador del sujeto, con Sistema Operativo',
+            'ID de TEDx, corresponde a la tabla de cronotipos',
+            'Identifica el navegador en una computadora, a ver si más de un experimento provienen de ahí'
+        ]
+
+    def case_questions_begining(self, stage):
+        return ['Nombre', 'Edad', 'Sexo']
+
+    def case_present_past_future(self, stage):
+        return self.variables_for(stage, [
+            'Posición X (vertical) del centro',
+            'Posición Y (vertical) del centro',
+            'Radio',
+            'Color'
+        ])
+
+    def case_seasons_of_year(self, stage):
+        return self.variables_for(stage, [
+            'Posición X (vertical) del centro',
+            'Posición Y (vertical) del centro',
+            'Tamaño en X (ancho)',
+            'Tamaño en Y (alto)',
+            'Color'
+        ])
+
+    def case_days_of_week(self, stage):
+        return self.variables_for(stage, [
+            'Posición X (vertical) del centro',
+            'Posición Y (vertical) del centro',
+            'Tamaño en Y (alto)',
+            'Color'
+        ])
+
+    def case_parts_of_day(self, stage):
+        return self.variables_for(stage, [
+            'Grados del cenro (de 0 a 360, aumenta en sentido horario)',
+            'Cuántos grados (de 0 a 360) abarca el arco',
+            'Color'
+        ])
+
+    def case_timeline(self, stage):
+        result = [
+            'Grados de inclinación (de -90 a 90) de la línea, negativo hacia arriba y positivo hacia abajo',
+            'Longitud de la línea de tiempo'
+        ]
+        result.extend(self.variables_for(stage, [
+            'Posición (de 0 a 1, comienzo y fin de la línea, respectivamente)'
+        ]))
+        return result
+
+    def case_questions_ending(self, stage):
+        return [
+            'En qué medida uno siente que representa el tiempo en el espacio',
+            'Según sus hábitos el sujeto se considera una persona ...',
+            'Qué tan forzado le pareció elegir el tamaño',
+            'Qué tan forzado le pareció elegir el color',
+            'Qué tan forzado le pareció elegir la posición'
+        ]
+
+    @staticmethod
+    def variables_for(stage, variables):
+        elements = stage.stage_elements()
+        return ['{} del "{}"'.format(var, elem) for var in variables for elem in elements]
+
+
+class ExperimentDescription:
+    def row(self):
+        return [
+            'Identificador único del experimento',
+            'Cantidad de etapas del experimento (en total son 8)',
+            'Fecha del inicio de la etapa, en milisegundos desde 1/1/1970',
+            'Duración en milisegundos desde el inicio hasta su fin',
+            'Verdadero si están todas las etapas, y falso si falta alguna',
+            'Tamaño en bytes de la etapa, aumenta cuantos más clicks y movimientos hubo'
+        ]
