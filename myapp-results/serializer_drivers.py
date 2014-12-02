@@ -19,11 +19,9 @@ class Experiments:
         # FIXME: join all descriptions for each stage
         with open('{}/experiments_description.csv'.format(self.output_dir), 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
-            header_serializer = serializers.ExperimentHeader()
-            data_serializer = serializers.ExperimentDescription()
 
-            one = header_serializer.row()
-            two = data_serializer.row()
+            one = self.get_header()
+            two = self.get_descriptions()
 
             writer.writerow(['variable_name', 'description'])
             for r in zip(one, two):
@@ -49,11 +47,22 @@ class Experiments:
         serializer = serializers.StageData()
         result = []
         for stageCls in stages.all_stages():
-            if experiment.has_stage(stageCls):
-                stage = experiment.stage_named(stageCls.stage_name())
+            sn = stageCls.stage_name()
+            if experiment.has_stage(sn):
+                stage = experiment.get_stage(sn)
                 fields = [stage.time_duration(), stage.size_in_bytes()] + serializer.row_for(stage)
             else:
                 fields = ['missing'] * (len(serializers.StageHeader().row_for(stageCls)) + 2)
+            result.extend(fields)
+        return result
+
+    def get_descriptions(self):
+        serializer = serializers.StageDescription()
+        result = []
+        for stageCls in stages.all_stages():
+            fields = ['duration', 'size_in_bytes']
+            fields.extend(serializer.row_for(stageCls))
+            fields = ['{} para "{}"'.format(f, stageCls.stage_name()) for f in fields]
             result.extend(fields)
         return result
 

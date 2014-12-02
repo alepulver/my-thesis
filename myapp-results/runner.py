@@ -36,8 +36,12 @@ def main(arguments):
 
     exps = experiments.experiments_from(stgs)
     print("%s total experiments" % len(exps))
+
     exps_complete = [e for e in exps if e.is_complete()]
     print("%s complete experiments" % len(exps_complete))
+
+    exps = [e for e in exps if not e.has_stage('questions_begining') or e.get_stage('questions_begining').sex() in ['male', 'female']]
+    print("%s valid experiments remain" % len(exps))
 
     for driverCls in serializer_drivers.all_drivers():
         driver = driverCls(args.output_dir)
