@@ -67,7 +67,7 @@ def test_present_past_future():
 
 def test_seasons_of_year():
     stage = stages.stage_from(rows['seasons_of_year'])
-    
+
     assert_equals(stage.stage_name(), 'seasons_of_year')
     assert_equals(stage.element_data('winter'), {
         'center_x': 386.3129272460938, 'center_y': 120.6320495605469,
@@ -134,76 +134,73 @@ def test_parts_of_day_angles_should_wraparound():
     })
 
 
-def test_timeline_angle_0_90():
-    my_row = copy.deepcopy(rows['timeline'])
-    timeline = my_row['results']['timeline']['results']
-    timeline['rotation'] = 45
-    stage = stages.stage_from(my_row)
+class TestTimelineAngles:
+    def setUp(self):
+        self.row = copy.deepcopy(rows['timeline'])
+        self.timeline = self.row['results']['timeline']['results']
 
-    assert_equals(stage.rotation(), 45)
-    assert_equals(stage.element_data('year_1900'), {
-        'position': 0.7737157552273286
-    })
-    assert_equals(stage.element_data('year_2100'), {
-        'position': 0.02825327829787394
-    })
-    assert_equals(stage.element_data('today'), {
-        'position': 0.5262852358292817
-    })
+    def test_0_90(self):
+        self.timeline['rotation'] = 45
+        stage = stages.stage_from(self.row)
 
-
-def test_timeline_angle_90_180():
-    my_row = copy.deepcopy(rows['timeline'])
-    timeline = my_row['results']['timeline']['results']
-    timeline['rotation'] = 135
-    stage = stages.stage_from(my_row)
-
-    assert_equals(stage.rotation(), -45)
-    assert_equals(stage.element_data('year_1900'), {
-        'position': 0.2262842447726714
-    })
-    assert_equals(stage.element_data('year_2100'), {
-        'position': 0.9717467217021261
-    })
-    assert_equals(stage.element_data('today'), {
-        'position': 0.47371476417071834
-    })
+        assert_equals(stage.rotation(), 45)
+        assert_equals(stage.element_data('year_1900'), {
+            'position': 0.7737157552273286
+        })
+        assert_equals(stage.element_data('year_2100'), {
+            'position': 0.02825327829787394
+        })
+        assert_equals(stage.element_data('today'), {
+            'position': 0.5262852358292817
+        })
 
 
-def test_timeline_angle_180_270():
-    my_row = copy.deepcopy(rows['timeline'])
-    timeline = my_row['results']['timeline']['results']
-    timeline['rotation'] = 225
-    stage = stages.stage_from(my_row)
+    def test_90_180(self):
+        self.timeline['rotation'] = 135
+        stage = stages.stage_from(self.row)
 
-    assert_equals(stage.rotation(), 45)
-    assert_equals(stage.element_data('year_1900'), {
-        'position': 0.2262842447726714
-    })
-    assert_equals(stage.element_data('year_2100'), {
-        'position': 0.9717467217021261
-    })
-    assert_equals(stage.element_data('today'), {
-        'position': 0.47371476417071834
-    })
+        assert_equals(stage.rotation(), -45)
+        assert_equals(stage.element_data('year_1900'), {
+            'position': 0.2262842447726714
+        })
+        assert_equals(stage.element_data('year_2100'), {
+            'position': 0.9717467217021261
+        })
+        assert_equals(stage.element_data('today'), {
+            'position': 0.47371476417071834
+        })
 
 
-def test_timeline_angle_270_360():
-    my_row = copy.deepcopy(rows['timeline'])
-    timeline = my_row['results']['timeline']['results']
-    timeline['rotation'] = 315
-    stage = stages.stage_from(my_row)
+    def test_180_270(self):
+        self.timeline['rotation'] = 225
+        stage = stages.stage_from(self.row)
 
-    assert_equals(stage.rotation(), -45)
-    assert_equals(stage.element_data('year_1900'), {
-        'position': 0.7737157552273286
-    })
-    assert_equals(stage.element_data('year_2100'), {
-        'position': 0.02825327829787394
-    })
-    assert_equals(stage.element_data('today'), {
-        'position': 0.5262852358292817
-    })
+        assert_equals(stage.rotation(), 45)
+        assert_equals(stage.element_data('year_1900'), {
+            'position': 0.2262842447726714
+        })
+        assert_equals(stage.element_data('year_2100'), {
+            'position': 0.9717467217021261
+        })
+        assert_equals(stage.element_data('today'), {
+            'position': 0.47371476417071834
+        })
+
+
+    def test_270_360(self):
+        self.timeline['rotation'] = 315
+        stage = stages.stage_from(self.row)
+
+        assert_equals(stage.rotation(), -45)
+        assert_equals(stage.element_data('year_1900'), {
+            'position': 0.7737157552273286
+        })
+        assert_equals(stage.element_data('year_2100'), {
+            'position': 0.02825327829787394
+        })
+        assert_equals(stage.element_data('today'), {
+            'position': 0.5262852358292817
+        })
 
 
 def test_timeline():

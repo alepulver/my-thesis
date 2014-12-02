@@ -20,20 +20,23 @@ class Experiment:
 
         assert(len(stage_list) == len(self._data))
 
-    def has_stage(self, stage):
-        return stage.stage_name() in self._data.keys()
+    def has_stage(self, name):
+        return name in self._data.keys()
 
-    def stage_named(self, name):
+    def get_stage(self, name):
         return self._data[name]
 
+    def stages(self):
+        return self._data.values()
+
     def time_start(self):
-        pass
+        return self._data['introduction'].time_start()
 
     def time_duration(self):
-        pass
+        return sum(s.time_duration() for s in self._data.values())
 
     def num_stages(self):
-        pass
+        return len(self._data)
 
     def experiment_id(self):
         return self._data['introduction'].experiment_id()
@@ -41,12 +44,5 @@ class Experiment:
     def size_in_bytes(self):
         return sum(s.size_in_bytes() for s in self._data.values())
 
-    def end_time(self):
-        end_time = max(map(lambda s: s['end_time'], self._data))
-        return end_time
-
     def is_complete(self):
         return len(self._data) == len(stages.all_stages())
-
-    def stages(self):
-        return self._data

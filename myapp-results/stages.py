@@ -56,7 +56,10 @@ class Stage:
         return self._data['end_time'] - self._data['start_time']
 
     def size_in_bytes(self):
-        return len(json.dumps(self._data))
+        total = len(json.dumps(self._data))
+        if 'stage_as_json' in self._data['results']:
+            total -= len(json.dumps(self._data['results']['stage_as_json']))
+        return total
 
 
 class Introduction(Stage):
@@ -94,7 +97,11 @@ class QuestionsBegin(Stage):
     def sex(self):
         return self._data['results']['sex']
 
-    # XXX: TEDx does not have "working"/"studying", but the others may be too few to analyze
+    #def working(self):
+    #    return self._data['results']['working']
+
+    #def studying(self):
+    #    return self._data['results']['studying']
 
 
 class PresentPastFuture(Stage):

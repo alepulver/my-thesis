@@ -83,25 +83,15 @@ class StageData:
 
 class ExperimentHeader:
     def row(self):
-        serializer = StageHeader()
-        result = []
-        for stage in stages.all_stages():
-            sn = stage.stage_name()
-            fields = ['duration', 'size_in_bytes'] + serializer.row_for(stage)
-            fields = ["{}_{}".format(sn, f) for f in fields]
-            result.extend(fields)
-        return result
+        return [
+            'id', 'num_stages', 'start_time',
+            'duration', 'is_complete', 'size_in_bytes'
+        ]
 
 
 class ExperimentData:
     def row_for(self, experiment):
-        serializer = StageData()
-        result = []
-        for stageCls in stages.all_stages():
-            if experiment.has_stage(stageCls):
-                stage = experiment.stage_named(stageCls.stage_name())
-                fields = [stage.time_duration(), stage.size_in_bytes()] + serializer.row_for(stage)
-            else:
-                fields = ['missing'] * (len(StageHeader().row_for(stageCls)) + 2)
-            result.extend(fields)
-        return result
+        return [
+            experiment.experiment_id(), experiment.num_stages(), experiment.time_start(),
+            experiment.time_duration(), experiment.is_complete(), experiment.size_in_bytes()
+        ]
