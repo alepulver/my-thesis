@@ -26,11 +26,11 @@ class TestRunner:
 
     def test_experiments(self):
         assert_equals(self.record_count('experiments.csv'), 3)
-        assert_equals(self.field_counts('experiments.csv'), [108, 108, 108])
+        assert_equals(self.field_counts('experiments.csv'), [116, 116, 116])
 
     def test_common_stages(self):
         assert_equals(self.record_count('stages.csv'), 15)
-        assert_equals(self.field_counts('stages.csv'), [4] * 15)
+        assert_equals(self.field_counts('stages.csv'), [5] * 15)
 
     def test_individual_stages(self):
         table = [

@@ -44,8 +44,13 @@ def main(arguments):
     print("%s valid experiments remain" % len(exps))
 
     for driverCls in serializer_drivers.all_drivers():
-        driver = driverCls(args.output_dir)
-        driver.serialize(exps)
+        driver = driverCls()
+        results = driver.serialize(exps)
+        for name, rows in results.items():
+            with open('{}/{}.csv'.format(args.output_dir, name), 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                for r in rows:
+                    writer.writerow(r)
 
     return 0
 

@@ -1,7 +1,7 @@
 import json
 import experiments
 import stages
-import serializers
+import serializers_stage as sz_stage
 from nose.tools import assert_equals
 
 rows = {}
@@ -28,18 +28,24 @@ def setup_module():
 
 class TestStageHeader:
     def setUp(self):
-        self.serializer = serializers.StageHeader()
+        self.serializer = [sz_stage.FlatHeader(), sz_stage.RecursiveHeader()]
+
+    def common_row(self):
+        return self.serializer[0].common_row()
+
+    def single_row_for(self, stage):
+        return self.serializer[0].single_row_for(stage) + self.serializer[1].single_row_for(stage)
 
     def test_common(self):
-        result = self.serializer.common_row()
-        assert_equals(result, ['experiment_id', 'time_start', 'time_duration', 'size_in_bytes'])
+        result = self.common_row()
+        assert_equals(result, ['time_start', 'time_duration', 'size_in_bytes'])
 
     def test_introduction(self):
-        result = self.serializer.row_for(stages.Introduction)
+        result = self.single_row_for(stages.Introduction)
         assert_equals(result, ['ip_address', 'user_agent', 'participant', 'local_id'])
 
     def test_parts_of_day(self):
-        result = self.serializer.row_for(stages.PartsOfDay)
+        result = self.single_row_for(stages.PartsOfDay)
         assert_equals(result, [
             'rotation_morning', 'rotation_afternoon', 'rotation_night',
             'size_morning', 'size_afternoon', 'size_night',
@@ -47,14 +53,14 @@ class TestStageHeader:
         ])
 
     def test_questions_ending(self):
-        result = self.serializer.row_for(stages.QuestionsEnd)
+        result = self.single_row_for(stages.QuestionsEnd)
         assert_equals(result, [
             'represents_time', 'cronotype',
             'forced_size', 'forced_color', 'forced_position'
         ])
 
     def test_seasons_of_year(self):
-        result = self.serializer.row_for(stages.SeasonsOfYear)
+        result = self.single_row_for(stages.SeasonsOfYear)
         assert_equals(result, [
             'center_x_summer', 'center_x_autum', 'center_x_winter', 'center_x_spring',
             'center_y_summer', 'center_y_autum', 'center_y_winter', 'center_y_spring',
@@ -64,7 +70,7 @@ class TestStageHeader:
         ])
 
     def test_timeline(self):
-        result = self.serializer.row_for(stages.Timeline)
+        result = self.single_row_for(stages.Timeline)
         assert_equals(result, [
             'line_rotation', 'line_length', 'position_my_birth', 'position_my_childhood',
             'position_my_youth', 'position_today', 'position_my_third_age', 'position_year_1900',
@@ -72,11 +78,11 @@ class TestStageHeader:
         ])
 
     def test_questions_begining(self):
-        result = self.serializer.row_for(stages.QuestionsBegin)
+        result = self.single_row_for(stages.QuestionsBegin)
         assert_equals(result, ['name', 'age', 'sex'])
 
     def test_days_of_week(self):
-        result = self.serializer.row_for(stages.DaysOfWeek)
+        result = self.single_row_for(stages.DaysOfWeek)
         assert_equals(result, [
             'center_x_monday', 'center_x_tuesday', 'center_x_wednesday', 'center_x_thursday', 'center_x_friday', 'center_x_saturday', 'center_x_sunday',
             'center_y_monday', 'center_y_tuesday', 'center_y_wednesday', 'center_y_thursday', 'center_y_friday', 'center_y_saturday', 'center_y_sunday',
@@ -88,14 +94,20 @@ class TestStageHeader:
 class TestStageData:
     def setUp(self):
         self.stages = my_stages
-        self.serializer = serializers.StageData()
+        self.serializer = [sz_stage.FlatData(), sz_stage.RecursiveData()]
+
+    def common_row_for(self, stage):
+        return self.serializer[0].common_row_for(stage)
+
+    def single_row_for(self, stage):
+        return self.serializer[0].single_row_for(stage) + self.serializer[1].single_row_for(stage)
 
     def test_common(self):
-        result = self.serializer.common_row_for(self.stages['introduction'])
-        assert_equals(result, ['a7e32988-9e4b-4a2d-bbb2-a35798e7e8f1', 1410966188680, 55448, 423])
+        result = self.common_row_for(self.stages['introduction'])
+        assert_equals(result, [1410966188680, 55448, 423])
 
     def test_introduction(self):
-        result = self.serializer.row_for(self.stages['introduction'])
+        result = self.single_row_for(self.stages['introduction'])
         assert_equals(result, [
             '200.0.255.1',
             'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -105,7 +117,7 @@ class TestStageData:
         ])
 
     def test_parts_of_day(self):
-        result = self.serializer.row_for(self.stages['parts_of_day'])
+        result = self.single_row_for(self.stages['parts_of_day'])
         assert_equals(result, [
             167.81246306668982, 44.51096951035254, 289.75028142222305,
             76.41994897349244, 137.1224927263627, 168.7934961310493,
@@ -113,11 +125,11 @@ class TestStageData:
         ])
 
     def test_questions_ending(self):
-        result = self.serializer.row_for(self.stages['questions_ending'])
+        result = self.single_row_for(self.stages['questions_ending'])
         assert_equals(result, ['much', 'nocturna', 0.7, 0.3, 0.7])
 
     def test_seasons_of_year(self):
-        result = self.serializer.row_for(self.stages['seasons_of_year'])
+        result = self.single_row_for(self.stages['seasons_of_year'])
         assert_equals(result, [
             412.140122756362, 393.6964931190014, 386.3129272460938, 431.0544780162724,
             322.4871162027121, 207.1552720665932, 120.6320495605469, 431.5310184621541,
@@ -127,7 +139,7 @@ class TestStageData:
         ])
 
     def test_timeline(self):
-        result = self.serializer.row_for(self.stages['timeline'])
+        result = self.single_row_for(self.stages['timeline'])
         assert_equals(result, [
             44.84884095673553, 724.8023584003396,
             0.9639922045259025, 0.9137393582305529, 0.5891534589279476, 0.5262852358292817,
@@ -135,43 +147,14 @@ class TestStageData:
         ])
 
     def test_questions_begining(self):
-        result = self.serializer.row_for(self.stages['questions_begining'])
+        result = self.single_row_for(self.stages['questions_begining'])
         assert_equals(result, ['Mora', '32', 'female'])
 
     def test_days_of_week(self):
-        result = self.serializer.row_for(self.stages['days_of_week'])
+        result = self.single_row_for(self.stages['days_of_week'])
         assert_equals(result, [
             241, 123, 94, 235, 484, 356, 180,
             418.5703125, 407.1989734508097, 251.294921875, 274, 229.8177833557129, 245.1704249382019, 84.19854736328125,
             28.859375, 95.60205309838057, 155.41015625, 100, 272.3644332885742, 314.3408498764038, 146.6029052734375,
             'black', 'red', 'saddlebrown', 'blue', 'darkviolet', 'yellow', 'green'
-        ])
-
-
-class TestExperimentHeader:
-    def setUp(self):
-        self.serializer = serializers.ExperimentHeader()
-
-    def test_row(self):
-        result = self.serializer.row()
-
-        assert_equals(len(result), 6)
-        assert_equals(result, [
-            'id', 'num_stages', 'start_time',
-            'duration', 'is_complete', 'size_in_bytes'
-        ])
-
-
-class TestExperimentData:
-    def setUp(self):
-        self.serializer = serializers.ExperimentData()
-
-    def test_row(self):
-        self.experiment = experiments.experiments_from(my_stages.values())[0]
-        result = self.serializer.row_for(self.experiment)
-
-        assert_equals(len(result), 6)
-        assert_equals(result, [
-            'a7e32988-9e4b-4a2d-bbb2-a35798e7e8f1', 8, 1410966188680,
-            556956, True, 131271
         ])

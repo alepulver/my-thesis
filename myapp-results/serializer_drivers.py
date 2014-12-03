@@ -1,123 +1,205 @@
-import serializers
+import serializers_stage as sz_stage
+import serializers_experiment as sz_exp
 import stages
-import csv
 
 
 def all_drivers():
     return [
-        Experiments,
-        CommonStages,
-        IndividualStages
+        StageSummary,
+        FlatStages,
+        Stages,
+        ExperimentSummary,
+        Experiments
     ]
 
 
-class Experiments:
-    def __init__(self, output_dir):
-        self.output_dir = output_dir
+class CommonAggregator:
+    def __init__(self, header, description, data):
+        self.header = header
+        self.description = description
+        self.data = data
 
-    def serialize(self, experiments):
-        # FIXME: join all descriptions for each stage
-        with open('{}/experiments_description.csv'.format(self.output_dir), 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
+    def description(self):
+        one = self.header.common_row()
+        two = self.description.common_row()
 
-            one = self.get_header()
-            two = self.get_descriptions()
-
-            writer.writerow(['variable_name', 'description'])
-            for r in zip(one, two):
-                writer.writerow(r)
-
-        with open('{}/experiments.csv'.format(self.output_dir), 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(self.get_header())
-            for e in experiments:
-                writer.writerow(self.get_row_for(e))
-
-    def get_header(self):
-        serializer = serializers.StageHeader()
         result = []
-        for stage in stages.all_stages():
-            sn = stage.stage_name()
-            fields = ['duration', 'size_in_bytes'] + serializer.row_for(stage)
-            fields = ["{}_{}".format(sn, f) for f in fields]
-            result.extend(fields)
+        result.append(['variable_name', 'description'])
+        result.extend(zip(one, two))
+
         return result
 
-    def get_row_for(self, experiment):
-        serializer = serializers.StageData()
+    def data(self, elements):
         result = []
-        for stageCls in stages.all_stages():
-            sn = stageCls.stage_name()
-            if experiment.has_stage(sn):
-                stage = experiment.get_stage(sn)
-                fields = [stage.time_duration(), stage.size_in_bytes()] + serializer.row_for(stage)
-            else:
-                fields = ['missing'] * (len(serializers.StageHeader().row_for(stageCls)) + 2)
-            result.extend(fields)
-        return result
+        result.append(self.header.common_row())
+        result.extend(self.data.common_row_for(e) for e in elements)
 
-    def get_descriptions(self):
-        serializer = serializers.StageDescription()
-        result = []
-        for stageCls in stages.all_stages():
-            fields = ['duration', 'size_in_bytes']
-            fields.extend(serializer.row_for(stageCls))
-            fields = ['{} para "{}"'.format(f, stageCls.stage_name()) for f in fields]
-            result.extend(fields)
         return result
 
 
-class CommonStages:
-    def __init__(self, output_dir):
-        self.output_dir = output_dir
+class RecursiveAggregator:
+    pass
 
+
+class StageSummary:
     def serialize(self, experiments):
         stgs = []
         for exp in experiments:
             stgs.extend(exp.stages())
 
-        with open('{}/stages_description.csv'.format(self.output_dir), 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            header_serializer = serializers.StageHeader()
-            data_serializer = serializers.StageDescription()
+        results = {}
 
-            one = header_serializer.common_row()
-            two = data_serializer.common_row()
+        description = []
+        description.append(['variable_name', 'description'])
 
-            writer.writerow(['variable_name', 'description'])
-            for r in zip(one, two):
-                writer.writerow(r)
+        header_serializer = sz_stage.FlatHeader()
+        data_serializer = sz_stage.FlatDescription()
+        one = ['experiment_id', 'name'] + header_serializer.common_row()
+        two = ['ID única del experimento', 'Clase de etapa correspondiente a la fila'] + data_serializer.common_row()
 
-        with open('{}/stages.csv'.format(self.output_dir), 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            header_serializer = serializers.StageHeader()
-            data_serializer = serializers.StageData()
+        for r in zip(one, two):
+            description.append(r)
 
-            writer.writerow(header_serializer.common_row())
-            for s in stgs:
-                writer.writerow(data_serializer.common_row_for(s))
+        results['stages_description'] = description
+
+        header_serializer = sz_stage.FlatHeader()
+        data_serializer = sz_stage.FlatData()
+        data = []
+        data.append(['experiment_id','name'] + header_serializer.common_row())
+        for s in stgs:
+            data.append([s.experiment_id(), s.stage_name()] + data_serializer.common_row_for(s))
+        results['stages'] = data
+
+        return results
 
 
-class IndividualStages:
-    def __init__(self, output_dir):
-        self.output_dir = output_dir
-
+class FlatStages:
     def serialize(self, experiments):
         stgs = []
         for exp in experiments:
             stgs.extend(exp.stages())
 
-        writers = {}
-        a_serializer = serializers.StageHeader()
+        results = {}
+        flat_serializer = sz_stage.FlatHeader()
+        recursive_serializer = sz_stage.RecursiveHeader()
         for s in stages.all_stages():
             sn = s.stage_name()
-            csv_file = open('{}/stage_{}.csv'.format(self.output_dir, sn), 'w', newline='')
-            csv_writer = csv.writer(csv_file)
-            writers[sn] = csv_writer
+            fn = 'stage_{}'.format(sn)
+            row = ['experiment_id'] + flat_serializer.common_row() + flat_serializer.single_row_for(s) + recursive_serializer.single_row_for(s)
+            results[fn] = [row]
 
-            csv_writer.writerow(a_serializer.common_row() + a_serializer.row_for(s))
-
-        a_serializer = serializers.StageData()
+        flat_serializer = sz_stage.FlatData()
+        recursive_serializer = sz_stage.RecursiveData()
         for s in stgs:
             sn = s.stage_name()
-            writers[sn].writerow(a_serializer.common_row_for(s) + a_serializer.row_for(s))
+            fn = 'stage_{}'.format(sn)
+            row = flat_serializer.common_row_for(s) + flat_serializer.single_row_for(s) + recursive_serializer.single_row_for(s)
+            results[fn].append([s.experiment_id()] + row)
+
+
+        flat_serializer = sz_stage.FlatHeader()
+        recursive_serializer = sz_stage.RecursiveHeader()
+        flat_description_serializer = sz_stage.FlatDescription()
+        recursive_description_serializer = sz_stage.RecursiveDescription()
+        for s in stages.all_stages():
+            sn = s.stage_name()
+            fn = 'stage_{}_description'.format(sn)
+            one = ['experiment_id'] + flat_serializer.common_row() + flat_serializer.single_row_for(s) + recursive_serializer.single_row_for(s)
+            two = ['ID únco por experimento'] + flat_description_serializer.common_row() + flat_description_serializer.single_row_for(s) + recursive_description_serializer.single_row_for(s)
+            row = [['variable_name', 'description']]
+            row.extend(zip(one, two))
+            results[fn] = row
+
+        return results
+
+
+class Stages:
+    def serialize(self, experiments):
+        stgs = []
+        for exp in experiments:
+            stgs.extend(exp.stages())
+
+        results = {}
+        header_serializer = sz_stage.RecursiveHeader()
+        for s in stages.all_stages():
+            sn = s.stage_name()
+            fn = 'stageM_{}'.format(sn)
+            row = ['experiment_id'] + header_serializer.multiple_rows_for(s)
+            results[fn] = [row]
+
+        data_serializer = sz_stage.RecursiveData()
+        for s in stgs:
+            sn = s.stage_name()
+            fn = 'stageM_{}'.format(sn)
+            for row in data_serializer.multiple_rows_for(s):
+                results[fn].append([s.experiment_id()] + row)
+
+
+        header_serializer = sz_stage.RecursiveHeader()
+        data_serializer = sz_stage.RecursiveDescription()
+        for s in stages.all_stages():
+            sn = s.stage_name()
+            fn = 'stageM_{}_description'.format(sn)
+            one = ['experiment_id'] + header_serializer.multiple_rows_for(s)
+            two = ['ID únco por experimento'] + data_serializer.multiple_rows_for(s)
+            row = [['variable_name', 'description']]
+            row.extend(zip(one, two))
+            results[fn] = row
+
+        return results
+
+
+class ExperimentSummary:
+    def serialize(self, experiments):
+        results = {}
+
+        description = []
+        description.append(['variable_name', 'description'])
+
+        header_serializer = sz_exp.SummaryHeader()
+        data_serializer = sz_exp.SummaryDescription()
+        one = header_serializer.row()
+        two = data_serializer.row()
+
+        for r in zip(one, two):
+            description.append(r)
+
+        results['experiments_summary_description'] = description
+
+        header_serializer = sz_exp.SummaryHeader()
+        data_serializer = sz_exp.SummaryData()
+        data = []
+        data.append(header_serializer.row())
+        for e in experiments:
+            data.append(data_serializer.row_for(e))
+        results['experiments_summary'] = data
+
+        return results
+
+
+class Experiments:
+    def serialize(self, experiments):
+        results = {}
+
+        description = []
+        description.append(['variable_name', 'description'])
+
+        header_serializer = sz_exp.FullHeader()
+        data_serializer = sz_exp.FullDescription()
+        one = header_serializer.row()
+        two = data_serializer.row()
+
+        for r in zip(one, two):
+            description.append(r)
+
+        results['experiments_description'] = description
+
+        header_serializer = sz_exp.FullHeader()
+        data_serializer = sz_exp.FullData()
+        data = []
+        data.append(header_serializer.row())
+        for e in experiments:
+            data.append(data_serializer.row_for(e))
+        results['experiments'] = data
+
+        return results
