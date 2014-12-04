@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import stages
@@ -20,7 +21,11 @@ def main(arguments):
 
     args = parser.parse_args(arguments[1:])
 
-    # FIXME: create output dir if doesn't exist, fail if does
+    if os.path.exists(args.output_dir):
+        print('ERROR: the directory "{}" already exists, please use another name'.format(args.output_dir), file=sys.stderr)
+        return 1
+    else:
+        os.makedirs(args.output_dir)
 
     data_rows = []
     for file_path in args.input_files:
@@ -46,8 +51,9 @@ def main(arguments):
     for driverCls in serializer_drivers.all_drivers():
         driver = driverCls()
         results = driver.serialize(exps)
+        os.makedirs('{}/{}'.format(args.output_dir, driver.name))
         for name, rows in results.items():
-            with open('{}/{}.csv'.format(args.output_dir, name), 'w', newline='') as csvfile:
+            with open('{}/{}/{}.csv'.format(args.output_dir, driver.name, name), 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 for r in rows:
                     writer.writerow(r)

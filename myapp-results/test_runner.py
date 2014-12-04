@@ -21,16 +21,15 @@ class TestRunner:
 
     @classmethod
     def setup_class(cls):
-        os.system('mkdir {}'.format(cls.test_dir))
         runner.main(['command', '--output_dir', cls.test_dir,'examples/results.json'])
 
     def test_experiments(self):
-        assert_equals(self.record_count('experiments.csv'), 3)
-        assert_equals(self.field_counts('experiments.csv'), [116, 116, 116])
+        assert_equals(self.record_count('experiments_full/experiments.csv'), 3)
+        assert_equals(self.field_counts('experiments_full/experiments.csv'), [116, 116, 116])
 
     def test_common_stages(self):
-        assert_equals(self.record_count('stages.csv'), 15)
-        assert_equals(self.field_counts('stages.csv'), [5] * 15)
+        assert_equals(self.record_count('stage_summary/stages.csv'), 15)
+        assert_equals(self.field_counts('stage_summary/stages.csv'), [5] * 15)
 
     def test_individual_stages(self):
         table = [
@@ -45,7 +44,7 @@ class TestRunner:
         ]
 
         for stage_name, rows, columns in table:
-            file_name = 'stage_{}.csv'.format(stage_name)
+            file_name = 'stages/{}.csv'.format(stage_name)
             print(file_name)
             assert_equals(self.record_count(file_name), rows)
             assert_equals(self.field_counts(file_name), [columns] * rows)

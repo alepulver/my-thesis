@@ -67,6 +67,6 @@ class FullDescription:
         for stage in stages.all_stages():
             sn = stage.stage_name()
             fields = serializer[0].common_row() + serializer[0].single_row_for(stage) + serializer[1].single_row_for(stage)
-            fields = ["{}_{}".format(sn, f) for f in fields]
+            fields = ['{} para la etapa "{}"'.format(f, sn) for f in fields]
             result.extend(fields)
         return result

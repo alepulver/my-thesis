@@ -148,6 +148,9 @@ class SeasonsOfYear(Stage):
             "color": section['color']
         }
 
+    def overlap(self):
+        pass
+
 
 class DaysOfWeek(Stage):
     @staticmethod

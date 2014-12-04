@@ -42,6 +42,8 @@ class RecursiveAggregator:
 
 
 class StageSummary:
+    name = "stage_summary"
+
     def serialize(self, experiments):
         stgs = []
         for exp in experiments:
@@ -74,6 +76,8 @@ class StageSummary:
 
 
 class FlatStages:
+    name = "stages"
+
     def serialize(self, experiments):
         stgs = []
         for exp in experiments:
@@ -84,7 +88,7 @@ class FlatStages:
         recursive_serializer = sz_stage.RecursiveHeader()
         for s in stages.all_stages():
             sn = s.stage_name()
-            fn = 'stage_{}'.format(sn)
+            fn = sn
             row = ['experiment_id'] + flat_serializer.common_row() + flat_serializer.single_row_for(s) + recursive_serializer.single_row_for(s)
             results[fn] = [row]
 
@@ -92,7 +96,7 @@ class FlatStages:
         recursive_serializer = sz_stage.RecursiveData()
         for s in stgs:
             sn = s.stage_name()
-            fn = 'stage_{}'.format(sn)
+            fn = sn
             row = flat_serializer.common_row_for(s) + flat_serializer.single_row_for(s) + recursive_serializer.single_row_for(s)
             results[fn].append([s.experiment_id()] + row)
 
@@ -103,7 +107,7 @@ class FlatStages:
         recursive_description_serializer = sz_stage.RecursiveDescription()
         for s in stages.all_stages():
             sn = s.stage_name()
-            fn = 'stage_{}_description'.format(sn)
+            fn = '{}_description'.format(sn)
             one = ['experiment_id'] + flat_serializer.common_row() + flat_serializer.single_row_for(s) + recursive_serializer.single_row_for(s)
             two = ['ID únco por experimento'] + flat_description_serializer.common_row() + flat_description_serializer.single_row_for(s) + recursive_description_serializer.single_row_for(s)
             row = [['variable_name', 'description']]
@@ -114,6 +118,8 @@ class FlatStages:
 
 
 class Stages:
+    name = "stages_multiple_rows"
+
     def serialize(self, experiments):
         stgs = []
         for exp in experiments:
@@ -123,14 +129,14 @@ class Stages:
         header_serializer = sz_stage.RecursiveHeader()
         for s in stages.all_stages():
             sn = s.stage_name()
-            fn = 'stageM_{}'.format(sn)
+            fn = sn
             row = ['experiment_id'] + header_serializer.multiple_rows_for(s)
             results[fn] = [row]
 
         data_serializer = sz_stage.RecursiveData()
         for s in stgs:
             sn = s.stage_name()
-            fn = 'stageM_{}'.format(sn)
+            fn = sn
             for row in data_serializer.multiple_rows_for(s):
                 results[fn].append([s.experiment_id()] + row)
 
@@ -139,7 +145,7 @@ class Stages:
         data_serializer = sz_stage.RecursiveDescription()
         for s in stages.all_stages():
             sn = s.stage_name()
-            fn = 'stageM_{}_description'.format(sn)
+            fn = '{}_description'.format(sn)
             one = ['experiment_id'] + header_serializer.multiple_rows_for(s)
             two = ['ID únco por experimento'] + data_serializer.multiple_rows_for(s)
             row = [['variable_name', 'description']]
@@ -150,6 +156,8 @@ class Stages:
 
 
 class ExperimentSummary:
+    name = "experiment_summary"
+
     def serialize(self, experiments):
         results = {}
 
@@ -164,7 +172,7 @@ class ExperimentSummary:
         for r in zip(one, two):
             description.append(r)
 
-        results['experiments_summary_description'] = description
+        results['experiments_description'] = description
 
         header_serializer = sz_exp.SummaryHeader()
         data_serializer = sz_exp.SummaryData()
@@ -172,12 +180,14 @@ class ExperimentSummary:
         data.append(header_serializer.row())
         for e in experiments:
             data.append(data_serializer.row_for(e))
-        results['experiments_summary'] = data
+        results['experiments'] = data
 
         return results
 
 
 class Experiments:
+    name = "experiments_full"
+
     def serialize(self, experiments):
         results = {}
 
