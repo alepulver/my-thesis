@@ -48,9 +48,17 @@ def main(arguments):
     exps = [e for e in exps if not e.has_stage('questions_begining') or e.get_stage('questions_begining').sex() in ['male', 'female']]
     print("%s valid experiments remain" % len(exps))
 
-    for driverCls in serializer_drivers.all_drivers():
-        driver = driverCls()
+    for driver in serializer_drivers.experiments_drivers():
         results = driver.serialize(exps)
+        os.makedirs('{}/{}'.format(args.output_dir, driver.name))
+        for name, rows in results.items():
+            with open('{}/{}/{}.csv'.format(args.output_dir, driver.name, name), 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                for r in rows:
+                    writer.writerow(r)
+
+    for driver in serializer_drivers.stages_drivers():
+        results = driver.serialize(stgs)
         os.makedirs('{}/{}'.format(args.output_dir, driver.name))
         for name, rows in results.items():
             with open('{}/{}/{}.csv'.format(args.output_dir, driver.name, name), 'w', newline='') as csvfile:

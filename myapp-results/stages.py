@@ -40,7 +40,7 @@ class Stage:
         return type(self).stage_name()
 
     @classmethod
-    def visit_header(cls, other):
+    def visit_class(cls, other):
         return getattr(other, 'case_%s' % cls.stage_name())(cls)
 
     def visit(self, other):

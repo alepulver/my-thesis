@@ -24,12 +24,12 @@ class TestRunner:
         runner.main(['command', '--output_dir', cls.test_dir,'examples/results.json'])
 
     def test_experiments(self):
-        assert_equals(self.record_count('experiments_full/experiments.csv'), 3)
-        assert_equals(self.field_counts('experiments_full/experiments.csv'), [116, 116, 116])
+        assert_equals(self.record_count('experiments_full/data.csv'), 3)
+        assert_equals(self.field_counts('experiments_full/data.csv'), [117, 117, 117])
 
     def test_common_stages(self):
-        assert_equals(self.record_count('stage_summary/stages.csv'), 15)
-        assert_equals(self.field_counts('stage_summary/stages.csv'), [5] * 15)
+        assert_equals(self.record_count('stages_summary/data.csv'), 15)
+        assert_equals(self.field_counts('stages_summary/data.csv'), [5] * 15)
 
     def test_individual_stages(self):
         table = [
@@ -39,12 +39,12 @@ class TestRunner:
             ['seasons_of_year', 3, 24],
             ['parts_of_day', 3, 13],
             ['days_of_week', 3, 32],
-            ['timeline', 2, 15],
+            ['timeline', 2, 16],
             ['questions_ending', 2, 9]
         ]
 
         for stage_name, rows, columns in table:
-            file_name = 'stages/{}.csv'.format(stage_name)
+            file_name = 'individual_stages/{}.csv'.format(stage_name)
             print(file_name)
             assert_equals(self.record_count(file_name), rows)
             assert_equals(self.field_counts(file_name), [columns] * rows)

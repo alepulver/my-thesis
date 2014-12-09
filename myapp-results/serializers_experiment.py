@@ -2,54 +2,20 @@ import serializers_stage as sz_stage
 import stages
 
 
-class SummaryHeader:
-    def row(self):
+class Summary:
+    def row_header_for(self, experiment_class):
         return [
             'id', 'num_stages', 'start_time',
             'duration', 'is_complete', 'size_in_bytes'
         ]
 
-
-class FullHeader:
-    def row(self):
-        serializer = [sz_stage.FlatHeader(), sz_stage.RecursiveHeader()]
-        result = []
-        for stage in stages.all_stages():
-            sn = stage.stage_name()
-            fields = serializer[0].common_row() + serializer[0].single_row_for(stage) + serializer[1].single_row_for(stage)
-            fields = ["{}_{}".format(sn, f) for f in fields]
-            result.extend(fields)
-        return result
-
-
-class SummaryData:
-    def row_for(self, experiment):
+    def row_data_for(self, experiment):
         return [
             experiment.experiment_id(), experiment.num_stages(), experiment.time_start(),
             experiment.time_duration(), experiment.is_complete(), experiment.size_in_bytes()
         ]
 
-
-class FullData:
-    def row_for(self, experiment):
-        serializer = [sz_stage.FlatData(), sz_stage.RecursiveData()]
-        result = []
-        for stage in stages.all_stages():
-            sn = stage.stage_name()
-            if experiment.has_stage(sn):
-                current = experiment.get_stage(sn)
-                fields = serializer[0].common_row_for(current) + serializer[0].single_row_for(current) + serializer[1].single_row_for(current)
-            else:
-                one = sz_stage.FlatHeader().common_row()
-                two = sz_stage.FlatHeader().single_row_for(stage)
-                three = sz_stage.RecursiveHeader().single_row_for(stage)
-                fields = ['missing'] * (len(one) + len(two) + len(three))
-            result.extend(fields)
-        return result
-
-
-class SummaryDescription:
-    def row(self):
+    def row_description_for(self, experiment_class):
         return [
             'Identificador único del experimento',
             'Cantidad de etapas del experimento (en total son 8)',
@@ -60,13 +26,38 @@ class SummaryDescription:
         ]
 
 
-class FullDescription:
-    def row(self):
-        serializer = [sz_stage.FlatDescription(), sz_stage.RecursiveDescription()]
+class Full:
+    def __init__(self):
+        serializers = sz_stage.normal()
+        self.serializer = sz_stage.Composite([serializers['common'], serializers['flat'], serializers['recursive_single']])
+
+    def row_header_for(self, experiment_class):
         result = []
         for stage in stages.all_stages():
             sn = stage.stage_name()
-            fields = serializer[0].common_row() + serializer[0].single_row_for(stage) + serializer[1].single_row_for(stage)
+            fields = self.serializer.row_header_for(stage)
+            fields = ["{}_{}".format(sn, f) for f in fields]
+            result.extend(fields)
+        return result
+
+    def row_data_for(self, experiment):
+        result = []
+        for stage in stages.all_stages():
+            sn = stage.stage_name()
+            if experiment.has_stage(sn):
+                current = experiment.get_stage(sn)
+                fields = self.serializer.row_data_for(current)
+            else:
+                headers = self.serializer.row_header_for(stage)
+                fields = ['missing'] * len(headers)
+            result.extend(fields)
+        return result
+
+    def row_description_for(self, experiment_class):
+        result = []
+        for stage in stages.all_stages():
+            sn = stage.stage_name()
+            fields = self.serializer.row_description_for(stage)
             fields = ['{} para la etapa "{}"'.format(f, sn) for f in fields]
             result.extend(fields)
         return result

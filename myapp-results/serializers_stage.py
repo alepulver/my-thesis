@@ -1,128 +1,94 @@
-class FlatHeader:
-    def single_row_for(self, stage):
-        return stage.visit_header(self)
-
-    def multiple_rows_for(self, stage):
-        raise NotImplementedError()
-
-    def common_row(self):
-        return ['time_start', 'time_duration', 'size_in_bytes']
-
-    def case_introduction(self, stage):
-        return ['ip_address', 'user_agent', 'participant', 'local_id']
-
-    def case_questions_begining(self, stage):
-        return ['name', 'age', 'sex']
-
-    def case_present_past_future(self, stage):
-        return []
-
-    def case_seasons_of_year(self, stage):
-        return []
-
-    def case_days_of_week(self, stage):
-        return []
-
-    def case_parts_of_day(self, stage):
-        return []
-
-    def case_timeline(self, stage):
-        return ['line_rotation', 'line_length']
-
-    def case_questions_ending(self, stage):
-        return ['represents_time', 'cronotype', 'forced_size', 'forced_color', 'forced_position']
+import serializers_stage_empty as sz_empty
+import serializers_stage_normal as sz_normal
 
 
-class RecursiveHeader:
-    def single_row_for(self, stage):
-        if len(stage.visit_header(self)) == 0:
+def normal():
+    result = {
+        'flat': Flat(sz_normal.FlatHeader(), sz_normal.FlatDescription(), sz_normal.FlatData()),
+        'common': Common(sz_normal.FlatHeader(), sz_normal.FlatDescription(), sz_normal.FlatData()),
+        'recursive_single': RecursiveSingle(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData()),
+        'recursive_multi': RecursiveMulti(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData())
+    }
+    result['common_flat'] = Composite([result['common'], result['flat']])
+    return result
+
+
+class Flat:
+    def __init__(self, header, description, data):
+        self.header = header
+        self.description = description
+        self.data = data
+
+    def row_header_for(self, stage_class):
+        return stage_class.visit_class(self.header)
+
+    def row_data_for(self, stage):
+        return stage.visit(self.data)
+
+    def row_description_for(self, stage_class):
+        return stage_class.visit_class(self.description)
+
+
+class Common:
+    def __init__(self, header, description, data):
+        self.header = header
+        self.description = description
+        self.data = data
+
+    def row_header_for(self, stage_class):
+        return self.header.common_row()
+
+    def row_data_for(self, stage):
+        return self.data.common_row_for(stage)
+
+    def row_description_for(self, stage_class):
+        return self.description.common_row()
+
+
+class RecursiveSingle:
+    def __init__(self, header, description, data):
+        self.header = header
+        self.description = description
+        self.data = data
+
+    def row_header_for(self, stage_class):
+        variables = stage_class.visit_class(self.header)
+        if len(variables) == 0:
             return []
-        variables = stage.visit_header(self)
-        elements = stage.stage_elements()
+
+        elements = stage_class.stage_elements()
         return ['{}_{}'.format(var, elem) for var in variables for elem in elements]
 
-    def multiple_rows_for(self, stage):
-        row = stage.visit_header(self)
+    def row_data_for(self, stage):
+        variables = stage.visit(self.header)
+        if len(variables) == 0:
+            return []
+        elements = type(stage).stage_elements()
+        return [stage.element_data(elem)[var] for var in variables for elem in elements]
+
+    def row_description_for(self, stage_class):
+        variables = stage_class.visit_class(self.description)
+        if len(variables) == 0:
+            return []
+        elements = stage_class.stage_elements()
+        return ['{} del "{}"'.format(var, elem) for var in variables for elem in elements]
+
+
+
+class RecursiveMulti:
+    def __init__(self, header, description, data):
+        self.header = header
+        self.description = description
+        self.data = data
+
+    def row_header_for(self, stage_class):
+        row = stage_class.visit_class(self.header)
         if len(row) > 0:
             row = ['element'] + row
         return row
 
-    def common_row(self):
-        return []
-
-    def case_introduction(self, stage):
-        return []
-
-    def case_questions_begining(self, stage):
-        return []
-
-    def case_present_past_future(self, stage):
-        return ['center_x', 'center_y', 'radius', 'color']
-
-    def case_seasons_of_year(self, stage):
-        return ['center_x', 'center_y', 'size_x', 'size_y', 'color']
-
-    def case_days_of_week(self, stage):
-        return ['center_x', 'center_y', 'size_y', 'color']
-
-    def case_parts_of_day(self, stage):
-        return ['rotation', 'size', 'color']
-
-    def case_timeline(self, stage):
-        return ['position']
-
-    def case_questions_ending(self, stage):
-        return []
-
-
-class FlatData:
-    def single_row_for(self, stage):
-        return stage.visit(self)
-
-    def multiple_rows_for(self, stage):
-        raise NotImplementedError()
-
-    def common_row_for(self, stage):
-        return [stage.time_start(), stage.time_duration(), stage.size_in_bytes()]
-
-    def case_introduction(self, stage):
-        return [stage.ip_address(), stage.user_agent(), stage.participant(), stage.local_id()]
-
-    def case_questions_begining(self, stage):
-        return [stage.name(), stage.age(), stage.sex()]
-
-    def case_present_past_future(self, stage):
-        return []
-
-    def case_seasons_of_year(self, stage):
-        return []
-
-    def case_days_of_week(self, stage):
-        return []
-
-    def case_parts_of_day(self, stage):
-        return []
-
-    def case_timeline(self, stage):
-        return [stage.rotation(), stage.length()]
-
-    def case_questions_ending(self, stage):
-        return [
-            stage.represents_time(), stage.cronotype(),
-            stage.choice_size(), stage.choice_color(), stage.choice_position()
-        ]
-
-
-class RecursiveData:
-    def single_row_for(self, stage):
-        if len(stage.visit_header(self)) == 0:
-            return []
-        variables = stage.visit_header(self)
-        elements = type(stage).stage_elements()
-        return [stage.element_data(elem)[var] for var in variables for elem in elements]
-
-    def multiple_rows_for(self, stage):
-        variables = stage.visit_header(self)
+    def rows_data_for(self, stage):
+        variables = stage.visit_class(self.header)
         if len(variables) == 0:
             return []
         elements = type(stage).stage_elements()
@@ -133,147 +99,31 @@ class RecursiveData:
 
         return result
 
-    def common_row_for(self, stage):
-        return []
-
-    def case_introduction(self, stage):
-        return []
-
-    def case_questions_begining(self, stage):
-        return []
-
-    def case_present_past_future(self, stage):
-        return ['center_x', 'center_y', 'radius', 'color']
-
-    def case_seasons_of_year(self, stage):
-        return ['center_x', 'center_y', 'size_x', 'size_y', 'color']
-
-    def case_days_of_week(self, stage):
-        return ['center_x', 'center_y', 'size_y', 'color']
-
-    def case_parts_of_day(self, stage):
-        return ['rotation', 'size', 'color']
-
-    def case_timeline(self, stage):
-        return ['position']
-
-    def case_questions_ending(self, stage):
-        return []
-
-
-class FlatDescription:
-    def single_row_for(self, stage):
-        return stage.visit_header(self)
-
-    def multiple_rows_for(self, stage):
-        raise NotImplementedError()
-
-    def common_row(self):
-        return [
-            'ID único por experimento',
-            'Fecha del inicio de la etapa, en milisegundos desde 1/1/1970',
-            'Duración en milisegundos desde el inicio hasta su fin',
-            'Tamaño en bytes de la etapa, aumenta cuantos más clicks y movimientos hubo'
-        ]
-
-    def case_introduction(self, stage):
-        return [
-            'Dirección IP del sujeto, permite identificar región y suele ser la misma por oficinas',
-            'Navegador del sujeto, con Sistema Operativo',
-            'ID de TEDx, corresponde a la tabla de cronotipos',
-            'Identifica el navegador en una computadora, a ver si más de un experimento provienen de ahí'
-        ]
-
-    def case_questions_begining(self, stage):
-        return ['Nombre', 'Edad', 'Sexo']
-
-    def case_present_past_future(self, stage):
-        return []
-
-    def case_seasons_of_year(self, stage):
-        return []
-
-    def case_days_of_week(self, stage):
-        return []
-
-    def case_parts_of_day(self, stage):
-        return []
-
-    def case_timeline(self, stage):
-        return [
-            'Grados de inclinación (de -90 a 90) de la línea, negativo hacia arriba y positivo hacia abajo',
-            'Longitud de la línea de tiempo'
-        ]
-
-    def case_questions_ending(self, stage):
-        return [
-            'En qué medida uno siente que representa el tiempo en el espacio',
-            'Según sus hábitos el sujeto se considera una persona ...',
-            'Qué tan forzado le pareció elegir el tamaño',
-            'Qué tan forzado le pareció elegir el color',
-            'Qué tan forzado le pareció elegir la posición'
-        ]
-
-
-class RecursiveDescription:
-    def single_row_for(self, stage):
-        if len(stage.visit_header(self)) == 0:
-            return []
-        variables = stage.visit_header(self)
-        elements = stage.stage_elements()
-        return ['{} del "{}"'.format(var, elem) for var in variables for elem in elements]
-
-    def multiple_rows_for(self, stage):
-        variables = stage.visit_header(self)
+    def row_description_for(self, stage_class):
+        variables = stage_class.visit_class(self.description)
         if len(variables) == 0:
             return []
         return ['Elemento'] + variables
 
-    def common_row(self):
-        return []
 
-    def case_introduction(self, stage):
-        return []
+class Composite:
+    def __init__(self, serializers):
+        self.serializers = serializers
 
-    def case_questions_begining(self, stage):
-        return []
+    def row_header_for(self, stage_class):
+        result = []
+        for s in self.serializers:
+            result.extend(s.row_header_for(stage_class))
+        return result
 
-    def case_present_past_future(self, stage):
-        return [
-            'Posición X (vertical) del centro',
-            'Posición Y (vertical) del centro',
-            'Radio',
-            'Color'
-        ]
+    def row_data_for(self, stage):
+        result = []
+        for s in self.serializers:
+            result.extend(s.row_data_for(stage))
+        return result
 
-    def case_seasons_of_year(self, stage):
-        return [
-            'Posición X (vertical) del centro',
-            'Posición Y (vertical) del centro',
-            'Tamaño en X (ancho)',
-            'Tamaño en Y (alto)',
-            'Color'
-        ]
-
-    def case_days_of_week(self, stage):
-        return [
-            'Posición X (vertical) del centro',
-            'Posición Y (vertical) del centro',
-            'Tamaño en Y (alto)',
-            'Color'
-        ]
-
-    def case_parts_of_day(self, stage):
-        return [
-            'Grados del cenro (de 0 a 360, aumenta en sentido horario)',
-            'Cuántos grados (de 0 a 360) abarca el arco',
-            'Color'
-        ]
-
-    def case_timeline(self, stage):
-        return [
-            'Posición (de 0 a 1, comienzo y fin de la línea, respectivamente)'
-        ]
-
-    def case_questions_ending(self, stage):
-        return []
+    def row_description_for(self, stage_class):
+        result = []
+        for s in self.serializers:
+            result.extend(s.row_description_for(stage_class))
+        return result

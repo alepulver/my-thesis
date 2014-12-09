@@ -28,10 +28,10 @@ def setup_module():
 
 class TestExperimentHeader:
     def setUp(self):
-        self.serializer = sz_exp.SummaryHeader()
+        self.serializer = sz_exp.Summary()
 
     def test_row(self):
-        result = self.serializer.row()
+        result = self.serializer.row_header_for(None)
 
         assert_equals(len(result), 6)
         assert_equals(result, [
@@ -42,11 +42,11 @@ class TestExperimentHeader:
 
 class TestExperimentData:
     def setUp(self):
-        self.serializer = sz_exp.SummaryData()
+        self.serializer = sz_exp.Summary()
 
     def test_row(self):
         self.experiment = experiments.experiments_from(my_stages.values())[0]
-        result = self.serializer.row_for(self.experiment)
+        result = self.serializer.row_data_for(self.experiment)
 
         assert_equals(len(result), 6)
         assert_equals(result, [
