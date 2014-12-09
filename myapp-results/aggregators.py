@@ -23,7 +23,22 @@ class Events:
         pass
 
     def selection_order(self, stage):
-        pass
+        result = []
+        events = stage._data['results']['choose']['events']
+        for e in events:
+            if e['type'] == 'choose':
+                result.append(e['arg'])
+        return result
+
+    def order_matching(self, stage):
+        shown = stage._data['results']['choose']['show_order']
+        selected = self.selection_order(stage)
+        totalOne = [1 if a == b else 0 for (a, b) in zip(shown, selected)]
+        totalTwo = [1 if a == b else 0 for (a, b) in zip(shown, reversed(selected))]
+        if totalOne > totalTwo:
+            return sum(totalOne) / len(totalOne)
+        else:
+            return -sum(totalTwo) / len(totalTwo)
 
 
 class Geometry:

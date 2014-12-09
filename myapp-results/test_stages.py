@@ -100,6 +100,7 @@ def test_parts_of_day():
     stage = stages.stage_from(rows['parts_of_day'])
 
     assert_equals(stage.stage_name(), 'parts_of_day')
+    assert_equals(stage.order(), 'counterclockwise')
     assert_equals(stage.element_data('morning'), {
         'color': 'green',
         'size': 76.41994897349244,

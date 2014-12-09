@@ -29,3 +29,9 @@ def test_xxx():
     x = aggregators.Events(['present', 'past', 'future'])
     r = x.color_changes(my_stages['present_past_future'])
     assert_equals(r, {'past': 1, 'future': 1, 'present': 3})
+
+
+def test_yyy():
+    x = aggregators.Events(None)
+    assert_equals(x.order_matching(my_stages['seasons_of_year']), -1)
+    assert_equals(x.order_matching(my_stages['present_past_future']), -1/3)

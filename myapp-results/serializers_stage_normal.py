@@ -11,6 +11,9 @@ class FlatHeader(empty.FlatHeader):
     def case_questions_begining(self, stage):
         return ['name', 'age', 'sex']
 
+    def case_parts_of_day(self, stage):
+        return ['order']
+
     def case_timeline(self, stage):
         return ['line_rotation', 'line_length', 'button_order']
 
@@ -45,6 +48,9 @@ class FlatData(empty.FlatData):
     def case_questions_begining(self, stage):
         return [stage.name(), stage.age(), stage.sex()]
 
+    def case_parts_of_day(self, stage):
+        return [stage.order()]
+
     def case_timeline(self, stage):
         return [stage.rotation(), stage.length(), stage.button_order()]
 
@@ -75,7 +81,6 @@ class RecursiveData(empty.RecursiveData):
 class FlatDescription(empty.FlatDescription):
     def common_row(self):
         return [
-            'ID único por experimento',
             'Fecha del inicio de la etapa, en milisegundos desde 1/1/1970',
             'Duración en milisegundos desde el inicio hasta su fin',
             'Tamaño en bytes de la etapa, aumenta cuantos más clicks y movimientos hubo'
@@ -91,6 +96,9 @@ class FlatDescription(empty.FlatDescription):
 
     def case_questions_begining(self, stage):
         return ['Nombre', 'Edad', 'Sexo']
+
+    def case_parts_of_day(self, stage):
+        return ['Orden en que se obican las etapas del día']
 
     def case_timeline(self, stage):
         return [
@@ -137,7 +145,7 @@ class RecursiveDescription(empty.RecursiveDescription):
 
     def case_parts_of_day(self, stage):
         return [
-            'Grados del cenro (de 0 a 360, aumenta en sentido horario)',
+            'Grados del centro (de 0 a 360, aumenta en sentido horario)',
             'Cuántos grados (de 0 a 360) abarca el arco',
             'Color'
         ]

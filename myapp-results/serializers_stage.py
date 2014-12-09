@@ -1,16 +1,13 @@
-import serializers_stage_empty as sz_empty
 import serializers_stage_normal as sz_normal
 
 
 def normal():
-    result = {
+    return {
         'flat': Flat(sz_normal.FlatHeader(), sz_normal.FlatDescription(), sz_normal.FlatData()),
         'common': Common(sz_normal.FlatHeader(), sz_normal.FlatDescription(), sz_normal.FlatData()),
         'recursive_single': RecursiveSingle(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData()),
         'recursive_multi': RecursiveMulti(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData())
     }
-    result['common_flat'] = Composite([result['common'], result['flat']])
-    return result
 
 
 class Flat:
