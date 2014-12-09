@@ -75,7 +75,6 @@ class FlatByClass:
             sn = s.stage_name()
             fn = sn
             row = self.serializer.row_data_for(s)
-            print(row)
             results[fn].append(row)
 
         for sn, s in self.classes.items():

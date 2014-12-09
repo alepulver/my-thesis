@@ -19,20 +19,22 @@ class Summary:
         return [
             'Identificador único del experimento',
             'Cantidad de etapas del experimento (en total son 8)',
-            'Fecha del inicio de la etapa, en milisegundos desde 1/1/1970',
+            'Fecha del inicio del experimento, en milisegundos desde 1/1/1970',
             'Duración en milisegundos desde el inicio hasta su fin',
             'Verdadero si están todas las etapas, y falso si falta alguna',
-            'Tamaño en bytes de la etapa, aumenta cuantos más clicks y movimientos hubo'
+            'Tamaño en bytes del experimento, aumenta cuantos más clicks y movimientos hubo'
         ]
 
 
 class Full:
     def __init__(self):
         serializers = sz_stage.normal()
+        self.summary = Summary()
         self.serializer = sz_stage.Composite([serializers['common'], serializers['flat'], serializers['recursive_single']])
 
     def row_header_for(self, experiment_class):
         result = []
+        result.extend(self.summary.row_header_for(experiment_class))
         for stage in stages.all_stages():
             sn = stage.stage_name()
             fields = self.serializer.row_header_for(stage)
@@ -42,6 +44,7 @@ class Full:
 
     def row_data_for(self, experiment):
         result = []
+        result.extend(self.summary.row_data_for(experiment))
         for stage in stages.all_stages():
             sn = stage.stage_name()
             if experiment.has_stage(sn):
@@ -55,6 +58,7 @@ class Full:
 
     def row_description_for(self, experiment_class):
         result = []
+        result.extend(self.summary.row_description_for(experiment_class))
         for stage in stages.all_stages():
             sn = stage.stage_name()
             fields = self.serializer.row_description_for(stage)
