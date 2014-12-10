@@ -1,12 +1,16 @@
 import serializers.stage.normal as sz_normal
 import serializers.stage.extras as sz_extras
 import serializers.stage.default_values as sz_def_val
+import serializers.stage.show_select_order as sz_sel_ord
+import serializers.stage.positional_order as sz_pos_ord
 
 
 def flat():
     return {
         'normal': Flat(sz_normal.FlatHeader(), sz_normal.FlatDescription(), sz_normal.FlatData()),
         'common': sz_extras.Common(),
+        'show_select_order': Flat(sz_sel_ord.FlatHeader(), sz_sel_ord.FlatDescription(), sz_sel_ord.FlatData()),
+        'positional_order': Flat(sz_pos_ord.FlatHeader(), sz_pos_ord.FlatDescription(), sz_pos_ord.FlatData())
     }
 
 
