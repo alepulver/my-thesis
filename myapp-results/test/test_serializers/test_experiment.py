@@ -1,7 +1,7 @@
 import json
 import experiments
 import stages
-import serializers_experiment as sz_exp
+import serializers.experiment as sz_exp
 from nose.tools import assert_equals
 
 rows = {}

@@ -1,6 +1,6 @@
-import serializers_stage as sz_stage
-import serializers_experiment as sz_exp
-import serializers_stage_extras as sz_stage_extras
+import serializers.stage_groups as sz_stage
+import serializers.experiment as sz_exp
+import serializers.stage.extras as sz_stage_extras
 import stages
 
 

@@ -1,4 +1,4 @@
-import serializers_stage_normal as sz_normal
+import serializers.stage.normal as sz_normal
 
 
 def normal():

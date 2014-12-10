@@ -1,6 +1,6 @@
 import json
 import stages
-import serializers_stage_normal as sz_normal
+import serializers.stage.normal as sz_normal
 from nose.tools import assert_equals
 
 rows = {}
