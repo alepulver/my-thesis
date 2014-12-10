@@ -28,16 +28,17 @@ def setup_module():
 
 class TestStageHeader:
     def setUp(self):
-        self.serializers = sz_stage_groups.normal()
+        self.serializers = sz_stage_groups.flat()
+        self.rec_sz = sz_stage_groups.recursive_single()
 
     def common_row(self):
         return self.serializers['common'].row_header_for(None)
 
     def flat_row_for(self, stage):
-        return self.serializers['flat'].row_header_for(stage)
+        return self.serializers['normal'].row_header_for(stage)
 
     def recursive_row_for(self, stage):
-        return self.serializers['recursive_single'].row_header_for(stage)
+        return self.rec_sz['normal'].row_header_for(stage)
 
     def test_common(self):
         result = self.common_row()
@@ -103,16 +104,17 @@ class TestStageHeader:
 class TestStageData:
     def setUp(self):
         self.stages = my_stages
-        self.serializers = sz_stage_groups.normal()
+        self.serializers = sz_stage_groups.flat()
+        self.sz_rec = sz_stage_groups.recursive_single()
 
     def common_row_for(self, stage):
         return self.serializers['common'].row_data_for(stage)
 
     def flat_row_for(self, stage):
-        return self.serializers['flat'].row_data_for(stage)
+        return self.serializers['normal'].row_data_for(stage)
 
     def recursive_row_for(self, stage):
-        return self.serializers['recursive_single'].row_data_for(stage)
+        return self.sz_rec['normal'].row_data_for(stage)
 
     def test_common(self):
         result = self.common_row_for(self.stages['introduction'])

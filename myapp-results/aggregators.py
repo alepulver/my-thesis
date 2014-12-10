@@ -1,8 +1,10 @@
 class Events:
-    def __init__(self, elements):
-        self.elements = elements
+    def __init__(self, stage):
+        self.stage = stage
+        self.elements = stage.stage_elements()
 
-    def color_changes(self, stage):
+    def color_changes(self):
+        stage = self.stage
         counts = {}
         for e in self.elements:
             counts[e] = 0
@@ -22,7 +24,8 @@ class Events:
     def active_time(self, stage):
         pass
 
-    def selection_order(self, stage):
+    def selection_order(self):
+        stage = self.stage
         result = []
         events = stage._data['results']['choose']['events']
         for e in events:
@@ -30,9 +33,10 @@ class Events:
                 result.append(e['arg'])
         return result
 
-    def order_matching(self, stage):
+    def order_matching(self):
+        stage = self.stage
         shown = stage._data['results']['choose']['show_order']
-        selected = self.selection_order(stage)
+        selected = self.selection_order()
         totalOne = [1 if a == b else 0 for (a, b) in zip(shown, selected)]
         totalTwo = [1 if a == b else 0 for (a, b) in zip(shown, reversed(selected))]
         if totalOne > totalTwo:

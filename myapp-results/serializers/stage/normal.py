@@ -127,7 +127,7 @@ class RecursiveDescription(empty.StageVisitor):
 
     def case_present_past_future(self, stage):
         return [
-            'Posición X (vertical) del centro',
+            'Posición X (horizontal) del centro',
             'Posición Y (vertical) del centro',
             'Radio',
             'Color'
@@ -135,7 +135,7 @@ class RecursiveDescription(empty.StageVisitor):
 
     def case_seasons_of_year(self, stage):
         return [
-            'Posición X (vertical) del centro',
+            'Posición X (horizontal) del centro',
             'Posición Y (vertical) del centro',
             'Tamaño en X (ancho)',
             'Tamaño en Y (alto)',
@@ -144,7 +144,7 @@ class RecursiveDescription(empty.StageVisitor):
 
     def case_days_of_week(self, stage):
         return [
-            'Posición X (vertical) del centro',
+            'Posición X (horizontal) del centro',
             'Posición Y (vertical) del centro',
             'Tamaño en Y (alto)',
             'Color'

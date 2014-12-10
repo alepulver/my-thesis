@@ -1,13 +1,40 @@
 import serializers.stage.normal as sz_normal
 import serializers.stage.extras as sz_extras
+import serializers.stage.default_values as sz_def_val
 
 
-def normal():
+def flat():
     return {
-        'flat': Flat(sz_normal.FlatHeader(), sz_normal.FlatDescription(), sz_normal.FlatData()),
+        'normal': Flat(sz_normal.FlatHeader(), sz_normal.FlatDescription(), sz_normal.FlatData()),
         'common': sz_extras.Common(),
-        'recursive_single': RecursiveSingle(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData()),
-        'recursive_multi': RecursiveMulti(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData())
+    }
+
+
+def recursive_single():
+    return {
+        'normal': RecursiveSingle(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData()),
+        'default_values': RecursiveSingle(sz_def_val.RecursiveHeader(), sz_def_val.RecursiveDescription(), sz_def_val.RecursiveData())
+    }
+
+
+def recursive_multi():
+    return {
+        'normal': RecursiveMulti(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData()),
+        'default_values': RecursiveMulti(sz_def_val.RecursiveHeader(), sz_def_val.RecursiveDescription(), sz_def_val.RecursiveData())
+    }
+
+
+# This is to sort serializers in the same order each time, as dictionaries don't have order
+def all_by_category():
+    flat_sz = flat()
+    rec_single_sz = recursive_single()
+    rec_multi_sz = recursive_multi()
+    recursive_keys = ['normal', 'default_values']
+
+    return {
+        'flat': Composite([flat_sz[k] for k in ['common', 'normal']]),
+        'recursive_single': Composite([rec_single_sz[k] for k in recursive_keys]),
+        'recursive_multi': Composite([rec_multi_sz[k] for k in recursive_keys])
     }
 
 
@@ -39,7 +66,7 @@ class RecursiveSingle:
             return []
 
         elements = stage_class.stage_elements()
-        return ['{}_{}'.format(var, elem) for var in variables for elem in elements]
+        return ['{}_{}'.format(var, elem) for elem in elements for var in variables]
 
     def row_data_for(self, stage):
         variables = self.header.row_for(type(stage))
@@ -57,7 +84,7 @@ class RecursiveSingle:
         if len(variables) == 0:
             return []
         elements = stage_class.stage_elements()
-        return ['{} del "{}"'.format(var, elem) for var in variables for elem in elements]
+        return ['{} del "{}"'.format(var, elem) for elem in elements for var in variables]
 
 
 class RecursiveMulti:
@@ -72,7 +99,7 @@ class RecursiveMulti:
             row = ['element'] + row
         return row
 
-    def rows_data_for(self, stage):
+    def row_data_for(self, stage):
         variables = self.header.row_for(type(stage))
         if len(variables) == 0:
             return []

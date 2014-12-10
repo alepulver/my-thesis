@@ -28,9 +28,12 @@ class Summary:
 
 class Full:
     def __init__(self):
-        serializers = sz_stage.normal()
+        serializers = sz_stage.all_by_category()
+
         self.summary = Summary()
-        self.serializer = sz_stage.Composite([serializers['common'], serializers['flat'], serializers['recursive_single']])
+        self.serializer = sz_stage.Composite([
+            serializers['flat'], serializers['recursive_single']
+        ])
 
     def row_header_for(self, experiment_class):
         result = []

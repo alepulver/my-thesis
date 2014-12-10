@@ -5,23 +5,25 @@ import stages
 
 
 def stages_drivers():
-    normal = sz_stage.normal()
+    all_serializers = sz_stage.all_by_category()
+    flat = sz_stage.flat()
+
     classes = {}
     for s in stages.all_stages():
         classes[s.stage_name()] = s
 
     summary_sz = sz_stage.Composite([
-        sz_stage_extras.ExperimentId(), sz_stage_extras.Name(), normal['common']
+        sz_stage_extras.ExperimentId(), sz_stage_extras.Name(), flat['common']
     ])
     flat_sz = sz_stage.Composite([
-        sz_stage_extras.ExperimentId(), normal['common'],
-        normal['flat'], normal['recursive_single']
+        sz_stage_extras.ExperimentId(),
+        all_serializers['flat'], all_serializers['recursive_single']
     ])
 
     return [
         Summary(summary_sz, 'stages_summary'),
         FlatByClass(flat_sz, classes),
-        MultipleRowsByClass(normal['recursive_multi'], classes)
+        MultipleRowsByClass(all_serializers['recursive_multi'], classes)
     ]
 
 
@@ -105,7 +107,7 @@ class MultipleRowsByClass:
         for s in things:
             sn = s.stage_name()
             fn = sn
-            for row in self.serializer.rows_data_for(s):
+            for row in self.serializer.row_data_for(s):
                 results[fn].append(row)
 
         for sn, s in self.classes.items():

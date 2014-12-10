@@ -26,12 +26,13 @@ def setup_module():
 
 
 def test_xxx():
-    x = aggregators.Events(['present', 'past', 'future'])
-    r = x.color_changes(my_stages['present_past_future'])
+    x = aggregators.Events(my_stages['present_past_future'])
+    r = x.color_changes()
     assert_equals(r, {'past': 1, 'future': 1, 'present': 3})
 
 
 def test_yyy():
-    x = aggregators.Events(None)
-    assert_equals(x.order_matching(my_stages['seasons_of_year']), -1)
-    assert_equals(x.order_matching(my_stages['present_past_future']), -1/3)
+    x = aggregators.Events(my_stages['parts_of_day'])
+    assert_equals(x.order_matching(), -1)
+    x = aggregators.Events(my_stages['present_past_future'])
+    assert_equals(x.order_matching(), -1/3)
