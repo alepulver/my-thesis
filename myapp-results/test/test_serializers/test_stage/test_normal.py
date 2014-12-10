@@ -1,6 +1,7 @@
 import json
 import stages
-import serializers.stage.normal as sz_normal
+import serializers.stage_groups as sz_stage_groups
+#import serializers.stage.normal as sz_normal
 from nose.tools import assert_equals
 
 rows = {}
@@ -27,17 +28,16 @@ def setup_module():
 
 class TestStageHeader:
     def setUp(self):
-        self.sz_flat = sz_normal.FlatHeader()
-        self.sz_recursive = sz_normal.RecursiveHeader()
+        self.serializers = sz_stage_groups.normal()
 
     def common_row(self):
-        return self.sz_flat.common_row()
+        return self.serializers['common'].row_header_for(None)
 
     def flat_row_for(self, stage):
-        return stage.visit_class(self.sz_flat)
+        return self.serializers['flat'].row_header_for(stage)
 
     def recursive_row_for(self, stage):
-        return stage.visit_class(self.sz_recursive)
+        return self.serializers['recursive_single'].row_header_for(stage)
 
     def test_common(self):
         result = self.common_row()
@@ -50,7 +50,9 @@ class TestStageHeader:
     def test_parts_of_day(self):
         result = self.recursive_row_for(stages.PartsOfDay)
         assert_equals(result, [
-            'rotation', 'size', 'color',
+            'rotation_morning', 'rotation_afternoon', 'rotation_night',
+            'size_morning', 'size_afternoon', 'size_night',
+            'color_morning', 'color_afternoon', 'color_night'
         ])
 
     def test_questions_ending(self):
@@ -63,7 +65,11 @@ class TestStageHeader:
     def test_seasons_of_year(self):
         result = self.recursive_row_for(stages.SeasonsOfYear)
         assert_equals(result, [
-            'center_x', 'center_y', 'size_x', 'size_y', 'color'
+            'center_x_summer', 'center_x_autum', 'center_x_winter', 'center_x_spring',
+            'center_y_summer', 'center_y_autum', 'center_y_winter', 'center_y_spring',
+            'size_x_summer', 'size_x_autum', 'size_x_winter', 'size_x_spring',
+            'size_y_summer', 'size_y_autum', 'size_y_winter', 'size_y_spring',
+            'color_summer', 'color_autum', 'color_winter', 'color_spring'
         ])
 
     def test_timeline_flat(self):
@@ -75,7 +81,9 @@ class TestStageHeader:
     def test_timeline_recursive(self):
         result = self.recursive_row_for(stages.Timeline)
         assert_equals(result, [
-            'position'
+            'position_my_birth', 'position_my_childhood', 'position_my_youth',
+            'position_today', 'position_my_third_age', 'position_year_1900',
+            'position_year_2100', 'position_wwii', 'position_the_beatles'
         ])
 
     def test_questions_begining(self):
@@ -85,24 +93,26 @@ class TestStageHeader:
     def test_days_of_week(self):
         result = self.recursive_row_for(stages.DaysOfWeek)
         assert_equals(result, [
-            'center_x', 'center_y', 'size_y', 'color'
+            'center_x_monday', 'center_x_tuesday', 'center_x_wednesday', 'center_x_thursday', 'center_x_friday', 'center_x_saturday', 'center_x_sunday',
+            'center_y_monday', 'center_y_tuesday', 'center_y_wednesday', 'center_y_thursday', 'center_y_friday', 'center_y_saturday', 'center_y_sunday',
+            'size_y_monday', 'size_y_tuesday', 'size_y_wednesday', 'size_y_thursday', 'size_y_friday', 'size_y_saturday', 'size_y_sunday',
+            'color_monday', 'color_tuesday', 'color_wednesday', 'color_thursday', 'color_friday', 'color_saturday', 'color_sunday'
         ])
 
 
 class TestStageData:
     def setUp(self):
         self.stages = my_stages
-        self.sz_flat = sz_normal.FlatData()
-        self.sz_recursive = sz_normal.RecursiveData()
+        self.serializers = sz_stage_groups.normal()
 
     def common_row_for(self, stage):
-        return self.sz_flat.common_row_for(stage)
+        return self.serializers['common'].row_data_for(stage)
 
     def flat_row_for(self, stage):
-        return stage.visit(self.sz_flat)
+        return self.serializers['flat'].row_data_for(stage)
 
     def recursive_row_for(self, stage):
-        return stage.visit(self.sz_recursive)
+        return self.serializers['recursive_single'].row_data_for(stage)
 
     def test_common(self):
         result = self.common_row_for(self.stages['introduction'])
@@ -121,7 +131,9 @@ class TestStageData:
     def test_parts_of_day(self):
         result = self.recursive_row_for(self.stages['parts_of_day'])
         assert_equals(result, [
-            'rotation', 'size', 'color'
+            167.81246306668982, 76.41994897349244, 'green',
+            44.51096951035254, 137.1224927263627, 'blue',
+            289.75028142222305, 168.7934961310493, 'black'
         ])
 
     def test_questions_ending(self):
@@ -131,7 +143,10 @@ class TestStageData:
     def test_seasons_of_year(self):
         result = self.recursive_row_for(self.stages['seasons_of_year'])
         assert_equals(result, [
-            'center_x', 'center_y', 'size_x', 'size_y', 'color'
+            412.140122756362, 322.4871162027121, 488.9562232196331, 113.0257675945759, 'red',
+            393.6964931190014, 207.1552720665932, 434.3308524489403, 109.6894558668137, 'grey',
+            386.3129272460938, 120.6320495605469, 413.3741455078125, 72.23980712890625, 'blue',
+            431.0544780162724, 431.5310184621541, 506.1089560325448, 110.9379630756919, 'green'
         ])
 
     def test_timeline_flat(self):
@@ -143,7 +158,9 @@ class TestStageData:
     def test_timeline_recursive(self):
         result = self.recursive_row_for(self.stages['timeline'])
         assert_equals(result, [
-            'position'
+            0.9639922045259025, 0.9137393582305529, 0.5891534589279476,
+            0.5262852358292817, 0.10140393087429822, 0.7737157552273286,
+            0.02825327829787394, 1.0, 0.9872686547323904
         ])
 
     def test_questions_begining(self):
@@ -153,5 +170,11 @@ class TestStageData:
     def test_days_of_week(self):
         result = self.recursive_row_for(self.stages['days_of_week'])
         assert_equals(result, [
-            'center_x', 'center_y', 'size_y', 'color'
+            241, 418.5703125, 28.859375, 'black',
+            123, 407.1989734508097, 95.60205309838057, 'red',
+            94, 251.294921875, 155.41015625, 'saddlebrown',
+            235, 274, 100, 'blue',
+            484, 229.8177833557129, 272.3644332885742, 'darkviolet',
+            356, 245.1704249382019, 314.3408498764038, 'yellow',
+            180, 84.19854736328125, 146.6029052734375, 'green'
         ])

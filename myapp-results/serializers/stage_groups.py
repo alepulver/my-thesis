@@ -1,10 +1,11 @@
 import serializers.stage.normal as sz_normal
+import serializers.stage.extras as sz_extras
 
 
 def normal():
     return {
         'flat': Flat(sz_normal.FlatHeader(), sz_normal.FlatDescription(), sz_normal.FlatData()),
-        'common': Common(sz_normal.FlatHeader(), sz_normal.FlatDescription(), sz_normal.FlatData()),
+        'common': sz_extras.Common(),
         'recursive_single': RecursiveSingle(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData()),
         'recursive_multi': RecursiveMulti(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData())
     }
@@ -17,29 +18,13 @@ class Flat:
         self.data = data
 
     def row_header_for(self, stage_class):
-        return stage_class.visit_class(self.header)
+        return self.header.row_for(stage_class)
 
     def row_data_for(self, stage):
-        return stage.visit(self.data)
+        return self.data.row_for(stage)
 
     def row_description_for(self, stage_class):
-        return stage_class.visit_class(self.description)
-
-
-class Common:
-    def __init__(self, header, description, data):
-        self.header = header
-        self.description = description
-        self.data = data
-
-    def row_header_for(self, stage_class):
-        return self.header.common_row()
-
-    def row_data_for(self, stage):
-        return self.data.common_row_for(stage)
-
-    def row_description_for(self, stage_class):
-        return self.description.common_row()
+        return self.description.row_for(stage_class)
 
 
 class RecursiveSingle:
@@ -49,7 +34,7 @@ class RecursiveSingle:
         self.data = data
 
     def row_header_for(self, stage_class):
-        variables = stage_class.visit_class(self.header)
+        variables = self.header.row_for(stage_class)
         if len(variables) == 0:
             return []
 
@@ -57,19 +42,22 @@ class RecursiveSingle:
         return ['{}_{}'.format(var, elem) for var in variables for elem in elements]
 
     def row_data_for(self, stage):
-        variables = stage.visit(self.header)
+        variables = self.header.row_for(type(stage))
         if len(variables) == 0:
             return []
+
         elements = type(stage).stage_elements()
-        return [stage.element_data(elem)[var] for var in variables for elem in elements]
+        result = []
+        for e in elements:
+            result.extend(self.data.row_for_element(stage, e))
+        return result
 
     def row_description_for(self, stage_class):
-        variables = stage_class.visit_class(self.description)
+        variables = self.description.row_for(stage_class)
         if len(variables) == 0:
             return []
         elements = stage_class.stage_elements()
         return ['{} del "{}"'.format(var, elem) for var in variables for elem in elements]
-
 
 
 class RecursiveMulti:
@@ -79,25 +67,24 @@ class RecursiveMulti:
         self.data = data
 
     def row_header_for(self, stage_class):
-        row = stage_class.visit_class(self.header)
+        row = self.header.row_for(stage_class)
         if len(row) > 0:
             row = ['element'] + row
         return row
 
     def rows_data_for(self, stage):
-        variables = stage.visit_class(self.header)
+        variables = self.header.row_for(type(stage))
         if len(variables) == 0:
             return []
+
         elements = type(stage).stage_elements()
         result = []
         for e in elements:
-            values = stage.element_data(e)
-            result.append([e] + [values[v] for v in variables])
-
+            result.append([e] + self.data.row_for_element(stage, e))
         return result
 
     def row_description_for(self, stage_class):
-        variables = stage_class.visit_class(self.description)
+        variables = self.description.row_for(stage_class)
         if len(variables) == 0:
             return []
         return ['Elemento'] + variables
