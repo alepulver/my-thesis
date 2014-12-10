@@ -3,7 +3,7 @@ class Events:
         self.stage = stage
         self.elements = stage.stage_elements()
 
-    def color_changes(self):
+    def count_by_type(self, event_type):
         stage = self.stage
         counts = {}
         for e in self.elements:
@@ -11,39 +11,57 @@ class Events:
 
         events = stage._data['results']['drawing']['events']
         for e in events:
-            if e['type'] == 'color':
+            if e['type'] == event_type:
                 counts[e['arg']] += 1
         return counts
 
-    def resizes(self, stage):
-        pass
+    def time_spent(self):
+        times = {}
+        for e in self.elements:
+            times[e] = 0
 
-    def moves(self, stage):
-        pass
+        current_element = None
+        last_timestamp = 0
 
-    def active_time(self, stage):
-        pass
+        events = self.stage._data['results']['drawing']['events']
+        for e in events:
+            if 'time' in e.keys():
+                timestamp = e['time']
+            elif 'time' in e['data'].keys():
+                timestamp = e['data']['time']
+
+            if current_element is not None:
+                times[current_element] += timestamp - last_timestamp
+
+            if e['type'] in ['add', 'select']:
+                current_element = e['arg']
+
+            last_timestamp = timestamp
+
+        return times
 
     def selection_order(self):
-        stage = self.stage
         result = []
-        events = stage._data['results']['choose']['events']
+        events = self.stage._data['results']['choose']['events']
         for e in events:
             if e['type'] == 'choose':
                 result.append(e['arg'])
         return result
 
     def order_matching(self):
-        stage = self.stage
-        shown = stage._data['results']['choose']['show_order']
+        shown = self.stage._data['results']['choose']['show_order']
         selected = self.selection_order()
+        return self.matching_score(shown, selected)
+
+    @staticmethod
+    def matching_score(shown, selected):
+        assert(len(shown) == len(selected))
         totalOne = [1 if a == b else 0 for (a, b) in zip(shown, selected)]
         totalTwo = [1 if a == b else 0 for (a, b) in zip(shown, reversed(selected))]
         if totalOne > totalTwo:
             return sum(totalOne) / len(totalOne)
         else:
             return -sum(totalTwo) / len(totalTwo)
-
 
 class Geometry:
     def __init__(self, stage):

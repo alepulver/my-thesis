@@ -48,12 +48,20 @@ class TestStageHeader:
         result = self.flat_row_for(stages.Introduction)
         assert_equals(result, ['ip_address', 'user_agent', 'participant', 'local_id'])
 
+    def test_present_past_future(self):
+        result = self.recursive_row_for(stages.PresentPastFuture)
+        assert_equals(result, [
+            'center_x_present', 'center_y_present', 'radius_present', 'color_present',
+            'center_x_past', 'center_y_past', 'radius_past', 'color_past',
+            'center_x_future', 'center_y_future', 'radius_future', 'color_future'
+        ])
+
     def test_parts_of_day(self):
         result = self.recursive_row_for(stages.PartsOfDay)
         assert_equals(result, [
-            'rotation_morning', 'rotation_afternoon', 'rotation_night',
-            'size_morning', 'size_afternoon', 'size_night',
-            'color_morning', 'color_afternoon', 'color_night'
+            'rotation_morning', 'size_morning', 'color_morning',
+            'rotation_afternoon', 'size_afternoon', 'color_afternoon',
+            'rotation_night', 'size_night', 'color_night'
         ])
 
     def test_questions_ending(self):
@@ -66,11 +74,10 @@ class TestStageHeader:
     def test_seasons_of_year(self):
         result = self.recursive_row_for(stages.SeasonsOfYear)
         assert_equals(result, [
-            'center_x_summer', 'center_x_autum', 'center_x_winter', 'center_x_spring',
-            'center_y_summer', 'center_y_autum', 'center_y_winter', 'center_y_spring',
-            'size_x_summer', 'size_x_autum', 'size_x_winter', 'size_x_spring',
-            'size_y_summer', 'size_y_autum', 'size_y_winter', 'size_y_spring',
-            'color_summer', 'color_autum', 'color_winter', 'color_spring'
+            'center_x_summer', 'center_y_summer', 'size_x_summer', 'size_y_summer', 'color_summer',
+            'center_x_autum', 'center_y_autum', 'size_x_autum', 'size_y_autum', 'color_autum',
+            'center_x_winter', 'center_y_winter', 'size_x_winter', 'size_y_winter', 'color_winter',
+            'center_x_spring', 'center_y_spring', 'size_x_spring', 'size_y_spring', 'color_spring'
         ])
 
     def test_timeline_flat(self):
@@ -94,10 +101,13 @@ class TestStageHeader:
     def test_days_of_week(self):
         result = self.recursive_row_for(stages.DaysOfWeek)
         assert_equals(result, [
-            'center_x_monday', 'center_x_tuesday', 'center_x_wednesday', 'center_x_thursday', 'center_x_friday', 'center_x_saturday', 'center_x_sunday',
-            'center_y_monday', 'center_y_tuesday', 'center_y_wednesday', 'center_y_thursday', 'center_y_friday', 'center_y_saturday', 'center_y_sunday',
-            'size_y_monday', 'size_y_tuesday', 'size_y_wednesday', 'size_y_thursday', 'size_y_friday', 'size_y_saturday', 'size_y_sunday',
-            'color_monday', 'color_tuesday', 'color_wednesday', 'color_thursday', 'color_friday', 'color_saturday', 'color_sunday'
+            'center_x_monday', 'center_y_monday', 'size_y_monday', 'color_monday',
+            'center_x_tuesday', 'center_y_tuesday', 'size_y_tuesday', 'color_tuesday',
+            'center_x_wednesday', 'center_y_wednesday', 'size_y_wednesday', 'color_wednesday',
+            'center_x_thursday', 'center_y_thursday', 'size_y_thursday', 'color_thursday',
+            'center_x_friday', 'center_y_friday', 'size_y_friday', 'color_friday',
+            'center_x_saturday', 'center_y_saturday', 'size_y_saturday', 'color_saturday',
+            'center_x_sunday', 'center_y_sunday', 'size_y_sunday', 'color_sunday'
         ])
 
 
@@ -128,6 +138,14 @@ class TestStageData:
             'Chrome/37.0.2062.120 Safari/537.36',
             '324',
             'ISc_wgAqEj4ckmtm4Ir2TDw-Nfzniy0ONXF_U6kPyv1'
+        ])
+
+    def test_present_past_future(self):
+        result = self.recursive_row_for(self.stages['present_past_future'])
+        assert_equals(result, [
+            319.06804908294, 256.06804908294, 152.93195091706, 'green',
+            229, 282, 70, 'blue',
+            500.3393852926092, 231.6606147073908, 146.6606147073908, 'darkviolet'
         ])
 
     def test_parts_of_day(self):

@@ -27,7 +27,7 @@ def setup_module():
 
 def test_xxx():
     x = aggregators.Events(my_stages['present_past_future'])
-    r = x.color_changes()
+    r = x.count_by_type('color')
     assert_equals(r, {'past': 1, 'future': 1, 'present': 3})
 
 

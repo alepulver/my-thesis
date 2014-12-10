@@ -11,9 +11,6 @@ class FlatHeader(empty.StageVisitor):
     def case_questions_begining(self, stage_class):
         return ['name', 'age', 'sex']
 
-    def case_parts_of_day(self, stage_class):
-        return ['order']
-
     def case_timeline(self, stage_class):
         return ['line_rotation', 'line_length', 'button_order']
 
@@ -30,9 +27,6 @@ class FlatData(empty.StageVisitor):
 
     def case_questions_begining(self, stage):
         return [stage.name(), stage.age(), stage.sex()]
-
-    def case_parts_of_day(self, stage):
-        return [stage.order()]
 
     def case_timeline(self, stage):
         return [stage.rotation(), stage.length(), stage.button_order()]
@@ -59,8 +53,6 @@ class FlatDescription(empty.StageVisitor):
     def case_questions_begining(self, stage_class):
         return ['Nombre', 'Edad', 'Sexo']
 
-    def case_parts_of_day(self, stage_class):
-        return ['Orden en que se obican las etapas del día']
 
     def case_timeline(self, stage_class):
         return [

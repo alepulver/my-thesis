@@ -3,6 +3,7 @@ import serializers.stage.extras as sz_extras
 import serializers.stage.default_values as sz_def_val
 import serializers.stage.show_select_order as sz_sel_ord
 import serializers.stage.positional_order as sz_pos_ord
+import serializers.stage.events as sz_events
 
 
 def flat():
@@ -17,14 +18,16 @@ def flat():
 def recursive_single():
     return {
         'normal': RecursiveSingle(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData()),
-        'default_values': RecursiveSingle(sz_def_val.RecursiveHeader(), sz_def_val.RecursiveDescription(), sz_def_val.RecursiveData())
+        'default_values': RecursiveSingle(sz_def_val.RecursiveHeader(), sz_def_val.RecursiveDescription(), sz_def_val.RecursiveData()),
+        'events': RecursiveSingle(sz_events.RecursiveHeader(), sz_events.RecursiveDescription(), sz_events.RecursiveData())
     }
 
 
 def recursive_multi():
     return {
         'normal': RecursiveMulti(sz_normal.RecursiveHeader(), sz_normal.RecursiveDescription(), sz_normal.RecursiveData()),
-        'default_values': RecursiveMulti(sz_def_val.RecursiveHeader(), sz_def_val.RecursiveDescription(), sz_def_val.RecursiveData())
+        'default_values': RecursiveMulti(sz_def_val.RecursiveHeader(), sz_def_val.RecursiveDescription(), sz_def_val.RecursiveData()),
+        'events': RecursiveMulti(sz_events.RecursiveHeader(), sz_events.RecursiveDescription(), sz_events.RecursiveData())
     }
 
 
@@ -33,10 +36,10 @@ def all_by_category():
     flat_sz = flat()
     rec_single_sz = recursive_single()
     rec_multi_sz = recursive_multi()
-    recursive_keys = ['normal', 'default_values']
+    recursive_keys = ['normal', 'default_values', 'events']
 
     return {
-        'flat': Composite([flat_sz[k] for k in ['common', 'normal']]),
+        'flat': Composite([flat_sz[k] for k in ['common', 'normal', 'show_select_order', 'positional_order']]),
         'recursive_single': Composite([rec_single_sz[k] for k in recursive_keys]),
         'recursive_multi': Composite([rec_multi_sz[k] for k in recursive_keys])
     }

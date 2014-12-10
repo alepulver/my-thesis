@@ -1,5 +1,4 @@
 import json
-import itertools as it
 
 
 def stage_from(stage_row):
@@ -192,21 +191,6 @@ class PartsOfDay(Stage):
             "size": fix_angle(section['angle']),
             "color": section['color']
         }
-
-    def order(self):
-        parts = [(p, self.element_data(p)['rotation']) for p in self.stage_elements()]
-        parts.sort(key = lambda x: x[1])
-        parts = it.cycle(map(lambda x: x[0], parts))
-        parts = it.dropwhile(lambda x: x != 'morning', parts)
-
-        morning = next(parts)
-        assert(morning == "morning")
-        after_morning = next(parts)
-
-        if after_morning == 'afternoon':
-            return 'clockwise'
-        else:
-            return 'counterclockwise'
 
 
 class Timeline(Stage):
