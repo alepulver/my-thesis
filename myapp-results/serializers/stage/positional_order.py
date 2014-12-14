@@ -12,6 +12,9 @@ class FlatHeader(empty.StageVisitor):
     def case_parts_of_day(self, stage_class):
         return ['order']
 
+    def case_days_of_week(self, stage_class):
+        return ['order_x']
+
 
 class FlatDescription(empty.StageVisitor):
     def row_for(self, stage_class):
@@ -25,6 +28,9 @@ class FlatDescription(empty.StageVisitor):
 
     def case_parts_of_day(self, stage_class):
         return ['Orden en que se obican las etapas del día']
+
+    def case_days_of_week(self, stage_class):
+        return ['Orden en X (lunes primero, domingo primero u otro)']
 
 
 class FlatData(empty.StageVisitor):
@@ -57,3 +63,17 @@ class FlatData(empty.StageVisitor):
             return ['clockwise']
         else:
             return ['counterclockwise']
+
+    def case_days_of_week(self, stage):
+        parts = [(p, stage.element_data(p)['center_x']) for p in stage.stage_elements()]
+        parts.sort(key = lambda x: x[1])
+        parts = [x[0] for x in parts]
+
+        monday_first = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+        sunday_first = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+        if parts == monday_first:
+            return ['monday_first']
+        elif parts == sunday_first:
+            return ['sunday_first']
+        else:
+            return ['not_ordered']

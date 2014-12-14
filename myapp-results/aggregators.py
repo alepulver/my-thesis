@@ -56,12 +56,9 @@ class Events:
     @staticmethod
     def matching_score(shown, selected):
         assert(len(shown) == len(selected))
-        totalOne = [1 if a == b else 0 for (a, b) in zip(shown, selected)]
-        totalTwo = [1 if a == b else 0 for (a, b) in zip(shown, reversed(selected))]
-        if totalOne > totalTwo:
-            return sum(totalOne) / len(totalOne)
-        else:
-            return -sum(totalTwo) / len(totalTwo)
+        total = [1 if a == b else 0 for (a, b) in zip(shown, selected)]
+        return sum(total) / len(total)
+
 
 class Geometry:
     def __init__(self, stage):

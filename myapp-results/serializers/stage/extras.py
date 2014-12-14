@@ -33,3 +33,14 @@ class Common:
             'Duración en milisegundos desde el inicio hasta su fin',
             'Tamaño en bytes de la etapa, aumenta cuantos más clicks y movimientos hubo'
         ]
+
+
+class Element:
+    def row_header_for(self, stage_class):
+        return ['element']
+
+    def row_data_for(self, stage):
+        return [[x] for x in type(stage).stage_elements()]
+
+    def row_description_for(self, stage_class):
+        return ['Elemento al que corresponden las variables']

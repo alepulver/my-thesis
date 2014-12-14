@@ -93,7 +93,42 @@ def test_seasons_of_year():
 
 def test_days_of_week():
     stage = stages.stage_from(rows['days_of_week'])
+
     assert_equals(stage.stage_name(), 'days_of_week')
+    assert_equals(stage.element_data('monday'), {
+        'center_x': 241, 'center_y': 418.5703125,
+        'color': 'black', 'size_y': 28.859375
+    })
+
+    assert_equals(stage.element_data('tuesday'), {
+        'center_x': 123, 'center_y': 407.1989734508097,
+        'color': 'red', 'size_y': 95.60205309838057
+    })
+
+    assert_equals(stage.element_data('wednesday'), {
+        'center_x': 94, 'center_y': 251.294921875,
+        'color': 'saddlebrown', 'size_y': 155.41015625
+    })
+
+    assert_equals(stage.element_data('thursday'), {
+        'center_x': 235, 'center_y': 274,
+        'color': 'blue', 'size_y': 100
+    })
+
+    assert_equals(stage.element_data('friday'), {
+        'center_x': 484, 'center_y': 229.8177833557129,
+        'color': 'darkviolet', 'size_y': 272.3644332885742
+    })
+
+    assert_equals(stage.element_data('saturday'), {
+        'center_x': 356, 'center_y': 245.1704249382019,
+        'color': 'yellow', 'size_y': 314.3408498764038
+    })
+
+    assert_equals(stage.element_data('sunday'), {
+        'center_x': 180, 'center_y': 84.19854736328125,
+        'color': 'green', 'size_y': 146.6029052734375
+    })
 
 
 def test_parts_of_day():

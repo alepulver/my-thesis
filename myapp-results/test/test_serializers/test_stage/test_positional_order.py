@@ -45,6 +45,12 @@ class TestStageHeader:
             'order'
         ])
 
+    def test_days_of_week(self):
+        result = self.row_for(type(self.stages['days_of_week']))
+        assert_equals(result, [
+            'order_x'
+        ])
+
 
 class TestStageData:
     def setUp(self):
@@ -66,3 +72,8 @@ class TestStageData:
             'counterclockwise'
         ])
 
+    def test_days_of_week(self):
+        result = self.row_for(self.stages['days_of_week'])
+        assert_equals(result, [
+            'not_ordered'
+        ])

@@ -41,7 +41,7 @@ def all_by_category():
     return {
         'flat': Composite([flat_sz[k] for k in ['common', 'normal', 'show_select_order', 'positional_order']]),
         'recursive_single': Composite([rec_single_sz[k] for k in recursive_keys]),
-        'recursive_multi': Composite([rec_multi_sz[k] for k in recursive_keys])
+        'recursive_multi': CompositeRecursiveMulti([sz_extras.Element()] + [rec_multi_sz[k] for k in recursive_keys])
     }
 
 
@@ -101,10 +101,7 @@ class RecursiveMulti:
         self.data = data
 
     def row_header_for(self, stage_class):
-        row = self.header.row_for(stage_class)
-        if len(row) > 0:
-            row = ['element'] + row
-        return row
+        return self.header.row_for(stage_class)
 
     def row_data_for(self, stage):
         variables = self.header.row_for(type(stage))
@@ -114,14 +111,11 @@ class RecursiveMulti:
         elements = type(stage).stage_elements()
         result = []
         for e in elements:
-            result.append([e] + self.data.row_for_element(stage, e))
+            result.append(self.data.row_for_element(stage, e))
         return result
 
     def row_description_for(self, stage_class):
-        variables = self.description.row_for(stage_class)
-        if len(variables) == 0:
-            return []
-        return ['Elemento'] + variables
+        return self.description.row_for(stage_class)
 
 
 class Composite:
@@ -138,6 +132,38 @@ class Composite:
         result = []
         for s in self.serializers:
             result.extend(s.row_data_for(stage))
+        return result
+
+    def row_description_for(self, stage_class):
+        result = []
+        for s in self.serializers:
+            result.extend(s.row_description_for(stage_class))
+        return result
+
+
+class CompositeRecursiveMulti:
+    def __init__(self, serializers):
+        self.serializers = serializers
+
+    def row_header_for(self, stage_class):
+        result = []
+        for s in self.serializers:
+            result.extend(s.row_header_for(stage_class))
+        return result
+
+    def row_data_for(self, stage):
+        if not hasattr(type(stage), 'stage_elements'):
+            return []
+
+        elements = type(stage).stage_elements()
+        result = [[] for e in elements]
+        for s in self.serializers:
+            rows = s.row_data_for(stage)
+            if len(rows) == 0:
+                continue
+
+            for i, e in enumerate(elements):
+                result[i].extend(rows[i])
         return result
 
     def row_description_for(self, stage_class):
