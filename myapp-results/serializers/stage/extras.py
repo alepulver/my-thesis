@@ -44,3 +44,14 @@ class Element:
 
     def row_description_for(self, stage_class):
         return ['Elemento al que corresponden las variables']
+
+
+class ExperimentIdMulti:
+    def row_header_for(self, stage_class):
+        return ['experiment_id']
+
+    def row_data_for(self, stage):
+        return [[stage.experiment_id()] for e in type(stage).stage_elements()]
+
+    def row_description_for(self, stage_class):
+        return ['ID única del experimento']

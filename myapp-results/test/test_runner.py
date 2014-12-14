@@ -51,11 +51,11 @@ class TestRunner:
 
     def test_individual_stages_long(self):
         table = [
-            ['present_past_future', 7, 12],
-            ['seasons_of_year', 9, 13],
-            ['parts_of_day', 7, 10],
-            ['days_of_week', 15, 12],
-            ['timeline', 10, 6],
+            ['present_past_future', 7, 13],
+            ['seasons_of_year', 9, 14],
+            ['parts_of_day', 7, 11],
+            ['days_of_week', 15, 13],
+            ['timeline', 10, 7],
         ]
 
         for stage_name, rows, columns in table:

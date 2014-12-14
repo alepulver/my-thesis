@@ -41,7 +41,9 @@ def all_by_category():
     return {
         'flat': Composite([flat_sz[k] for k in ['common', 'normal', 'show_select_order', 'positional_order']]),
         'recursive_single': Composite([rec_single_sz[k] for k in recursive_keys]),
-        'recursive_multi': CompositeRecursiveMulti([sz_extras.Element()] + [rec_multi_sz[k] for k in recursive_keys])
+        'recursive_multi': CompositeRecursiveMulti(
+            [sz_extras.ExperimentIdMulti(), sz_extras.Element()] +
+            [rec_multi_sz[k] for k in recursive_keys])
     }
 
 
