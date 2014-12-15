@@ -51,6 +51,12 @@ class TestStageHeader:
             'order_x'
         ])
 
+    def test_timeline(self):
+        result = self.row_for(type(self.stages['timeline']))
+        assert_equals(result, [
+            'order_match', 'order_match_reverse'
+        ])
+
 
 class TestStageData:
     def setUp(self):
@@ -63,7 +69,7 @@ class TestStageData:
     def test_present_past_future(self):
         result = self.row_for(self.stages['present_past_future'])
         assert_equals(result, [
-           'past_present_future', 'future_present_past' 
+            'past_present_future', 'future_present_past'
         ])
 
     def test_parts_of_day(self):
@@ -76,4 +82,10 @@ class TestStageData:
         result = self.row_for(self.stages['days_of_week'])
         assert_equals(result, [
             'not_ordered'
+        ])
+
+    def test_timeline(self):
+        result = self.row_for(self.stages['timeline'])
+        assert_equals(result, [
+            0, 0.4444444444444444
         ])
