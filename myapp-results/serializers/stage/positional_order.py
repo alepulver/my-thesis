@@ -1,6 +1,12 @@
 from . import empty
 import itertools as it
 import aggregators
+from serializers import groups
+
+
+def create():
+    obj = groups.Group(FlatHeader(), FlatDescription(), FlatData())
+    return groups.Flat(obj)
 
 
 class FlatHeader(empty.StageVisitor):

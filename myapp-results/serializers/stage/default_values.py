@@ -1,4 +1,10 @@
 from . import empty
+from serializers import groups
+
+
+def create():
+    obj = groups.Group(RecursiveHeader(), RecursiveDescription(), RecursiveData())
+    return groups.Recursive(obj)
 
 
 class RecursiveHeader(empty.StageVisitor):

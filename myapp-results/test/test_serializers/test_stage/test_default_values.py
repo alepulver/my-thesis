@@ -28,10 +28,10 @@ def setup_module():
 class TestStageHeader:
     def setUp(self):
         self.stages = my_stages
-        self.serializer = sz_stage_groups.recursive_single()['default_values']
+        self.serializer = sz_stage_groups.recursive()['default_values']
 
     def row_for(self, stage):
-        return self.serializer.row_header_for(stage)
+        return self.serializer.single_header_for(stage)
 
     def test_present_past_future(self):
         result = self.row_for(type(self.stages['present_past_future']))
@@ -58,10 +58,10 @@ class TestStageHeader:
 class TestStageData:
     def setUp(self):
         self.stages = my_stages
-        self.serializer = sz_stage_groups.recursive_single()['default_values']
+        self.serializer = sz_stage_groups.recursive()['default_values']
 
     def row_for(self, stage):
-        return self.serializer.row_data_for(stage)
+        return self.serializer.single_data_for(stage)
 
     def test_present_past_future(self):
         result = self.row_for(self.stages['present_past_future'])

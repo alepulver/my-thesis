@@ -1,6 +1,7 @@
 import json
 import stages
 import serializers.stage_groups as sz_stage_groups
+from serializers import groups
 from nose.tools import assert_equals
 
 rows = {}
@@ -28,10 +29,10 @@ def setup_module():
 class TestStageHeader:
     def setUp(self):
         self.stages = my_stages
-        self.serializer = sz_stage_groups.flat()['positional_order']
+        self.serializer = groups.SingleWrapper(sz_stage_groups.flat()['positional_order'])
 
     def row_for(self, stage):
-        return self.serializer.row_header_for(stage)
+        return self.serializer.header_for(stage)
 
     def test_present_past_future(self):
         result = self.row_for(type(self.stages['present_past_future']))
@@ -61,10 +62,10 @@ class TestStageHeader:
 class TestStageData:
     def setUp(self):
         self.stages = my_stages
-        self.serializer = sz_stage_groups.flat()['positional_order']
+        self.serializer = groups.SingleWrapper(sz_stage_groups.flat()['positional_order'])
 
     def row_for(self, stage):
-        return self.serializer.row_data_for(stage)
+        return self.serializer.data_for(stage)
 
     def test_present_past_future(self):
         result = self.row_for(self.stages['present_past_future'])

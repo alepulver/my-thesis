@@ -1,33 +1,45 @@
+from serializers import groups
+
+
+def create():
+    return {
+        'experiment_id': groups.Flat(ExperimentId()),
+        'name': groups.Flat(Name()),
+        'common': groups.Flat(Common()),
+        'element': groups.Recursive(Element())
+    }
+
+
 class ExperimentId:
-    def row_header_for(self, stage_class):
+    def header_for(self, stage_class):
         return ['experiment_id']
 
-    def row_data_for(self, stage):
+    def data_for(self, stage):
         return [stage.experiment_id()]
 
-    def row_description_for(self, stage_class):
+    def description_for(self, stage_class):
         return ['ID única del experimento']
 
 
 class Name:
-    def row_header_for(self, stage_class):
+    def header_for(self, stage_class):
         return ['name']
 
-    def row_data_for(self, stage):
+    def data_for(self, stage):
         return [stage.stage_name()]
 
-    def row_description_for(self, stage_class):
+    def description_for(self, stage_class):
         return ['Tipo de etapa correspondiente a la fila']
 
 
 class Common:
-    def row_header_for(self, stage_class):
+    def header_for(self, stage_class):
         return ['time_start', 'time_duration', 'size_in_bytes']
 
-    def row_data_for(self, stage):
+    def data_for(self, stage):
         return [stage.time_start(), stage.time_duration(), stage.size_in_bytes()]
 
-    def row_description_for(self, stage_class):
+    def description_for(self, stage_class):
         return [
             'Fecha del inicio de la etapa, en milisegundos desde 1/1/1970',
             'Duración en milisegundos desde el inicio hasta su fin',
@@ -36,22 +48,11 @@ class Common:
 
 
 class Element:
-    def row_header_for(self, stage_class):
+    def header_for(self, stage_class):
         return ['element']
 
-    def row_data_for(self, stage):
-        return [[x] for x in type(stage).stage_elements()]
+    def data_for_element(self, stage, element):
+        return [element]
 
-    def row_description_for(self, stage_class):
+    def description_for(self, stage_class):
         return ['Elemento al que corresponden las variables']
-
-
-class ExperimentIdMulti:
-    def row_header_for(self, stage_class):
-        return ['experiment_id']
-
-    def row_data_for(self, stage):
-        return [[stage.experiment_id()] for e in type(stage).stage_elements()]
-
-    def row_description_for(self, stage_class):
-        return ['ID única del experimento']

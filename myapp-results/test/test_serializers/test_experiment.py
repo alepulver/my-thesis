@@ -31,7 +31,7 @@ class TestExperimentHeader:
         self.serializer = sz_exp.Summary()
 
     def test_row(self):
-        result = self.serializer.row_header_for(None)
+        result = self.serializer.header_for(None)
 
         assert_equals(len(result), 6)
         assert_equals(result, [
@@ -46,7 +46,7 @@ class TestExperimentData:
 
     def test_row(self):
         self.experiment = experiments.experiments_from(my_stages.values())[0]
-        result = self.serializer.row_data_for(self.experiment)
+        result = self.serializer.data_for(self.experiment)
 
         assert_equals(len(result), 6)
         assert_equals(result, [

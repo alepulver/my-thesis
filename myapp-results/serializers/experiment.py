@@ -1,21 +1,22 @@
 from . import stage_groups as sz_stage
+from . import groups
 import stages
 
 
 class Summary:
-    def row_header_for(self, experiment_class):
+    def header_for(self, experiment_class):
         return [
             'id', 'num_stages', 'start_time',
             'duration', 'is_complete', 'size_in_bytes'
         ]
 
-    def row_data_for(self, experiment):
+    def data_for(self, experiment):
         return [
             experiment.experiment_id(), experiment.num_stages(), experiment.time_start(),
             experiment.time_duration(), experiment.is_complete(), experiment.size_in_bytes()
         ]
 
-    def row_description_for(self, experiment_class):
+    def description_for(self, experiment_class):
         return [
             'Identificador único del experimento',
             'Cantidad de etapas del experimento (en total son 8)',
@@ -31,40 +32,41 @@ class Full:
         serializers = sz_stage.all_by_category()
 
         self.summary = Summary()
-        self.serializer = sz_stage.Composite([
-            serializers['flat'], serializers['recursive_single']
+        obj = groups.Composite([
+            serializers['flat'], serializers['recursive']
         ])
+        self.serializer = groups.SingleWrapper(obj)
 
-    def row_header_for(self, experiment_class):
+    def header_for(self, experiment_class):
         result = []
-        result.extend(self.summary.row_header_for(experiment_class))
+        result.extend(self.summary.header_for(experiment_class))
         for stage in stages.all_stages():
             sn = stage.stage_name()
-            fields = self.serializer.row_header_for(stage)
+            fields = self.serializer.header_for(stage)
             fields = ["{}_{}".format(sn, f) for f in fields]
             result.extend(fields)
         return result
 
-    def row_data_for(self, experiment):
+    def data_for(self, experiment):
         result = []
-        result.extend(self.summary.row_data_for(experiment))
+        result.extend(self.summary.data_for(experiment))
         for stage in stages.all_stages():
             sn = stage.stage_name()
             if experiment.has_stage(sn):
                 current = experiment.get_stage(sn)
-                fields = self.serializer.row_data_for(current)
+                fields = self.serializer.data_for(current)
             else:
-                headers = self.serializer.row_header_for(stage)
+                headers = self.serializer.header_for(stage)
                 fields = ['missing'] * len(headers)
             result.extend(fields)
         return result
 
-    def row_description_for(self, experiment_class):
+    def description_for(self, experiment_class):
         result = []
-        result.extend(self.summary.row_description_for(experiment_class))
+        result.extend(self.summary.description_for(experiment_class))
         for stage in stages.all_stages():
             sn = stage.stage_name()
-            fields = self.serializer.row_description_for(stage)
+            fields = self.serializer.description_for(stage)
             fields = ['{} para la etapa "{}"'.format(f, sn) for f in fields]
             result.extend(fields)
         return result

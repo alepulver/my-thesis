@@ -2,7 +2,6 @@ import json
 import stages
 import serializers.stage_groups as sz_stage_groups
 from nose.tools import assert_equals
-from nose.plugins.skip import Skip, SkipTest
 
 rows = {}
 my_stages = {}
@@ -26,53 +25,13 @@ def setup_module():
         my_stages[k] = stages.stage_from(rows[k])
 
 
-@SkipTest
-class TestStageHeader:
-    def setUp(self):
-        self.stages = my_stages
-        self.serializer = sz_stage_groups.recursive_single()['events']
-
-    def row_for(self, stage):
-        return self.serializer.row_header_for(stage)
-
-    def test_present_past_future(self):
-        result = self.row_for(type(self.stages['present_past_future']))
-        assert_equals(result, [
-
-        ])
-
-    def test_days_of_week(self):
-        result = self.row_for(type(self.stages['days_of_week']))
-        assert_equals(result, [
-
-        ])
-
-    def test_seasons_of_year(self):
-        result = self.row_for(type(self.stages['seasons_of_year']))
-        assert_equals(result, [
-
-        ])
-
-    def test_parts_of_day(self):
-        result = self.row_for(type(self.stages['parts_of_day']))
-        assert_equals(result, [
-
-        ])
-
-    def test_timeline(self):
-        result = self.row_for(type(self.stages['timeline']))
-        assert_equals(result, [
-
-        ])
-
-
 class TestStageData:
     def setUp(self):
         self.stages = my_stages
-        self.serializer = sz_stage_groups.recursive_single()['events']
+        self.serializer = sz_stage_groups.recursive()['events']
 
     def row_for(self, stage):
-        return self.serializer.row_data_for(stage)
+        return self.serializer.single_data_for(stage)
 
     def test_present_past_future(self):
         result = self.row_for(self.stages['present_past_future'])

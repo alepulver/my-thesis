@@ -1,4 +1,15 @@
 from . import empty
+from serializers import groups
+
+
+def create_flat():
+    obj = groups.Group(FlatHeader(), FlatDescription(), FlatData())
+    return groups.Flat(obj)
+
+
+def create_recursive():
+    obj = groups.Group(RecursiveHeader(), RecursiveDescription(), RecursiveData())
+    return groups.Recursive(obj)
 
 
 class FlatHeader(empty.StageVisitor):

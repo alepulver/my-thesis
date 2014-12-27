@@ -37,7 +37,7 @@ class Stage:
         self._data = data
 
     def stage_name(self):
-        return type(self).stage_name()
+        return self.stage_name()
 
     @classmethod
     def visit_class(cls, other):
