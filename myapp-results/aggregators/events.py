@@ -58,24 +58,3 @@ class Events:
         assert(len(shown) == len(selected))
         total = [1 if a == b else 0 for (a, b) in zip(shown, selected)]
         return sum(total) / len(total)
-
-
-class Geometry:
-    def __init__(self, stage):
-        self.stage = stage
-        self.variables = {}
-
-    def case_present_past_future(self, other):
-        pass
-
-    def case_days_of_week(self, other):
-        pass
-
-    def case_parts_of_day(self, other):
-        pass
-
-    def case_seasons_of_year(self, other):
-        pass
-
-    def case_timeline(self, other):
-        pass

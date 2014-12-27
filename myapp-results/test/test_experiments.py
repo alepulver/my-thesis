@@ -1,16 +1,15 @@
-import json
 import experiments
 import stages
 from nose.tools import assert_equals
+import factory
 
 rows = None
-indexed_exps = {}
 
 
 def setup_module():
     global rows
-    with open("examples/results.json", "r") as fp:
-        rows = json.load(fp)
+    data = factory.Stages()
+    rows = data.indexed_rows()
 
 
 class TestExperiments:
