@@ -28,7 +28,7 @@ class TestStageHeader:
 
     def test_common(self):
         result = self.common_row()
-        assert_equals(result, ['time_start', 'time_duration', 'size_in_bytes'])
+        assert_equals(result, ['time_start', 'time_duration', 'hour'])
 
     def test_introduction(self):
         result = self.flat_row_for(stages.Introduction)
@@ -114,7 +114,7 @@ class TestStageData:
 
     def test_common(self):
         result = self.common_row_for(self.stages['introduction'])
-        assert_equals(result, [1410966188680, 55448, 423])
+        assert_equals(result, [1410966188680, 55448, 12])
 
     def test_introduction(self):
         result = self.flat_row_for(self.stages['introduction'])

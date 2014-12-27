@@ -1,4 +1,5 @@
 from serializers import groups
+from datetime import datetime
 
 
 def create():
@@ -34,16 +35,17 @@ class Name:
 
 class Common:
     def header_for(self, stage_class):
-        return ['time_start', 'time_duration', 'size_in_bytes']
+        return ['time_start', 'time_duration', 'hour']
 
     def data_for(self, stage):
-        return [stage.time_start(), stage.time_duration(), stage.size_in_bytes()]
+        hour = datetime.fromtimestamp(stage.time_start() / 1000).hour
+        return [stage.time_start(), stage.time_duration(), hour]
 
     def description_for(self, stage_class):
         return [
             'Fecha del inicio de la etapa, en milisegundos desde 1/1/1970',
             'Duración en milisegundos desde el inicio hasta su fin',
-            'Tamaño en bytes de la etapa, aumenta cuantos más clicks y movimientos hubo'
+            'Hora del día (según el navegador, en su zona horaria) del inicio de la etapa'
         ]
 
 

@@ -8,8 +8,9 @@ brentjanderson:kinetic.js@5.1.0
 mquandalle:bower@0.1.10
 coffeescript
 alethes:lodash@0.7.1
-cmather:iron-router@0.8.2
 gadicohen:headers@0.0.24
-mrt:reactive-store@0.0.1
 random
 mizzao:bootstrap-3
+iron:router
+
+mrt:reactive-store

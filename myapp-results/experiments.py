@@ -17,6 +17,7 @@ class Experiment:
         self._data = {}
         for s in stage_list:
             self._data[s.stage_name()] = s
+            s.experiment = self
 
         assert(len(stage_list) == len(self._data))
 
