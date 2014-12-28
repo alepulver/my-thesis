@@ -27,10 +27,10 @@ class TestEvents:
 class TestCottle:
     def test_xxx(self):
         x = aggregators.Cottle(my_stages['present_past_future'])
-        r = x.relatedness()
-        assert_equals(r, -1)
+        r = x.relatedness_all()
+        assert_equals(r, 8)
 
     def test_yyy(self):
         x = aggregators.Cottle(my_stages['present_past_future'])
-        r = x.dominance()
+        r = x.dominance_each()
         assert_equals(r, {'future': 2, 'present': 4, 'past': 0})

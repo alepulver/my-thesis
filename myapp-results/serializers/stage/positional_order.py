@@ -2,6 +2,7 @@ from . import empty
 import itertools as it
 import aggregators
 from serializers import groups
+from datetime import date
 
 
 def create():
@@ -99,14 +100,29 @@ class FlatData(empty.StageVisitor):
         parts.sort(key = lambda x: x[1])
         parts = [x[0] for x in parts]
 
-        # FIXME: adjust for other ages (very few subjects)
-        order = [
+        order_old = [
             'year_1900', 'wwii', 'the_beatles',
             'my_birth', 'my_childhood', 'my_youth',
             'today', 'my_third_age', 'year_2100'
         ]
 
-        one = aggregators.Events.matching_score(order, parts)
-        two = aggregators.Events.matching_score(list(reversed(order)), parts)
+        today = date.fromtimestamp(stage.time_start() / 1000).year
+        age = int(stage.experiment.get_stage('questions_begining').age())
+        order2 = [
+            ('year_1900', 1900),
+            ('wwii', 1942),
+            ('the_beatles', 1963),
+            ('my_birth', today - age),
+            ('my_childhood', today - age + 10),
+            ('my_youth', today - age + 25),
+            ('today', today),
+            ('my_third_age', today - age + 60),
+            ('year_2100', 2100)
+        ]
+        order2.sort(key = lambda x: x[1])
+        order2 = [x[0] for x in order2]
+
+        one = aggregators.Events.matching_score(order2, parts)
+        two = aggregators.Events.matching_score(list(reversed(order2)), parts)
 
         return [one, two]
