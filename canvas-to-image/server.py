@@ -18,7 +18,8 @@ def get_stages(paths):
     data_rows = filter(discard_old, data_rows)
 
     # we only keep stages including a canvas
-    stages_with_canvas = ['present_past_future', 'seasons_of_year', 'days_of_week', 'parts_of_day', 'timeline']
+    # XXX: timeline uses transforms, so it's not saved correctly for this display, se we ignore it
+    stages_with_canvas = ['present_past_future', 'seasons_of_year', 'days_of_week', 'parts_of_day']
     canvas_only = lambda s: s['stage'] in stages_with_canvas
     data_rows = filter(canvas_only, data_rows)
 
@@ -65,7 +66,8 @@ def handle_stage(experiment, stage):
         element = data[0]
         return {
             'serialized_stage': element['results']['stage_as_json'],
-            'filename': '{}.png'.format(element['experiment'])
+            'experiment': element['experiment'],
+            'stage': element['stage']
         }
     else:
         abort(404, 'The requested stage/experiment does not exist')

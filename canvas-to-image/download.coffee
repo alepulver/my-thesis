@@ -6,14 +6,10 @@ casper = require('casper').create(
     logLevel: "debug"
 )
 _ = require('underscore')
-
-i = -1
-links = [1, 2, 3]
+fs = require('fs')
 
 getLinks = ->
     $('a').map((i,e) -> $(e).attr('href'))
-
-fs = require('fs')
 
 casper.start "http://localhost:8080/stages", ->
     @echo 'Entered home page'
@@ -23,13 +19,16 @@ casper.start "http://localhost:8080/stages", ->
             casper.echo(x)
             casper.thenOpen("http://localhost:8080"+x, ->
                 @waitForText('Download', ->
-                    thing = @evaluate ->
+                    data = @evaluate ->
                         $('#download').attr('href')
-                    #@clickLabel 'Download'
-                    #@on 'resource.received', (resource) ->
-                        #casper.download resource.url
-                    @echo thing.length
-                    fs.write('test.png', thing)
+                    data = data.replace('data:image/octet-stream;base64,', '')
+                    filename =  @evaluate ->
+                        $('#download').attr('download')
+
+                    #fs.write('images/' + filename, data)
+                    @evaluate ->
+                        $('#download').hide()
+                    @capture('images/' + filename)
                 , -> console.log('ouch')
                 10000
                 )

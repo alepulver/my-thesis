@@ -10,7 +10,7 @@
   </head> 
   <body>
     <div id="container"></div>
-    <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v5.0.2.min.js"></script>
+    <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v5.1.0.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script defer="defer">
       var json = '{{!serialized_stage}}';
@@ -18,21 +18,30 @@
       // create node using json string
       var stage = Kinetic.Node.create(json, 'container');
 
+      var layerBg = new Kinetic.Rect({
+        x: 0,
+        y: 0,
+        width: stage.getWidth(),
+        height: stage.getHeight(),
+        fill: "white"
+      });
+      var stageBg = new Kinetic.Layer();
+      stageBg.add(layerBg);
+      stage.add(stageBg);
+      stageBg.moveToBottom();
+
       stage.toDataURL({
         callback: function(imageURL) {
           var newImageURL = imageURL.replace(
             "data:image/png;base64",
             "data:image/octet-stream;base64"
           );
-          $('#download').attr('download', '{{filename}}')
+          $('#download').attr('download', '{{experiment}}_{{stage}}.png')
           $('#download').attr('href', newImageURL)
           
           //window.open(imageURL);
         },
-        mimeType: 'image/png',
-        quality: 1,
-        height: 500,
-        width: 800
+        mimeType: 'image/png'
       })
     </script>
     <a id="download">Download</a>
