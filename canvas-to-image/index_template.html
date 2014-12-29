@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Stages</title>
+  </head>
+  <body>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <h1>Stages</h1>
+    <ul>
+      % for e in stages:
+        <li>
+          <a href="{{e['link']}}">{{e['text']}}</a>
+        </li>
+      % end
+    </ul>
+  </body>
+</html>

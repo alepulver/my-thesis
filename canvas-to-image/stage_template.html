@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head> 
+  <body>
+    <div id="container"></div>
+    <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v5.0.2.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script defer="defer">
+      var json = '{{!serialized_stage}}';
+
+      // create node using json string
+      var stage = Kinetic.Node.create(json, 'container');
+
+      stage.toDataURL({
+        callback: function(imageURL) {
+          var newImageURL = imageURL.replace(
+            "data:image/png;base64",
+            "data:image/octet-stream;base64"
+          );
+          $('#download').attr('download', '{{filename}}')
+          $('#download').attr('href', newImageURL)
+          
+          //window.open(imageURL);
+        },
+        mimeType: 'image/png',
+        quality: 1,
+        height: 500,
+        width: 800
+      })
+    </script>
+    <a id="download">Download</a>
+  </body>
+</html>
