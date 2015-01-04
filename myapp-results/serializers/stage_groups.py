@@ -10,14 +10,15 @@ def flat():
         'common': extras.create()['common'],
         'show_select_order': show_select_order.create(),
         'positional_order': positional_order.create(),
-        'geometry': geometry.create_flat()
+        'geometry': geometry.create_flat(),
+        'default_values': default_values.create_flat()
     }
 
 
 def recursive():
     return {
         'normal': normal.create_recursive(),
-        'default_values': default_values.create(),
+        'default_values': default_values.create_recursive(),
         'events': events.create(),
         'geometry': geometry.create_recursive()
     }
@@ -26,7 +27,7 @@ def recursive():
 # This is to sort serializers in the same order each time, as dictionaries don't have order
 def all_by_category():
     flat_sz = flat()
-    flat_keys = ['common', 'normal', 'show_select_order', 'positional_order', 'geometry']
+    flat_keys = ['common', 'normal', 'show_select_order', 'positional_order', 'geometry', 'default_values']
     rec_sz = recursive()
     rec_keys = ['normal', 'default_values', 'events', 'geometry']
 

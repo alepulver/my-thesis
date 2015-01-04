@@ -21,7 +21,7 @@ class TestEvents:
         x = aggregators.Events(my_stages['parts_of_day'])
         assert_equals(x.order_matching(), 1/3)
         x = aggregators.Events(my_stages['present_past_future'])
-        assert_equals(x.order_matching(), 0)
+        assert_equals(x.order_matching(), 0.6666666666666666)
 
 
 class TestCottle:

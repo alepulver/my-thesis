@@ -1,3 +1,6 @@
+from .order import Order
+
+
 class Events:
     def __init__(self, stage):
         self.stage = stage
@@ -51,10 +54,4 @@ class Events:
     def order_matching(self):
         shown = self.stage._data['results']['choose']['show_order']
         selected = self.selection_order()
-        return self.matching_score(shown, selected)
-
-    @staticmethod
-    def matching_score(shown, selected):
-        assert(len(shown) == len(selected))
-        total = [1 if a == b else 0 for (a, b) in zip(shown, selected)]
-        return sum(total) / len(total)
+        return Order.matching_score(shown, selected)

@@ -62,28 +62,33 @@ class Cottle:
         return sum(self.dominance_each().values())
 
 
-# FIXME: don't directly access stage JSON, use element_data
 class ShapeExtractor:
     def shapes_for(self, stage):
         self.elements = stage.stage_elements()
         return stage.visit(self)
 
     def case_present_past_future(self, stage):
-        data = stage._data['results']['drawing']['shapes']
         results = {}
         for e in self.elements:
-            v = data[e]
+            data = stage.element_data(e)
+            p = Point(data['center_x'], 500 - data['center_y'])
             results[e] = {
-                'point': Point(v['position']['x'], 500-v['position']['y']).buffer(v['radius'], 64)
+                'point': p.buffer(data['radius'], 64)
             }
         return results
 
     def case_seasons_of_year(self, stage):
-        data = stage._data['results']['drawing']['shapes']
         results = {}
         for e in self.elements:
-            v = data[e]
+            data = stage.element_data(e)
             results[e] = {
-                'point': box(v['position']['x'] - v['size']['width']/2, 500-v['position']['y'] - v['size']['height']/2, v['position']['x'] + v['size']['width']/2, 500-v['position']['y'] + v['size']['height']/2)
+                'point': box(
+                    data['center_x'] - data['size_x']/2,
+                    500 - data['center_y'] - data['size_y']/2,
+                    data['center_x'] + data['size_x']/2,
+                    500 - data['center_y'] + data['size_y']/2)
             }
         return results
+
+    def case_parts_of_day(self, stage):
+        return {'morning': {'point': Point(0,0)}, 'afternoon': {'point': Point(0,0)}, 'night': {'point': Point(0,0)}}

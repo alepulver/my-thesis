@@ -41,7 +41,7 @@ class TestStageHeader:
     def test_timeline(self):
         result = self.row_for(type(self.stages['timeline']))
         assert_equals(result, [
-            'order_match', 'order_match_reverse'
+            'order', 'order_match'
         ])
 
 
@@ -74,5 +74,5 @@ class TestStageData:
     def test_timeline(self):
         result = self.row_for(self.stages['timeline'])
         assert_equals(result, [
-            0, 0.4444444444444444
+            'right_left', 0.8888888888888888
         ])

@@ -26,6 +26,9 @@ class FlatHeader(empty.StageVisitor):
     def case_seasons_of_year(self, stage_class):
         return self.row()
 
+    def case_parts_of_day(self, stage_class):
+        return self.row()
+
 
 class FlatDescription(empty.StageVisitor):
     def row_for(self, stage_class):
@@ -41,6 +44,9 @@ class FlatDescription(empty.StageVisitor):
         return self.row()
 
     def case_seasons_of_year(self, stage_class):
+        return self.row()
+
+    def case_parts_of_day(self, stage_class):
         return self.row()
 
 
@@ -62,6 +68,9 @@ class FlatData(empty.StageVisitor):
     def case_seasons_of_year(self, stage):
         return self.row()
 
+    def case_parts_of_day(self, stage):
+        return self.row()
+
 
 class RecursiveHeader(empty.StageVisitor):
     def row_for(self, stage_class):
@@ -74,6 +83,9 @@ class RecursiveHeader(empty.StageVisitor):
         return self.row()
 
     def case_seasons_of_year(self, stage_class):
+        return self.row()
+
+    def case_parts_of_day(self, stage_class):
         return self.row()
 
 
@@ -91,6 +103,9 @@ class RecursiveDescription(empty.StageVisitor):
         return self.row()
 
     def case_seasons_of_year(self, stage_class):
+        return self.row()
+
+    def case_parts_of_day(self, stage_class):
         return self.row()
 
 
@@ -116,4 +131,7 @@ class RecursiveData(empty.StageVisitor):
         return self.row()
 
     def case_seasons_of_year(self, stage):
+        return self.row()
+
+    def case_parts_of_day(self, stage):
         return self.row()

@@ -24,7 +24,7 @@ class FlatHeader(empty.StageVisitor):
         return ['order_x']
 
     def case_timeline(self, stage_class):
-        return ['order_match', 'order_match_reverse']
+        return ['order', 'order_match']
 
 
 class FlatDescription(empty.StageVisitor):
@@ -45,70 +45,43 @@ class FlatDescription(empty.StageVisitor):
 
     def case_timeline(self, stage_class):
         return [
-            'Similitud entre el orden correcto y el elegido por el participante'
-            'Similitud entre el orden correcto al revés y el elegido por el participante'
+            'Orden de la línea, según el 1900 y el 2100 (izquierda a derecha, o al revés)'
+            'Similitud entre el orden correcto y el elegido, independiente de la dirección del tiempo elegida'
         ]
 
 
 class FlatData(empty.StageVisitor):
     def row_for(self, stage):
+        self.stage = stage
+        self.order = aggregators.Order()
         return stage.visit(self)
 
+    def get_elements_by(self, attribute):
+        elements = self.stage.stage_elements()
+        parts = [(p, self.stage.element_data(p)[attribute]) for p in elements]
+        parts.sort(key=lambda x: x[1])
+        parts = [x[0] for x in parts]
+        return parts
+
     def case_present_past_future(self, stage):
-        elements = stage.stage_elements()
-        data = [(e, stage.element_data(e)) for e in elements]
-
-        data.sort(key = lambda x: x[1]['center_x'])
-        order_x = [x[0] for x in data]
-
-        data.sort(key = lambda x: x[1]['center_y'])
-        order_y = [x[0] for x in data]
-
+        order_x = self.get_elements_by('center_x')
+        order_y = self.get_elements_by('center_y')
         return ['_'.join(order_x), '_'.join(order_y)]
 
     def case_parts_of_day(self, stage):
-        parts = [(p, stage.element_data(p)['rotation']) for p in stage.stage_elements()]
-        parts.sort(key = lambda x: x[1])
-        parts = it.cycle(map(lambda x: x[0], parts))
-        parts = it.dropwhile(lambda x: x != 'morning', parts)
-
-        morning = next(parts)
-        assert(morning == "morning")
-        after_morning = next(parts)
-
-        if after_morning == 'afternoon':
-            return ['clockwise']
-        else:
-            return ['counterclockwise']
+        parts = self.get_elements_by('rotation')
+        return [self.order.order_for(stage, parts)]
 
     def case_days_of_week(self, stage):
-        parts = [(p, stage.element_data(p)['center_x']) for p in stage.stage_elements()]
-        parts.sort(key = lambda x: x[1])
-        parts = [x[0] for x in parts]
-
-        monday_first = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-        sunday_first = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-        if parts == monday_first:
-            return ['monday_first']
-        elif parts == sunday_first:
-            return ['sunday_first']
-        else:
-            return ['not_ordered']
+        parts = self.get_elements_by('center_x')
+        return [self.order.order_for(stage, parts)]
 
     def case_timeline(self, stage):
-        parts = [(p, stage.element_data(p)['position']) for p in stage.stage_elements()]
-        parts.sort(key = lambda x: x[1])
-        parts = [x[0] for x in parts]
-
-        order_old = [
-            'year_1900', 'wwii', 'the_beatles',
-            'my_birth', 'my_childhood', 'my_youth',
-            'today', 'my_third_age', 'year_2100'
-        ]
+        parts = self.get_elements_by('position')
 
         today = date.fromtimestamp(stage.time_start() / 1000).year
         age = int(stage.experiment.get_stage('questions_begining').age())
-        order2 = [
+        ordered_parts = [
             ('year_1900', 1900),
             ('wwii', 1942),
             ('the_beatles', 1963),
@@ -119,10 +92,14 @@ class FlatData(empty.StageVisitor):
             ('my_third_age', today - age + 60),
             ('year_2100', 2100)
         ]
-        order2.sort(key = lambda x: x[1])
-        order2 = [x[0] for x in order2]
+        ordered_parts.sort(key=lambda x: x[1])
+        ordered_parts = [x[0] for x in ordered_parts]
 
-        one = aggregators.Events.matching_score(order2, parts)
-        two = aggregators.Events.matching_score(list(reversed(order2)), parts)
+        line_order = self.order.order_for(stage, parts)
+        if (line_order == 'left_right'):
+            order_match = self.order.matching_score(ordered_parts, parts)
+        else:
+            other_parts = list(reversed(ordered_parts))
+            order_match = self.order.matching_score(other_parts, parts)
 
-        return [one, two]
+        return [line_order, order_match]
