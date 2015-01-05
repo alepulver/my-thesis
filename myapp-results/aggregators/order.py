@@ -37,9 +37,7 @@ class Order:
             return 'counterclockwise'
 
     def case_timeline(self, stage):
-        year_1900 = self.elements.index('year_1900')
-        year_2100 = self.elements.index('year_2100')
-        if year_1900 < year_2100:
+        if stage.rotation() < 90 or stage.rotation() > 270:
             return 'left_right'
         else:
             return 'right_left'
@@ -50,9 +48,3 @@ class Order:
         matcher = difflib.SequenceMatcher()
         matcher.set_seqs(shown, selected)
         return matcher.ratio()
-
-    @staticmethod
-    def matching_score2(shown, selected):
-        assert(len(shown) == len(selected))
-        total = [1 if a == b else 0 for (a, b) in zip(shown, selected)]
-        return sum(total) / len(total)

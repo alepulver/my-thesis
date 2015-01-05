@@ -1,5 +1,4 @@
 from . import empty
-import itertools as it
 import aggregators
 from serializers import groups
 from datetime import date
@@ -96,10 +95,6 @@ class FlatData(empty.StageVisitor):
         ordered_parts = [x[0] for x in ordered_parts]
 
         line_order = self.order.order_for(stage, parts)
-        if (line_order == 'left_right'):
-            order_match = self.order.matching_score(ordered_parts, parts)
-        else:
-            other_parts = list(reversed(ordered_parts))
-            order_match = self.order.matching_score(other_parts, parts)
+        order_match = self.order.matching_score(ordered_parts, parts)
 
         return [line_order, order_match]

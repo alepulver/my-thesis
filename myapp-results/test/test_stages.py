@@ -161,108 +161,39 @@ def test_parts_of_day_angles_should_wraparound():
     })
 
 
-class TestTimelineAngles:
-    def setUp(self):
-        self.row = copy.deepcopy(rows['timeline'])
-        self.timeline = self.row['results']['timeline']['results']
-
-    def test_0_90(self):
-        self.timeline['rotation'] = 45
-        stage = stages.stage_from(self.row)
-
-        assert_equals(stage.rotation(), 45)
-        assert_equals(stage.element_data('year_1900'), {
-            'position': 0.7737157552273286
-        })
-        assert_equals(stage.element_data('year_2100'), {
-            'position': 0.02825327829787394
-        })
-        assert_equals(stage.element_data('today'), {
-            'position': 0.5262852358292817
-        })
-
-
-    def test_90_180(self):
-        self.timeline['rotation'] = 135
-        stage = stages.stage_from(self.row)
-
-        assert_equals(stage.rotation(), -45)
-        assert_equals(stage.element_data('year_1900'), {
-            'position': 0.2262842447726714
-        })
-        assert_equals(stage.element_data('year_2100'), {
-            'position': 0.9717467217021261
-        })
-        assert_equals(stage.element_data('today'), {
-            'position': 0.47371476417071834
-        })
-
-
-    def test_180_270(self):
-        self.timeline['rotation'] = 225
-        stage = stages.stage_from(self.row)
-
-        assert_equals(stage.rotation(), 45)
-        assert_equals(stage.element_data('year_1900'), {
-            'position': 0.2262842447726714
-        })
-        assert_equals(stage.element_data('year_2100'), {
-            'position': 0.9717467217021261
-        })
-        assert_equals(stage.element_data('today'), {
-            'position': 0.47371476417071834
-        })
-
-
-    def test_270_360(self):
-        self.timeline['rotation'] = 315
-        stage = stages.stage_from(self.row)
-
-        assert_equals(stage.rotation(), -45)
-        assert_equals(stage.element_data('year_1900'), {
-            'position': 0.7737157552273286
-        })
-        assert_equals(stage.element_data('year_2100'), {
-            'position': 0.02825327829787394
-        })
-        assert_equals(stage.element_data('today'), {
-            'position': 0.5262852358292817
-        })
-
-
 def test_timeline():
     stage = stages.stage_from(rows['timeline'])
 
     assert_equals(stage.stage_name(), 'timeline')
     assert_equals(stage.length(), 724.8023584003396)
-    assert_equals(stage.rotation(), 44.84884095673553)
+    assert_equals(stage.rotation(), 224.84884095673553)
     assert_equals(stage.button_order(), 'chronological')
     assert_equals(stage.element_data('year_1900'), {
-        'position': 0.7737157552273286
+        'position': 0.2262842447726714
     })
     assert_equals(stage.element_data('the_beatles'), {
-        'position': 0.9872686547323904
+        'position': 0.01273134526760955
     })
     assert_equals(stage.element_data('wwii'), {
-        'position': 1
+        'position': 0
     })
     assert_equals(stage.element_data('year_2100'), {
-        'position': 0.02825327829787394
+        'position': 0.9717467217021261
     })
     assert_equals(stage.element_data('my_third_age'), {
-        'position': 0.10140393087429822
+        'position': 0.8985960691257018
     })
     assert_equals(stage.element_data('my_birth'), {
-        'position': 0.9639922045259025
+        'position': 0.03600779547409749
     })
     assert_equals(stage.element_data('my_childhood'), {
-        'position': 0.9137393582305529
+        'position': 0.08626064176944714
     })
     assert_equals(stage.element_data('my_youth'), {
-        'position': 0.5891534589279476
+        'position': 0.41084654107205243
     })
     assert_equals(stage.element_data('today'), {
-        'position': 0.5262852358292817
+        'position': 0.47371476417071834
     })
 
 

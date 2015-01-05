@@ -158,15 +158,15 @@ class TestStageData:
     def test_timeline_flat(self):
         result = self.flat_row_for(self.stages['timeline'])
         assert_equals(result, [
-            44.84884095673553, 724.8023584003396, 'chronological',
+            224.84884095673553, 724.8023584003396, 'chronological',
         ])
 
     def test_timeline_recursive(self):
         result = self.recursive_row_for(self.stages['timeline'])
         assert_equals(result, [
-            0.9639922045259025, 0.9137393582305529, 0.5891534589279476,
-            0.5262852358292817, 0.10140393087429822, 0.7737157552273286,
-            0.02825327829787394, 1.0, 0.9872686547323904
+            0.03600779547409749, 0.08626064176944714, 0.41084654107205243,
+            0.47371476417071834, 0.8985960691257018, 0.2262842447726714,
+            0.9717467217021261, 0.0, 0.01273134526760955
         ])
 
     def test_questions_begining(self):

@@ -82,21 +82,15 @@ class FlatData(empty.StageVisitor):
         return self.row_with_order(stage)
 
     def case_days_of_week(self, stage):
-        def order(days):
-            monday_first = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-            sunday_first = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-            if days == monday_first:
-                return 'monday_first'
-            elif days == sunday_first:
-                return 'sunday_first'
-            else:
-                return 'not_ordered'
-
         events = aggregators.Events(stage)
+        order = aggregators.Order()
         show_order = stage._data['results']['choose']['show_order']
         select_order = events.selection_order()
 
-        return self.row(stage) + [order(show_order), order(select_order)]
+        return self.row(stage) + [
+            order.order_for(stage, show_order),
+            order.order_for(stage, select_order)
+        ]
 
     def case_parts_of_day(self, stage):
         return self.row_with_order(stage)

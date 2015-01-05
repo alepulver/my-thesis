@@ -73,7 +73,7 @@ class ShapeExtractor:
             data = stage.element_data(e)
             p = Point(data['center_x'], 500 - data['center_y'])
             results[e] = {
-                'point': p.buffer(data['radius'], 64)
+                'point': p.buffer(data['radius'])
             }
         return results
 

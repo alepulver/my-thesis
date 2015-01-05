@@ -104,24 +104,26 @@ class RecursiveHeader(empty.StageVisitor):
 
 class RecursiveData(empty.StageVisitor):
     def row_for_element(self, stage, element):
-        data = stage.element_data(element)
-        variables = stage.visit(self)
-        return [data[v] for v in variables]
+        self.data = stage.element_data(element)
+        return stage.visit(self)
+
+    def row(self, variables):
+        return [self.data[v] for v in variables]
 
     def case_present_past_future(self, stage):
-        return ['center_x', 'center_y', 'radius', 'color']
+        return self.row(['center_x', 'center_y', 'radius', 'color'])
 
     def case_seasons_of_year(self, stage):
-        return ['center_x', 'center_y', 'size_x', 'size_y', 'color']
+        return self.row(['center_x', 'center_y', 'size_x', 'size_y', 'color'])
 
     def case_days_of_week(self, stage):
-        return ['center_x', 'center_y', 'size_y', 'color']
+        return self.row(['center_x', 'center_y', 'size_y', 'color'])
 
     def case_parts_of_day(self, stage):
-        return ['rotation', 'size', 'color']
+        return self.row(['rotation', 'size', 'color'])
 
     def case_timeline(self, stage):
-        return ['position']
+        return self.row(['position'])
 
 
 class RecursiveDescription(empty.StageVisitor):
