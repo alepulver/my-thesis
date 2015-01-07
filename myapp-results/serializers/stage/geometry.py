@@ -18,7 +18,11 @@ class FlatHeader(empty.StageVisitor):
         return stage_class.visit_class(self)
 
     def row(self):
-        return ['relatedness', 'dominance']
+        return [
+            'relatedness', 'dominance',
+            'relatedness_ext', 'dominance_ext',
+            'coverage'
+        ]
 
     def case_present_past_future(self, stage_class):
         return self.row()
@@ -27,6 +31,9 @@ class FlatHeader(empty.StageVisitor):
         return self.row()
 
     def case_parts_of_day(self, stage_class):
+        return self.row()
+
+    def case_days_of_week(self, stage_class):
         return self.row()
 
 
@@ -37,7 +44,10 @@ class FlatDescription(empty.StageVisitor):
     def row(self):
         return [
             'Medida "relatedness" total de Cottle',
-            'Medida "dominance" total de Cottle'
+            'Medida "dominance" total de Cottle',
+            'Medida "relatedness" total extendida',
+            'Medida "dominance" total extendida',
+            "Medida de cobertura total del canvas (en porcentaje)"
         ]
 
     def case_present_past_future(self, stage_class):
@@ -49,6 +59,9 @@ class FlatDescription(empty.StageVisitor):
     def case_parts_of_day(self, stage_class):
         return self.row()
 
+    def days_of_week(self, stage_class):
+        return self.row()
+
 
 class FlatData(empty.StageVisitor):
     def row_for(self, stage):
@@ -56,10 +69,14 @@ class FlatData(empty.StageVisitor):
         return stage.visit(self)
 
     def row(self):
-        calculator = aggregators.Cottle(self.stage)
+        calcCottle = aggregators.Cottle(self.stage)
+        calcExt = aggregators.ExtendedCottle(self.stage)
         return [
-            calculator.relatedness_all(),
-            calculator.dominance_all()
+            calcCottle.relatedness_all(),
+            calcCottle.dominance_all(),
+            calcExt.relatedness_all(),
+            calcExt.dominance_all(),
+            calcExt.coverage_all()
         ]
 
     def case_present_past_future(self, stage):
@@ -71,13 +88,20 @@ class FlatData(empty.StageVisitor):
     def case_parts_of_day(self, stage):
         return self.row()
 
+    def case_days_of_week(self, stage):
+        return self.row()
+
 
 class RecursiveHeader(empty.StageVisitor):
     def row_for(self, stage_class):
         return stage_class.visit_class(self)
 
     def row(self):
-        return ['relatedness', 'dominance']
+        return [
+            'relatedness', 'dominance',
+            'relatedness_ext', 'dominance_ext',
+            'coverage'
+        ]
 
     def case_present_past_future(self, stage_class):
         return self.row()
@@ -86,6 +110,9 @@ class RecursiveHeader(empty.StageVisitor):
         return self.row()
 
     def case_parts_of_day(self, stage_class):
+        return self.row()
+
+    def case_days_of_week(self, stage_class):
         return self.row()
 
 
@@ -96,7 +123,10 @@ class RecursiveDescription(empty.StageVisitor):
     def row(self):
         return [
             'Medida "relatedness" específica de Cottle',
-            'Medida "dominance" específica de Cottle'
+            'Medida "dominance" específica de Cottle',
+            'Medida "relatedness" específica extendida',
+            'Medida "dominance" específica extendida',
+            "Medida de cobertura específica del canvas (en porcentaje)"
         ]
 
     def case_present_past_future(self, stage_class):
@@ -108,6 +138,9 @@ class RecursiveDescription(empty.StageVisitor):
     def case_parts_of_day(self, stage_class):
         return self.row()
 
+    def case_days_of_week(self, stage_class):
+        return self.row()
+
 
 class RecursiveData(empty.StageVisitor):
     def __init__(self):
@@ -115,7 +148,8 @@ class RecursiveData(empty.StageVisitor):
 
     def row_for_element(self, stage, element):
         if self.stage != stage:
-            self.calculator = aggregators.Cottle(stage)
+            self.calcCottle = aggregators.Cottle(stage)
+            self.calcExt = aggregators.ExtendedCottle(stage)
             self.stage = stage
 
         self.element = element
@@ -123,8 +157,11 @@ class RecursiveData(empty.StageVisitor):
 
     def row(self):
         return [
-            self.calculator.relatedness_each()[self.element],
-            self.calculator.dominance_each()[self.element]
+            self.calcCottle.relatedness_each()[self.element],
+            self.calcCottle.dominance_each()[self.element],
+            self.calcExt.relatedness_each()[self.element],
+            self.calcExt.dominance_each()[self.element],
+            self.calcExt.coverage_each()[self.element]
         ]
 
     def case_present_past_future(self, stage):
@@ -134,4 +171,7 @@ class RecursiveData(empty.StageVisitor):
         return self.row()
 
     def case_parts_of_day(self, stage):
+        return self.row()
+
+    def case_days_of_week(self, stage):
         return self.row()
