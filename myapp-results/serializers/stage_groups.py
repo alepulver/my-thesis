@@ -1,6 +1,6 @@
 from serializers.stage import normal, extras, default_values
 from serializers.stage import show_select_order, positional_order
-from serializers.stage import events, geometry
+from serializers.stage import events, cottle, time_flow
 from serializers import groups
 
 
@@ -10,7 +10,7 @@ def flat():
         'common': extras.create()['common'],
         'show_select_order': show_select_order.create(),
         'positional_order': positional_order.create(),
-        'geometry': geometry.create_flat(),
+        'geometry': cottle.create_flat(),
         'default_values': default_values.create_flat()
     }
 
@@ -20,7 +20,8 @@ def recursive():
         'normal': normal.create_recursive(),
         'default_values': default_values.create_recursive(),
         'events': events.create(),
-        'geometry': geometry.create_recursive()
+        'geometry': cottle.create_recursive(),
+        'time_flow': time_flow.create_recursive()
     }
 
 

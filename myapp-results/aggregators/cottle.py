@@ -62,6 +62,10 @@ class Cottle:
         return sum(self.dominance_each().values())
 
 
+class ExtendedCottle:
+    pass
+
+
 class ShapeExtractor:
     def shapes_for(self, stage):
         self.elements = stage.stage_elements()
