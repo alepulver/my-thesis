@@ -19,9 +19,9 @@ class FlatHeader(empty.StageVisitor):
 
     def row(self):
         return [
-            'relatedness', 'dominance',
-            'relatedness_ext', 'dominance_ext',
-            'coverage'
+            'relatedness_cottle', 'dominance_cottle',
+            'separation_ext', 'intersection_ext',
+            'dominance_ext', 'coverage_ext'
         ]
 
     def case_present_past_future(self, stage_class):
@@ -30,8 +30,8 @@ class FlatHeader(empty.StageVisitor):
     def case_seasons_of_year(self, stage_class):
         return self.row()
 
-    def case_parts_of_day(self, stage_class):
-        return self.row()
+    #def case_parts_of_day(self, stage_class):
+    #    return self.row()
 
     def case_days_of_week(self, stage_class):
         return self.row()
@@ -45,8 +45,9 @@ class FlatDescription(empty.StageVisitor):
         return [
             'Medida "relatedness" total de Cottle',
             'Medida "dominance" total de Cottle',
-            'Medida "relatedness" total extendida',
-            'Medida "dominance" total extendida',
+            'Medida de separación relativa al tamaño de los elementos',
+            'Medida de intersección relativa al tamaño de los elementos',
+            'Medida de tamaño relativo similar a "dominance" pero continua',
             "Medida de cobertura total del canvas (en porcentaje)"
         ]
 
@@ -56,8 +57,8 @@ class FlatDescription(empty.StageVisitor):
     def case_seasons_of_year(self, stage_class):
         return self.row()
 
-    def case_parts_of_day(self, stage_class):
-        return self.row()
+    #def case_parts_of_day(self, stage_class):
+    #    return self.row()
 
     def days_of_week(self, stage_class):
         return self.row()
@@ -69,16 +70,9 @@ class FlatData(empty.StageVisitor):
         return stage.visit(self)
 
     def row(self):
-        calcCottle = aggregators.Cottle(self.stage)
-        calcExt = aggregators.ExtendedCottle(self.stage)
+        calculator = aggregators.CottleWrapper(self.stage)
 
-        return [
-            calcCottle.relatedness_all(),
-            calcCottle.dominance_all(),
-            calcExt.relatedness_all(),
-            calcExt.dominance_all(),
-            calcExt.coverage_all()
-        ]
+        return calculator.row_for_stage()
 
     def case_present_past_future(self, stage):
         return self.row()
@@ -86,17 +80,8 @@ class FlatData(empty.StageVisitor):
     def case_seasons_of_year(self, stage):
         return self.row()
 
-    def case_parts_of_day(self, stage):
-        calcCottle = aggregators.PartsOfDayCottle(self.stage)
-        calcExt = aggregators.PartsOfDayExtendedCottle(self.stage)
-
-        return [
-            calcCottle.relatedness_all(),
-            calcCottle.dominance_all(),
-            calcExt.relatedness_all(),
-            calcExt.dominance_all(),
-            calcExt.coverage_all()
-        ]
+    #def case_parts_of_day(self, stage):
+    #    return self.row()
 
     def case_days_of_week(self, stage):
         return self.row()
@@ -108,9 +93,9 @@ class RecursiveHeader(empty.StageVisitor):
 
     def row(self):
         return [
-            'relatedness', 'dominance',
-            'relatedness_ext', 'dominance_ext',
-            'coverage'
+            'relatedness_cottle', 'dominance_cottle',
+            'separation_ext', 'intersection_ext',
+            'dominance_ext', 'coverage_ext'
         ]
 
     def case_present_past_future(self, stage_class):
@@ -119,8 +104,8 @@ class RecursiveHeader(empty.StageVisitor):
     def case_seasons_of_year(self, stage_class):
         return self.row()
 
-    def case_parts_of_day(self, stage_class):
-        return self.row()
+    #def case_parts_of_day(self, stage_class):
+    #    return self.row()
 
     def case_days_of_week(self, stage_class):
         return self.row()
@@ -132,11 +117,12 @@ class RecursiveDescription(empty.StageVisitor):
 
     def row(self):
         return [
-            'Medida "relatedness" específica de Cottle',
-            'Medida "dominance" específica de Cottle',
-            'Medida "relatedness" específica extendida',
-            'Medida "dominance" específica extendida',
-            "Medida de cobertura específica del canvas (en porcentaje)"
+            'Medida "relatedness" de Cottle',
+            'Medida "dominance" e Cottle',
+            'Medida de separación relativa al tamaño',
+            'Medida de intersección relativa al tamaño',
+            'Medida de tamaño relativo similar a "dominance" pero continua',
+            "Medida de cobertura del canvas (en porcentaje)"
         ]
 
     def case_present_past_future(self, stage_class):
@@ -145,8 +131,8 @@ class RecursiveDescription(empty.StageVisitor):
     def case_seasons_of_year(self, stage_class):
         return self.row()
 
-    def case_parts_of_day(self, stage_class):
-        return self.row()
+    #def case_parts_of_day(self, stage_class):
+    #    return self.row()
 
     def case_days_of_week(self, stage_class):
         return self.row()
@@ -157,41 +143,24 @@ class RecursiveData(empty.StageVisitor):
         self.stage = None
 
     def row_for_element(self, stage, element):
+        if self.stage != stage:
+            self.calculator = aggregators.CottleWrapper(stage)
+            self.stage = stage
+
         self.element = element
         return stage.visit(self)
 
-    def row(self, stage):
-        if self.stage != stage:
-            self.calcCottle = aggregators.Cottle(stage)
-            self.calcExt = aggregators.ExtendedCottle(stage)
-            #self.calcPod = aggregators.PartsOfDayCottle(stage)
-            self.stage = stage
-
-        return [
-            self.calcCottle.relatedness_each()[self.element],
-            self.calcCottle.dominance_each()[self.element],
-            self.calcExt.relatedness_each()[self.element],
-            self.calcExt.dominance_each()[self.element],
-            self.calcExt.coverage_each()[self.element]
-        ]
+    def row(self):
+        return self.calculator.row_for_element(self.element)
 
     def case_present_past_future(self, stage):
-        return self.row(stage)
+        return self.row()
 
     def case_seasons_of_year(self, stage):
-        return self.row(stage)
+        return self.row()
 
-    def case_parts_of_day(self, stage):
-        calcCottle = aggregators.PartsOfDayCottle(stage)
-        calcExt = aggregators.PartsOfDayExtendedCottle(stage)
-
-        return [
-            calcCottle.relatedness_each()[self.element],
-            calcCottle.dominance_each()[self.element],
-            calcExt.relatedness_each()[self.element],
-            calcExt.dominance_each()[self.element],
-            calcExt.coverage_each()[self.element]
-        ]
+    #def case_parts_of_day(self, stage):
+    #    return self.row()
 
     def case_days_of_week(self, stage):
-        return self.row(stage)
+        return self.row()

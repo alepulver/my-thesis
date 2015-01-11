@@ -1,5 +1,6 @@
 import serializers.stage_groups as sz_stage_groups
 from nose.tools import assert_equals
+from nose.plugins.skip import Skip, SkipTest
 import factory
 
 my_stages = None
@@ -10,7 +11,7 @@ def setup_module():
     data = factory.Stages()
     my_stages = data.named_stages()
 
-
+@SkipTest
 class TestStageDataFlat:
     def setUp(self):
         self.stages = my_stages
@@ -40,6 +41,7 @@ class TestStageDataFlat:
         ])
 
 
+@SkipTest
 class TestStageDataRecursive:
     def setUp(self):
         self.stages = my_stages
