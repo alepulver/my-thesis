@@ -66,6 +66,14 @@ class ExtendedCottle:
     pass
 
 
+class PartsOfDayCottle:
+    pass
+
+
+class PartsOfDayExtendedCottle:
+    pass
+
+
 class ShapeExtractor:
     def shapes_for(self, stage):
         self.elements = stage.stage_elements()

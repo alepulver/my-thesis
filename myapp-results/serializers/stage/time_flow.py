@@ -23,10 +23,10 @@ class RecursiveHeader(empty.StageVisitor):
     def case_seasons_of_year(self, stage_class):
         return self.row()
 
-    def case_parts_of_day(self, stage_class):
+    def case_days_of_week(self, stage_class):
         return self.row()
 
-    def case_days_of_week(self, stage_class):
+    def case_parts_of_day(self, stage_class):
         return [
             'timeflow_arc'
         ]
@@ -48,10 +48,10 @@ class RecursiveDescription(empty.StageVisitor):
     def case_seasons_of_year(self, stage_class):
         return self.row()
 
-    def case_parts_of_day(self, stage_class):
+    def case_days_of_week(self, stage_class):
         return self.row()
 
-    def case_days_of_week(self, stage_class):
+    def case_parts_of_day(self, stage_class):
         return [
             'Grados entre el elemento y el siguiente (cronológico)'
         ]
@@ -62,29 +62,30 @@ class RecursiveData(empty.StageVisitor):
         self.stage = None
 
     def row_for_element(self, stage, element):
-        if self.stage != stage:
-            self.timeflow = aggregators.Timeflow(stage)
-            self.timeflow_week = aggregators.WeekTimeflow(stage)
-
         self.element = element
         return stage.visit(self)
 
-    def row(self):
+    def row(self, stage):
+        if self.stage != stage:
+            self.timeflow = aggregators.Timeflow(stage)
+
         return [
             self.timeflow.angle_each()[self.element],
             self.timeflow.length_each()[self.element]
         ]
 
     def case_present_past_future(self, stage):
-        return self.row()
+        return self.row(stage)
 
     def case_seasons_of_year(self, stage):
-        return self.row()
-
-    def case_parts_of_day(self, stage):
-        return self.row()
+        return self.row(stage)
 
     def case_days_of_week(self, stage):
+        return self.row(stage)
+
+    def case_parts_of_day(self, stage):
+        timeflow_pod = aggregators.PartsOfDayTimeflow(stage)
+
         return [
-            self.timeflow_week.wrap_distance_each()[self.element]
+            timeflow_pod.wrap_distance_each()[self.element]
         ]

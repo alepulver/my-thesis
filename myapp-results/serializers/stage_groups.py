@@ -10,7 +10,7 @@ def flat():
         'common': extras.create()['common'],
         'show_select_order': show_select_order.create(),
         'positional_order': positional_order.create(),
-        'geometry': cottle.create_flat(),
+        'cottle': cottle.create_flat(),
         'default_values': default_values.create_flat()
     }
 
@@ -20,7 +20,7 @@ def recursive():
         'normal': normal.create_recursive(),
         'default_values': default_values.create_recursive(),
         'events': events.create(),
-        'geometry': cottle.create_recursive(),
+        'cottle': cottle.create_recursive(),
         'time_flow': time_flow.create_recursive()
     }
 
@@ -28,9 +28,9 @@ def recursive():
 # This is to sort serializers in the same order each time, as dictionaries don't have order
 def all_by_category():
     flat_sz = flat()
-    flat_keys = ['common', 'normal', 'show_select_order', 'positional_order', 'geometry', 'default_values']
+    flat_keys = ['common', 'normal', 'show_select_order', 'positional_order', 'cottle', 'default_values']
     rec_sz = recursive()
-    rec_keys = ['normal', 'default_values', 'events', 'geometry']
+    rec_keys = ['normal', 'default_values', 'events', 'cottle', 'time_flow']
 
     return {
         'flat': groups.Composite([flat_sz[k] for k in flat_keys]),
