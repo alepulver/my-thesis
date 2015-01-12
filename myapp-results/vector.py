@@ -19,7 +19,17 @@ class Vect2D:
         return math.sqrt(self.x**2 + self.y**2)
 
     def angleBetween(self, other):
-        radians = math.acos(self.dotProd(other) / (self.length() * other.length()))
+        m1 = self.length()
+        m2 = other.length()
+        if m1 == 0:
+            return other.angle()
+        elif m2 == 0:
+            return self.angle()
+
+        if self.x == other.x and self.y == other.y:
+            return 0
+
+        radians = math.acos(self.dotProd(other) / (m1 * m2))
         return math.degrees(radians)
 
     def dotProd(self, other):
