@@ -114,8 +114,11 @@ class ExtendedCottle:
                 if p1.area/p2.area > 1:
                     results[e1]['dominance'] += p1.area/p2.area
 
-                results[e1]['intersection'] += p1.intersection(p2).area/p1.area
-                results[e1]['separation'] += (p1.distance(p2)**2)/p1.area
+                intersection = p1.intersection(p2)
+                results[e1]['intersection'] += intersection.area/p1.area
+
+                if intersection.area == 0:
+                    results[e1]['separation'] += (p1.distance(p2)**2)/p1.area
 
         # don't count twice any border
         relatedness = 0
@@ -128,8 +131,11 @@ class ExtendedCottle:
                 e2 = elements[j]
                 p2 = results[e2]['point']
 
-                relatedness += p1.intersection(p2).area/p1.area
-                separation += (p1.distance(p2)**2)/p1.area
+                intersection = p1.intersection(p2)
+                relatedness += intersection.area/p1.area
+
+                if intersection.area == 0:
+                    separation += (p1.distance(p2)**2)/p1.area
 
         coverage = Point(0, 0)
         for e in elements:
