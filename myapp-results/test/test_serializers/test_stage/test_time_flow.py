@@ -51,7 +51,7 @@ class TestStageData:
     def test_parts_of_day(self):
         result = self.row_for(self.stages['parts_of_day'])
         assert_equals(result, [
-            236.69850644366272,
-            245.23931191187052,
-            238.06218164446676
+            123.30149355633728,
+            114.76068808812948,
+            121.93781835553324
         ])

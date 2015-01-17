@@ -26,7 +26,11 @@ class FlatHeader(empty.StageVisitor):
         return ['line_rotation', 'line_length', 'button_order']
 
     def case_questions_ending(self, stage_class):
-        return ['represents_time', 'cronotype', 'forced_size', 'forced_color', 'forced_position']
+        return [
+            'represents_time', 'cronotype',
+            'forced_size', 'forced_color',
+            'forced_position', 'comments'
+        ]
 
 
 class FlatData(empty.StageVisitor):
@@ -45,7 +49,8 @@ class FlatData(empty.StageVisitor):
     def case_questions_ending(self, stage):
         return [
             stage.represents_time(), stage.cronotype(),
-            stage.choice_size(), stage.choice_color(), stage.choice_position()
+            stage.choice_size(), stage.choice_color(),
+            stage.choice_position(), stage.comments()
         ]
 
 
@@ -67,7 +72,7 @@ class FlatDescription(empty.StageVisitor):
 
     def case_timeline(self, stage_class):
         return [
-            'Grados de inclinación (de -90 a 90) de la línea, negativo hacia arriba y positivo hacia abajo',
+            'Grados de inclinación (de 0 a 360, aumenta en sentido antihorario)',
             'Longitud de la línea de tiempo',
             'Orden en que aparecen los botones (de arriba a abajo, e izuierda a derecha)'
         ]
@@ -78,7 +83,8 @@ class FlatDescription(empty.StageVisitor):
             'Según sus hábitos el sujeto se considera una persona ...',
             'Qué tan forzado le pareció elegir el tamaño',
             'Qué tan forzado le pareció elegir el color',
-            'Qué tan forzado le pareció elegir la posición'
+            'Qué tan forzado le pareció elegir la posición',
+            'Comentarios'
         ]
 
 
@@ -157,7 +163,7 @@ class RecursiveDescription(empty.StageVisitor):
 
     def case_parts_of_day(self, stage):
         return [
-            'Grados del centro (de 0 a 360, aumenta en sentido horario)',
+            'Grados del centro (de 0 a 360, aumenta en sentido antihorario)',
             'Cuántos grados (de 0 a 360) abarca el arco',
             'Color'
         ]

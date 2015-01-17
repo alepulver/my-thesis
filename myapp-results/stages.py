@@ -187,7 +187,7 @@ class PartsOfDay(Stage):
         rotation = section['rotation'] + fix_angle(section['angle']) / 2
 
         return {
-            "rotation": fix_angle(rotation),
+            "rotation": 360 - fix_angle(rotation),
             "size": fix_angle(section['angle']),
             "color": section['color']
         }
@@ -222,9 +222,9 @@ class Timeline(Stage):
     def rotation(self):
         angle = self._data['results']['timeline']['results']['rotation']
         if self.is_ordered():
-            return fix_angle(angle)
+            return 360 - fix_angle(angle)
         else:
-            return fix_angle(angle + 180)
+            return 360 - fix_angle(angle + 180)
 
     def button_order(self):
         value = self._data['results']['choose']['show_order']
@@ -260,8 +260,5 @@ class QuestionsEnd(Stage):
     def choice_position(self):
         return self._data['results']['slider-position'] / 10
 
-
-class EventAggregator:
-    def __init__(self, stage):
-        self._stage = stage
-
+    def comments(self):
+        return self._data['results']['comments']

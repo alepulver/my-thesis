@@ -54,7 +54,8 @@ class TestStageHeader:
         result = self.flat_row_for(stages.QuestionsEnd)
         assert_equals(result, [
             'represents_time', 'cronotype',
-            'forced_size', 'forced_color', 'forced_position'
+            'forced_size', 'forced_color',
+            'forced_position', 'comments'
         ])
 
     def test_seasons_of_year(self):
@@ -137,14 +138,14 @@ class TestStageData:
     def test_parts_of_day(self):
         result = self.recursive_row_for(self.stages['parts_of_day'])
         assert_equals(result, [
-            167.81246306668982, 76.41994897349244, 'green',
-            44.51096951035254, 137.1224927263627, 'blue',
-            289.75028142222305, 168.7934961310493, 'black'
+            192.18753693331018, 76.41994897349244, 'green',
+            315.48903048964746, 137.1224927263627, 'blue',
+            70.24971857777695, 168.7934961310493, 'black'
         ])
 
     def test_questions_ending(self):
         result = self.flat_row_for(self.stages['questions_ending'])
-        assert_equals(result, ['much', 'nocturna', 0.7, 0.3, 0.7])
+        assert_equals(result, ['much', 'nocturna', 0.7, 0.3, 0.7, ''])
 
     def test_seasons_of_year(self):
         result = self.recursive_row_for(self.stages['seasons_of_year'])
@@ -158,7 +159,7 @@ class TestStageData:
     def test_timeline_flat(self):
         result = self.flat_row_for(self.stages['timeline'])
         assert_equals(result, [
-            224.84884095673553, 724.8023584003396, 'chronological',
+            135.15115904326447, 724.8023584003396, 'chronological',
         ])
 
     def test_timeline_recursive(self):

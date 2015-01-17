@@ -130,17 +130,17 @@ def test_parts_of_day():
     assert_equals(stage.element_data('morning'), {
         'color': 'green',
         'size': 76.41994897349244,
-        'rotation': 167.81246306668982
+        'rotation': 192.18753693331018
     })
     assert_equals(stage.element_data('afternoon'), {
         'color': 'blue',
         'size': 137.1224927263627,
-        'rotation': 44.51096951035254
+        'rotation': 315.48903048964746
     })
     assert_equals(stage.element_data('night'), {
         'color': 'black',
         'size': 168.7934961310493,
-        'rotation': 289.75028142222305
+        'rotation': 70.24971857777695
     })
 
 
@@ -154,10 +154,10 @@ def test_parts_of_day_angles_should_wraparound():
     stage = stages.stage_from(my_row)
 
     assert_equals(stage.element_data('morning'), {
-        'color': 'green', 'size': 350, 'rotation': 185
+        'color': 'green', 'size': 350, 'rotation': 175.0
     })
     assert_equals(stage.element_data('night'), {
-        'color': 'black', 'size': 350, 'rotation': 185
+        'color': 'black', 'size': 350, 'rotation': 175.0
     })
 
 
@@ -166,7 +166,7 @@ def test_timeline():
 
     assert_equals(stage.stage_name(), 'timeline')
     assert_equals(stage.length(), 724.8023584003396)
-    assert_equals(stage.rotation(), 224.84884095673553)
+    assert_equals(stage.rotation(), 135.15115904326447)
     assert_equals(stage.button_order(), 'chronological')
     assert_equals(stage.element_data('year_1900'), {
         'position': 0.2262842447726714

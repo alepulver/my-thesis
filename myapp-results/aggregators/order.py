@@ -32,9 +32,9 @@ class Order:
         after_morning = next(parts)
 
         if after_morning == 'afternoon':
-            return 'clockwise'
-        else:
             return 'counterclockwise'
+        else:
+            return 'clockwise'
 
     def case_timeline(self, stage):
         if stage.rotation() < 90 or stage.rotation() > 270:
