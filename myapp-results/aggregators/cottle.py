@@ -98,6 +98,7 @@ class ExtendedCottle:
         extractor = ShapeExtractor()
         results = extractor.shapes_for(stage)
         elements = stage.stage_elements()
+        tolerance = 0.05
 
         for e1 in elements:
             results[e1]['dominance'] = 0
@@ -111,14 +112,16 @@ class ExtendedCottle:
                     continue
                 p2 = results[e2]['point']
 
-                if p1.area/p2.area > 1:
+                if p1.area/p2.area > (1 + tolerance):
                     results[e1]['dominance'] += p1.area/p2.area
 
                 intersection = p1.intersection(p2)
-                results[e1]['intersection'] += intersection.area/p1.area
+                if intersection.area/p1.area > tolerance:
+                    results[e1]['intersection'] += intersection.area/p1.area
 
-                if intersection.area == 0:
-                    results[e1]['separation'] += (p1.distance(p2)**2)/p1.area
+                distance = p1.distance(p2)
+                if intersection.area == 0 and distance > 5:
+                    results[e1]['separation'] += (distance**2)/p1.area
 
         # don't count twice any border
         relatedness = 0
@@ -132,9 +135,10 @@ class ExtendedCottle:
                 p2 = results[e2]['point']
 
                 intersection = p1.intersection(p2)
-                relatedness += intersection.area/p1.area
+                if intersection.area/p1.area > tolerance:
+                    relatedness += intersection.area/p1.area
 
-                if intersection.area == 0:
+                if intersection.area == 0 and distance > 5:
                     separation += (p1.distance(p2)**2)/p1.area
 
         coverage = Point(0, 0)
