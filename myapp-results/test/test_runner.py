@@ -25,7 +25,7 @@ class TestRunner:
 
     def test_experiments(self):
         assert_equals(self.record_count('experiments_full/data.csv'), 3)
-        assert_equals(self.field_counts('experiments_full/data.csv'), [431] * 3)
+        assert_equals(self.field_counts('experiments_full/data.csv'), [455] * 3)
 
     def test_common_stages(self):
         assert_equals(self.record_count('stages_summary/data.csv'), 15)
@@ -37,7 +37,7 @@ class TestRunner:
             ['questions_begining', 3, 7],
             ['present_past_future', 3, 73],
             ['seasons_of_year', 3, 94],
-            ['parts_of_day', 3, 38],
+            ['parts_of_day', 3, 62],
             ['days_of_week', 3, 148],
             ['timeline', 2, 55],
             ['questions_ending', 2, 10]
@@ -53,7 +53,7 @@ class TestRunner:
         table = [
             ['present_past_future', 7, 21],
             ['seasons_of_year', 9, 22],
-            ['parts_of_day', 7, 12],
+            ['parts_of_day', 7, 18],
             ['days_of_week', 15, 21],
             ['timeline', 10, 7],
         ]

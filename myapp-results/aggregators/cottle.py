@@ -1,6 +1,7 @@
-from shapely.geometry import Point
+from shapely.geometry import Point, box, Polygon
 from toolz.dicttoolz import valmap
-from shapely.geometry import box
+from functools import reduce
+import math
 
 
 class CottleWrapper:
@@ -141,10 +142,7 @@ class ExtendedCottle:
                 if intersection.area == 0 and distance > 5:
                     separation += (p1.distance(p2)**2)/p1.area
 
-        coverage = Point(0, 0)
-        for e in elements:
-            p = results[e]['point']
-            coverage = coverage.union(p)
+        coverage = reduce(lambda x, y: x.union(y), (results[e]['point'] for e in elements))
 
         self._relatedness = relatedness
         self._separation = separation
@@ -218,6 +216,15 @@ class ShapeExtractor:
             }
         return results
 
+    def case_parts_of_day(self, stage):
+        results = {}
+        for e in self.elements:
+            data = stage.element_data(e)
+            results[e] = {
+                'point': CircularAdapter(data['rotation'], data['size'], 200)
+            }
+        return results
+
     @staticmethod
     def intersection(one, two):
         return one.intersection(two).area
@@ -225,3 +232,56 @@ class ShapeExtractor:
     @staticmethod
     def distance(one, two):
         return one.distance(two)
+
+
+class CircularAdapter:
+    def __init__(self, rotation, size, radius):
+        self._rotation = rotation
+        self._size = size
+        self._radius = radius
+
+        points = [(0, 0)]
+        count = max(2, math.ceil(self._size * 16 / 360))
+        angle = math.radians(self._rotation - self._size/2)
+        size = math.radians(self._size)
+        for i in range(count+1):
+            x = math.cos(angle + i/count * size) * self._radius
+            y = math.sin(angle + i/count * size) * self._radius
+            points.append((x, y))
+
+        self._shape = Polygon(points)
+
+    @property
+    def area(self):
+        return self._shape.area
+
+    def intersection(self, other):
+        result = self._shape.intersection(other._shape)
+        return CircularWrapper(result)
+
+    def union(self, other):
+        result = self._shape.union(other._shape)
+        return CircularWrapper(result)
+
+    def distance(self, other):
+        dist_a = (self._rotation - other._rotation) % 360
+        dist_b = (other._rotation - self._rotation) % 360
+        dist = min(dist_a, dist_b) - (self._size + other._size) / 2
+        return max(0, dist)
+
+
+class CircularWrapper:
+    def __init__(self, shape):
+        self._shape = shape
+
+    @property
+    def area(self):
+        return self._shape.area
+
+    def intersection(self, other):
+        result = self._shape.intersection(other._shape)
+        return CircularWrapper(result)
+
+    def union(self, other):
+        result = self._shape.union(other._shape)
+        return CircularWrapper(result)
