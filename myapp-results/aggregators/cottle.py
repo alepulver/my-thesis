@@ -13,6 +13,8 @@ class CottleWrapper:
         return [
             self.cottle.relatedness_all(),
             self.cottle.dominance_all(),
+            self.cottle.relatedness_group(),
+            self.cottle.dominance_group(),
             self.cottle_ext.separation_all(),
             self.cottle_ext.intersection_all(),
             self.cottle_ext.dominance_all(),
@@ -38,6 +40,9 @@ class Cottle:
         results = extractor.shapes_for(stage)
         elements = stage.stage_elements()
         tolerance = 0.1
+
+        self.stage = stage
+        self.elements = elements
 
         for e1 in elements:
             results[e1]['dominance'] = 0
@@ -93,12 +98,33 @@ class Cottle:
     def dominance_all(self):
         return sum(self.dominance_each().values())
 
+    def relatedness_group(self):
+        value = self.relatedness_all()
+        
+        if value < 2 * (len(self.elements) - 1):
+            return "atomistic"
+        elif value <= 4 * (len(self.elements) - 1):
+            return "continuous"
+        else:
+            return "integrated_projected"
+
+    def dominance_group(self):
+        value = self.dominance_all()
+        metric = value / (2 * (len(self.elements) - 1))
+        if metric < 1/3:
+            return "absence"
+        elif metric <= 2/3:
+            return "secondary"
+        else:
+            return "dominance"
+
 
 class ExtendedCottle:
     def __init__(self, stage):
         extractor = ShapeExtractor()
         results = extractor.shapes_for(stage)
         elements = stage.stage_elements()
+        num_elements = len(elements)
         tolerance = 0.05
 
         for e1 in elements:
@@ -114,15 +140,15 @@ class ExtendedCottle:
                 p2 = results[e2]['point']
 
                 if p1.area/p2.area > (1 + tolerance):
-                    results[e1]['dominance'] += p1.area/p2.area
+                    results[e1]['dominance'] += p1.area/p2.area / num_elements
 
                 intersection = p1.intersection(p2)
                 if intersection.area/p1.area > tolerance:
-                    results[e1]['intersection'] += intersection.area/p1.area
+                    results[e1]['intersection'] += intersection.area/p1.area  / num_elements
 
                 distance = p1.distance(p2)
                 if intersection.area == 0 and distance > 5:
-                    results[e1]['separation'] += (distance**2)/p1.area
+                    results[e1]['separation'] += (distance**2)/p1.area  / num_elements
 
         # don't count twice any border
         relatedness = 0
@@ -137,16 +163,16 @@ class ExtendedCottle:
 
                 intersection = p1.intersection(p2)
                 if intersection.area/p1.area > tolerance:
-                    relatedness += intersection.area/p1.area
+                    relatedness += intersection.area/p1.area / num_elements
 
                 if intersection.area == 0 and distance > 5:
-                    separation += (p1.distance(p2)**2)/p1.area
+                    separation += (p1.distance(p2)**2)/p1.area / num_elements
 
         coverage = reduce(lambda x, y: x.union(y), (results[e]['point'] for e in elements))
 
         self._relatedness = relatedness
         self._separation = separation
-        self._coverage = coverage.area
+        self._coverage = coverage.area / num_elements
 
         self.results = results
 

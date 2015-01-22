@@ -20,6 +20,7 @@ class FlatHeader(empty.StageVisitor):
     def row(self):
         return [
             'relatedness_cottle', 'dominance_cottle',
+            'relatedness_group', 'dominance_group',
             'separation_ext', 'intersection_ext',
             'dominance_ext', 'coverage_ext'
         ]
@@ -45,6 +46,8 @@ class FlatDescription(empty.StageVisitor):
         return [
             'Medida "relatedness" total de Cottle',
             'Medida "dominance" total de Cottle',
+            'Grupo para "relatedness" de Cottle',
+            'Grupo para "dominance" de Cottle',
             'Medida de separación relativa al tamaño de los elementos',
             'Medida de intersección relativa al tamaño de los elementos',
             'Medida de tamaño relativo similar a "dominance" pero continua',
