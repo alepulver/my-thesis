@@ -12,6 +12,9 @@ class Vect2D:
     def __sub__(self, other):
         return Vect2D(self.x - other.x, self.y - other.y)
 
+    def __neg__(self):
+        return Vect2D(-self.x, -self.y)
+
     def angle(self):
         radians = math.atan2(self.y, self.x)
         return math.degrees(radians)
@@ -32,8 +35,14 @@ class Vect2D:
 
         #radians = math.acos(self.dotProd(other) / (m1 * m2))
         radians = math.atan2(other.y, other.x) - math.atan2(self.y, self.x)
+        angle = math.degrees(radians)
 
-        return math.degrees(radians)
+        if angle > 180:
+            angle = - (angle - 180)
+        elif angle < -180:
+            angle = - (angle + 180)
+
+        return angle
 
     def dotProd(self, other):
         return self.x * other.x + self.y * other.y

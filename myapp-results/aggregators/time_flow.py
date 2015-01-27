@@ -23,7 +23,7 @@ class Timeflow:
         other_pairs_dict = valmap(lambda es: (vector_dict[es[0]], vector_dict[es[1]]), other_dict)
 
         self.data = {
-            'vector_angles': valmap(lambda vs: vs[0].angleBetween(vs[1]), other_pairs_dict),
+            'vector_angles': valmap(lambda vs: (-vs[0]).angleBetween(vs[1]), other_pairs_dict),
             'angles': valmap(lambda v: v.angle(), vector_dict),
             'length': valmap(lambda v: v.length(), vector_dict)
         }

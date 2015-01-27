@@ -39,3 +39,9 @@ class Vect2DTest:
         v1 = Vect2D(0, 1)
         v2 = Vect2D(1, -1)
         assert_equals(v1.angleBetween(v2), -45)
+
+    def test_negate(self):
+        v1 = Vect2D(1, 2)
+        v2 = -v1
+        assert_equals(v2.x, -1)
+        assert_equals(v2.y, -2)
