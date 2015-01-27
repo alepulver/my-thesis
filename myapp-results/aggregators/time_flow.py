@@ -9,7 +9,8 @@ class Timeflow:
 
         def point_for_element(e):
             data = stage.element_data(e)
-            return Vect2D(data['center_x'], data['center_y'])
+            # XXX: Y coordinate grows downwards on canvas
+            return Vect2D(data['center_x'], -data['center_y'])
 
         element_pairs = list(zip(elements, elements[1:]+[elements[0]]))
         pair_dict = dict(zip(elements, element_pairs))
