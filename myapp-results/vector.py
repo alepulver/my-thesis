@@ -37,12 +37,7 @@ class Vect2D:
         radians = math.atan2(other.y, other.x) - math.atan2(self.y, self.x)
         angle = math.degrees(radians)
 
-        if angle > 180:
-            angle = - (angle - 180)
-        elif angle < -180:
-            angle = - (angle + 180)
-
-        return angle
+        return (angle % 360) - 180
 
     def dotProd(self, other):
         return self.x * other.x + self.y * other.y
