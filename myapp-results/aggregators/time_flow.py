@@ -16,14 +16,23 @@ class Timeflow:
         #pair_dict = dict([(x[0], x) for x in element_pairs])
         point_dict = valmap(lambda es: (point_for_element(es[0]), point_for_element(es[1])), pair_dict)
         vector_dict = valmap(lambda ps: ps[1] - ps[0], point_dict)
-        vector_pairs_dict = valmap(lambda es: (vector_dict[es[0]], vector_dict[es[1]]), pair_dict)
+        #vector_pairs_dict = valmap(lambda es: (vector_dict[es[0]], vector_dict[es[1]]), vector_dict)
+
+        other_pairs = list(zip([elements[-1]] + elements[:-1], elements))
+        other_dict = dict(zip(elements, other_pairs))
+        other_pairs_dict = valmap(lambda es: (vector_dict[es[0]], vector_dict[es[1]]), other_dict)
+
         self.data = {
-            'angles': valmap(lambda vs: vs[0].angleBetween(vs[1]), vector_pairs_dict),
+            'vector_angles': valmap(lambda vs: vs[0].angleBetween(vs[1]), other_pairs_dict),
+            'angles': valmap(lambda v: v.angle(), vector_dict),
             'length': valmap(lambda v: v.length(), vector_dict)
         }
 
     def angle_each(self):
         return self.data['angles']
+
+    def vector_angle_each(self):
+        return self.data['vector_angles']
 
     def length_each(self):
         return self.data['length']

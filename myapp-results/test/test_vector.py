@@ -30,7 +30,12 @@ class Vect2DTest:
         v2 = Vect2D(2, 3)
         assert_equals(v1.dotProd(v2), 8)
 
-    def test_angleBetween(self):
+    def test_angleBetweenPositive(self):
         v1 = Vect2D(0, 1)
         v2 = Vect2D(1, 1)
         assert_equals(v1.angleBetween(v2), 45)
+
+    def test_angleBetweenNegative(self):
+        v1 = Vect2D(0, 1)
+        v2 = Vect2D(1, -1)
+        assert_equals(v1.angleBetween(v2), -45)

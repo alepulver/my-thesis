@@ -22,7 +22,7 @@ class TestStageHeader:
     def test_present_past_future(self):
         result = self.row_for(type(self.stages['present_past_future']))
         assert_equals(result, [
-            'default_size_present', 'default_size_past', 'default_size_future'
+            'default_size_past', 'default_size_present', 'default_size_future'
         ])
 
     def test_days_of_week(self):
@@ -52,7 +52,7 @@ class TestStageData:
     def test_present_past_future(self):
         result = self.row_for(self.stages['present_past_future'])
         assert_equals(result, [
-            'no', 'yes', 'no'
+            'yes', 'no', 'no'
         ])
 
     def test_days_of_week(self):

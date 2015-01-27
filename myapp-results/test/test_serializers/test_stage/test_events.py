@@ -22,8 +22,8 @@ class TestStageData:
     def test_present_past_future(self):
         result = self.row_for(self.stages['present_past_future'])
         assert_equals(result, [
-            145, 41149, 3, 98, 41, 3,
             39, 7429, 0, 38, 0, 1,
+            145, 41149, 3, 98, 41, 3,
             59, 16669, 2, 24, 32, 1
         ])
 

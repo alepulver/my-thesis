@@ -37,8 +37,8 @@ class TestStageHeader:
     def test_present_past_future(self):
         result = self.recursive_row_for(stages.PresentPastFuture)
         assert_equals(result, [
-            'center_x_present', 'center_y_present', 'radius_present', 'color_present',
             'center_x_past', 'center_y_past', 'radius_past', 'color_past',
+            'center_x_present', 'center_y_present', 'radius_present', 'color_present',
             'center_x_future', 'center_y_future', 'radius_future', 'color_future'
         ])
 
@@ -130,8 +130,8 @@ class TestStageData:
     def test_present_past_future(self):
         result = self.recursive_row_for(self.stages['present_past_future'])
         assert_equals(result, [
-            319.06804908294, 256.06804908294, 152.93195091706, 'green',
             229, 282, 70, 'blue',
+            319.06804908294, 256.06804908294, 152.93195091706, 'green',
             500.3393852926092, 231.6606147073908, 146.6606147073908, 'darkviolet'
         ])
 

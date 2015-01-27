@@ -13,7 +13,8 @@ class Vect2D:
         return Vect2D(self.x - other.x, self.y - other.y)
 
     def angle(self):
-        return math.atan2(self.y, self.x)
+        radians = math.atan2(self.y, self.x)
+        return math.degrees(radians)
 
     def length(self):
         return math.sqrt(self.x**2 + self.y**2)
@@ -29,7 +30,9 @@ class Vect2D:
         if self.x == other.x and self.y == other.y:
             return 0
 
-        radians = math.acos(self.dotProd(other) / (m1 * m2))
+        #radians = math.acos(self.dotProd(other) / (m1 * m2))
+        radians = math.atan2(other.y, other.x) - math.atan2(self.y, self.x)
+
         return math.degrees(radians)
 
     def dotProd(self, other):

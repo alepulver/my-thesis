@@ -111,7 +111,7 @@ class PresentPastFuture(Stage):
 
     @staticmethod
     def stage_elements():
-        return ['present', 'past', 'future']
+        return ['past', 'present', 'future']
 
     @staticmethod
     def stage_dimensons():

@@ -14,7 +14,7 @@ class RecursiveHeader(empty.StageVisitor):
 
     def row(self):
         return [
-            'timeflow_angle', 'timeflow_length',
+            'timeflow_angle', 'timeflow_length', 'timeflow_vector_angle'
         ]
 
     def case_present_past_future(self, stage_class):
@@ -39,7 +39,8 @@ class RecursiveDescription(empty.StageVisitor):
     def row(self):
         return [
             'Ángulo entre el elemento y el siguiente (cronológico)',
-            'Distancia entre el elemento y el siguiente (cronológico)'
+            'Distancia entre el elemento y el siguiente (cronológico)',
+            'Ángulo entre el vector anterior y siguiente al elemento (cronológico)'
         ]
 
     def case_present_past_future(self, stage_class):
@@ -71,7 +72,8 @@ class RecursiveData(empty.StageVisitor):
 
         return [
             self.timeflow.angle_each()[self.element],
-            self.timeflow.length_each()[self.element]
+            self.timeflow.length_each()[self.element],
+            self.timeflow.vector_angle_each()[self.element]
         ]
 
     def case_present_past_future(self, stage):
