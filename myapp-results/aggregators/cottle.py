@@ -103,7 +103,7 @@ class Cottle:
 
         if value < 2 * (len(self.elements) - 1):
             return "atomistic"
-        elif value <= 4 * (len(self.elements) - 1):
+        elif value < 4 * (len(self.elements) - 1):
             return "contiguous"
         else:
             return "integrated_projected"
