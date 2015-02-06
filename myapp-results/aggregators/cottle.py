@@ -172,7 +172,7 @@ class ExtendedCottle:
 
         self._relatedness = relatedness
         self._separation = separation
-        self._coverage = coverage.area / num_elements
+        self._coverage = coverage.area / num_elements / (800*500)
 
         self.results = results
 
