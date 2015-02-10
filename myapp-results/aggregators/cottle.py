@@ -133,22 +133,22 @@ class ExtendedCottle:
             results[e1]['separation'] = 0
 
             p1 = results[e1]['point']
-            results[e1]['coverage'] = p1.area / (800 * 500)
+            results[e1]['coverage'] = math.sqrt(p1.area / (800 * 500))
             for e2 in elements:
                 if e1 == e2:
                     continue
                 p2 = results[e2]['point']
 
                 if p1.area/p2.area > (1 + tolerance):
-                    results[e1]['dominance'] += p1.area/p2.area / num_elements
+                    results[e1]['dominance'] += (p1.area-p2.area)/(p1.area+p2.area) / num_elements
 
                 intersection = p1.intersection(p2)
                 if intersection.area/p1.area > tolerance:
-                    results[e1]['intersection'] += intersection.area/p1.area  / num_elements
+                    results[e1]['intersection'] += 2*intersection.area/(p1.area+p2.area) / num_elements
 
                 distance = p1.distance(p2)
                 if intersection.area == 0 and distance > 5:
-                    results[e1]['separation'] += (distance**2)/p1.area  / num_elements
+                    results[e1]['separation'] += distance/p1.area / num_elements
 
         # don't count twice any border
         relatedness = 0
@@ -163,16 +163,17 @@ class ExtendedCottle:
 
                 intersection = p1.intersection(p2)
                 if intersection.area/p1.area > tolerance:
-                    relatedness += intersection.area/p1.area / num_elements
+                    relatedness += 2*intersection.area/(p1.area+p2.area) / num_elements
 
+                distance = p1.distance(p2)
                 if intersection.area == 0 and distance > 5:
-                    separation += (p1.distance(p2)**2)/p1.area / num_elements
+                    separation += distance/p1.area / num_elements
 
         coverage = reduce(lambda x, y: x.union(y), (results[e]['point'] for e in elements))
 
         self._relatedness = relatedness
         self._separation = separation
-        self._coverage = coverage.area / num_elements / (800*500)
+        self._coverage = math.sqrt(coverage.area / (800*500))
 
         self.results = results
 
