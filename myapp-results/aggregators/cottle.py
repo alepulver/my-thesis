@@ -7,7 +7,6 @@ import math
 class CottleWrapper:
     def __init__(self, stage):
         self.cottle = Cottle(stage)
-        self.cottle_ext = ExtendedCottle(stage)
 
     def row_for_stage(self):
         return [
@@ -15,20 +14,12 @@ class CottleWrapper:
             self.cottle.dominance_all(),
             self.cottle.relatedness_group(),
             self.cottle.dominance_group(),
-            self.cottle_ext.separation_all(),
-            self.cottle_ext.intersection_all(),
-            self.cottle_ext.dominance_all(),
-            self.cottle_ext.coverage_all()
         ]
 
     def row_for_element(self, element):
         results = [
             self.cottle.relatedness_each(),
             self.cottle.dominance_each(),
-            self.cottle_ext.separation_each(),
-            self.cottle_ext.intersection_each(),
-            self.cottle_ext.dominance_each(),
-            self.cottle_ext.coverage_each()
         ]
 
         return list([x[element] for x in results])
@@ -110,96 +101,13 @@ class Cottle:
 
     def dominance_group(self):
         value = self.dominance_all()
-        metric = value / (2 * (len(self.elements) - 1))
-        if metric < 1/3:
+
+        if value < 2 * (len(self.elements)-1):
             return "absence"
-        elif metric <= 2/3:
+        elif value < len(self.elements) * (len(self.elements)-1) / 2:
             return "secondary"
         else:
             return "dominance"
-
-
-class ExtendedCottle:
-    def __init__(self, stage):
-        extractor = ShapeExtractor()
-        results = extractor.shapes_for(stage)
-        elements = stage.stage_elements()
-        num_elements = len(elements)
-        tolerance = 0.05
-
-        for e1 in elements:
-            results[e1]['dominance'] = 0
-            results[e1]['intersection'] = 0
-            results[e1]['separation'] = 0
-
-            p1 = results[e1]['point']
-            results[e1]['coverage'] = math.sqrt(p1.area / (800 * 500))
-            for e2 in elements:
-                if e1 == e2:
-                    continue
-                p2 = results[e2]['point']
-
-                if p1.area/p2.area > (1 + tolerance):
-                    results[e1]['dominance'] += (p1.area-p2.area)/(p1.area+p2.area) / num_elements
-
-                intersection = p1.intersection(p2)
-                if intersection.area/p1.area > tolerance:
-                    results[e1]['intersection'] += 2*intersection.area/(p1.area+p2.area) / num_elements
-
-                distance = p1.distance(p2)
-                if intersection.area == 0 and distance > 5:
-                    results[e1]['separation'] += distance/p1.area / num_elements
-
-        # don't count twice any border
-        relatedness = 0
-        separation = 0
-
-        for i in range(len(elements)):
-            e1 = elements[i]
-            p1 = results[e1]['point']
-            for j in range(i+1, len(elements)):
-                e2 = elements[j]
-                p2 = results[e2]['point']
-
-                intersection = p1.intersection(p2)
-                if intersection.area/p1.area > tolerance:
-                    relatedness += 2*intersection.area/(p1.area+p2.area) / num_elements
-
-                distance = p1.distance(p2)
-                if intersection.area == 0 and distance > 5:
-                    separation += distance/p1.area / num_elements
-
-        coverage = reduce(lambda x, y: x.union(y), (results[e]['point'] for e in elements))
-
-        self._relatedness = relatedness
-        self._separation = separation
-        self._coverage = math.sqrt(coverage.area / (800*500))
-
-        self.results = results
-
-    def intersection_each(self):
-        return valmap(lambda x: x['intersection'], self.results)
-
-    def separation_each(self):
-        return valmap(lambda x: x['separation'], self.results)
-
-    def dominance_each(self):
-        return valmap(lambda x: x['dominance'], self.results)
-
-    def coverage_each(self):
-        return valmap(lambda x: x['coverage'], self.results)
-
-    def intersection_all(self):
-        return self._relatedness
-
-    def separation_all(self):
-        return self._separation
-
-    def dominance_all(self):
-        return sum(self.dominance_each().values())
-
-    def coverage_all(self):
-        return self._coverage
 
 
 class ShapeExtractor:

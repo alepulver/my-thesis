@@ -20,9 +20,7 @@ class FlatHeader(empty.StageVisitor):
     def row(self):
         return [
             'relatedness_cottle', 'dominance_cottle',
-            'relatedness_group', 'dominance_group',
-            'separation_ext', 'intersection_ext',
-            'dominance_ext', 'coverage_ext'
+            'relatedness_group', 'dominance_group'
         ]
 
     def case_present_past_future(self, stage_class):
@@ -44,14 +42,10 @@ class FlatDescription(empty.StageVisitor):
 
     def row(self):
         return [
-            'Medida "relatedness" total de Cottle',
-            'Medida "dominance" total de Cottle',
-            'Grupo para "relatedness" de Cottle',
-            'Grupo para "dominance" de Cottle',
-            'Medida de separación relativa al tamaño de los elementos',
-            'Medida de intersección relativa al tamaño de los elementos',
-            'Medida de tamaño relativo similar a "dominance" pero continua',
-            "Medida de cobertura total del canvas (en porcentaje)"
+            'Medida "relatedness" de Cottle (por etapa)',
+            'Medida "dominance" de Cottle (por etapa)',
+            'Grupo para "relatedness" de Cottle (por etapa)',
+            'Grupo para "dominance" de Cottle (por etapa)'
         ]
 
     def case_present_past_future(self, stage_class):
@@ -60,8 +54,8 @@ class FlatDescription(empty.StageVisitor):
     def case_seasons_of_year(self, stage_class):
         return self.row()
 
-    #def case_parts_of_day(self, stage_class):
-    #    return self.row()
+    def case_parts_of_day(self, stage_class):
+        return self.row()
 
     def days_of_week(self, stage_class):
         return self.row()
@@ -96,9 +90,7 @@ class RecursiveHeader(empty.StageVisitor):
 
     def row(self):
         return [
-            'relatedness_cottle', 'dominance_cottle',
-            'separation_ext', 'intersection_ext',
-            'dominance_ext', 'coverage_ext'
+            'relatedness_cottle', 'dominance_cottle'
         ]
 
     def case_present_past_future(self, stage_class):
@@ -120,12 +112,8 @@ class RecursiveDescription(empty.StageVisitor):
 
     def row(self):
         return [
-            'Medida "relatedness" de Cottle',
-            'Medida "dominance" e Cottle',
-            'Medida de separación relativa al tamaño',
-            'Medida de intersección relativa al tamaño',
-            'Medida de tamaño relativo similar a "dominance" pero continua',
-            "Medida de cobertura del canvas (en porcentaje)"
+            'Medida "relatedness" de Cottle (por elemento)',
+            'Medida "dominance" de Cottle (por elemento)'
         ]
 
     def case_present_past_future(self, stage_class):
