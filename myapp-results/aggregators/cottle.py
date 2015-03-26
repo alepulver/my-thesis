@@ -102,9 +102,9 @@ class Cottle:
     def dominance_group(self):
         value = self.dominance_all()
 
-        if value < 2 * (len(self.elements)-1):
+        if value == 0:
             return "absence"
-        elif value < len(self.elements) * (len(self.elements)-1) / 2:
+        elif value < len(self.elements) * (len(self.elements)-1):
             return "secondary"
         else:
             return "dominance"

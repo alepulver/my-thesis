@@ -65,6 +65,7 @@ class RecursiveDescription(empty.StageVisitor):
             'Cantidad de movimientos',
         ]
 
+
 class RecursiveData(empty.StageVisitor):
     def __init__(self):
         self.stage = None
