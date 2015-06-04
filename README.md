@@ -1,11 +1,12 @@
 # My thesis
 
-Neuroscience experiments for my thesis project.
+This repository contains the neuroscience experiment for my thesis project, and related utilities.
 
-There is an old [Python version](python-circles/README.md), and the [current one](myapp/README.md) written in Javascript.
+The following components are available (each one with its own documentation):
 
-A few prototypes for avoiding callbacks, which weren't used in the end, are [here](python-workflow/README.md).
-
-Scripts and results of data analysis are in [myapp-results](myapp-results/README.md).
-
-A script to generate images for each stage is [canvas-to-image](canvas-to-image/README.md)
+- Original [tablet prototype](python-circles/README.md), written in Python (incomplete)
+- Current [Meteor Web App](meteor-webapp/README.md), written in Javascript (finished)
+- [Some tests](python-workflow/README.md) for avoiding callbacks, which weren't used in the end
+- Results [table generator](results-tables/README.md), that reads the collected raw JSON data
+- Results [screenshot generator](results-screenshots/README.md), to generate final images for each stage
+- Results [visualization generator](results-visualizations/README.md), for creating more elaborate plots
