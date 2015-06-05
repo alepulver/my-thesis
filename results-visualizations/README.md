@@ -1,7 +1,13 @@
 # Results Visualizations
 
-I'm using [PyX](http://pyx.sourceforge.net/), because [cairo](http://cairographics.org/) is more complex and I didn't find other active projects providing a high level interface to draw vector graphics.
-The most reasonable alternatives seem to be low-level graphic libraries used by plotting packages; for example, [grid](https://www.stat.auckland.ac.nz/~paul/grid/grid.html) (used by [ggplot2](http://ggplot2.org/), for R) and [compose](https://github.com/dcjones/Compose.jl) (used by [gadfly](http://gadflyjl.org/), for Julia).
-[Diagrams](http://projects.haskell.org/diagrams/) (for Haskell) also looks promising.
+I'm using [PyX](http://pyx.sourceforge.net/), but noticed the following possible alternatives:
+
+- [grid](https://www.stat.auckland.ac.nz/~paul/grid/grid.html): low-level interface used by [ggplot2](http://ggplot2.org/), for R
+- [compose](https://github.com/dcjones/Compose.jl): low-level interface used by [gadfly](http://gadflyjl.org/), for Julia
+- [Artist](http://matplotlib.org/1.4.0/users/artists.html): objects used by [matplotlib](http://matplotlib.org/)
+- [Diagrams](http://projects.haskell.org/diagrams/): promising monadic interface for Haskell
+- [cairo](http://cairographics.org/): complex, and doesn't have active high-level interfaces
+- LaTeX packages for drawing (like [TikZ](https://www.sharelatex.com/learn/TikZ_package) and
+  [PSTricks](http://tug.org/PSTricks/main.cgi)) with extensions, but I prefer a general programming language
 
 ...
