@@ -7,7 +7,7 @@ I'm using [PyX](http://pyx.sourceforge.net/), but noticed the following possible
 - [Artist](http://matplotlib.org/1.4.0/users/artists.html): objects used by [matplotlib](http://matplotlib.org/)
 - [Diagrams](http://projects.haskell.org/diagrams/): promising monadic interface for Haskell
 - [cairo](http://cairographics.org/): complex, and doesn't have active high-level interfaces
-- LaTeX packages for drawing (like [TikZ](https://www.sharelatex.com/learn/TikZ_package) and
-  [PSTricks](http://tug.org/PSTricks/main.cgi)) with extensions, but I prefer a general programming language
+- LaTeX packages for drawing (like [TikZ](https://www.sharelatex.com/learn/TikZ_package), [Asymptote](http://asymptote.sourceforge.net/)
+  and [PSTricks](http://tug.org/PSTricks/main.cgi)) with extensions, but I prefer a general programming language
 
 ...
