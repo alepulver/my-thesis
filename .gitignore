@@ -1,1 +1,10 @@
-__pycache__*.pyc.idea
+# Temporary or custom config
+__pycache__
+*.pyc
+.idea
+
+# Generated data
+/results-tables/input
+/results-tables/output
+/results-screenshots/images
+/results-visualizations/output

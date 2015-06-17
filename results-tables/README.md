@@ -1,8 +1,14 @@
 # Results analysis
 
-The subjects' data can be accessed through the appropriate URL, but as it's not always fetched properly I recommend using `links`. Otherwise the database dump can be obtained with [db-tools](https://github.com/meteor-london/db-tools) in BJSON (Binary JSON) and converted to regular (plain text) JSON.
+This program parses the stored information in the database and outputs several CSV files for table-based analysis.
 
-A script for generating reports is available as `runner.py`. The tests can be run with `nosetests`.
+## Usage
+
+The subjects' data can be accessed through the appropriate URL, but as it's not always fetched properly I recommend using `links`.
+Otherwise the database dump can be obtained with [db-tools](https://github.com/meteor-london/db-tools) in BJSON (Binary JSON) and converted to regular (plain text) JSON.
+
+If the JSON files are in the `input/` directory, for instance, run `python runner.py input/*.json` and it will put the
+output files inside `output/` (if it doesn't already exist). The tests can be run with `nosetests`.
 
 ## Links
 
