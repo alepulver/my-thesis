@@ -5,4 +5,5 @@ import data_loader
 
 class DataLoaderTest(unittest.TestCase):
     def test_xxx(self):
-        assert_equals(0, 0)
+        results = data_loader.DataLoader("examples/tables", "examples/clusters")
+        assert_equals(len(results.results), 6)
