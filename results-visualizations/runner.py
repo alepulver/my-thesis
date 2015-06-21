@@ -8,7 +8,7 @@ def main(arguments):
     parser = argparse.ArgumentParser(description='Generate clustering visualizations.')
     parser.add_argument(
         '--tables_dir', dest='tables_dir',
-        help='directory containing the output of results-analysis'
+        help='contents of the "individual_stages" subdirectory, of the results-analysis output'
     )
     parser.add_argument(
         '--clusters_dir', dest='clusters_dir',

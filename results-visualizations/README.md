@@ -5,7 +5,7 @@ This program takes the output of `results-tables`, and clustering assignments fo
 ## Usage
 
 - Install [PyX](http://pyx.sourceforge.net/) (not available through `pip`, must download and run `python setup.py install`)
-- Run `python runner.py --tables_dir ... --clusters_dir ...`, with the path to the output of `results-tables` and clusters to represent
+- Run `python runner.py --tables_dir ... --clusters_dir ...`, with the path to the `individual_stages` (sudirectory) output of `results-tables` and clusters to represent
 - The generated files should be in the `output/` directory
 
 ## Alternatives
