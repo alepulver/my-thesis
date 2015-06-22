@@ -37,3 +37,12 @@ class DataLoaderTest(unittest.TestCase):
         canvas = pyx.canvas.canvas()
         stage_objects['36acb0a1-4f13-474e-84c8-a3bf32094014'].draw(canvas)
         canvas.writePDFfile("output/days_of_week")
+
+    def test_parts_of_day(self):
+        rows = data_loader.DataLoader.read_with_names('examples/tables/parts_of_day.csv')
+        stage_objects = {row['experiment_id']: stages.PartsOfDay(row) for row in rows}
+        assert_equals(len(stage_objects), 5)
+
+        canvas = pyx.canvas.canvas()
+        stage_objects['36acb0a1-4f13-474e-84c8-a3bf32094014'].draw(canvas)
+        canvas.writePDFfile("output/parts_of_day")

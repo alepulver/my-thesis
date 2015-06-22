@@ -1,8 +1,20 @@
 import pyx
+import math
 
 
 def all_stages():
     return [PresentPastFuture, SeasonsOfYear, DaysOfWeek, PartsOfDay, Timeline]
+
+
+class wedge(pyx.path.path):
+    def __init__(self, x, y, radius, angle1, angle2):
+        pyx.path.path.__init__(self,
+            pyx.path.moveto(x, y),
+            pyx.path.lineto(x + radius*math.cos(math.radians(angle1)), y + radius*math.sin(math.radians(angle1))),
+            pyx.path.arc(x, y, radius, angle1, angle2),
+            pyx.path.lineto(x, y),
+            pyx.path.closepath()
+        )
 
 
 class Stage:
@@ -60,7 +72,7 @@ class SeasonsOfYear(Stage):
         for e in self.elements:
             rect_path = pyx.path.rect(
                 self.get_numeric('center_x', e) - self.get_numeric('size_x', e)/2,
-                500 - (self.get_numeric('center_y', e) - self.get_numeric('size_y', e)/2),
+                500 - (self.get_numeric('center_y', e) + self.get_numeric('size_y', e)/2),
                 self.get_numeric('size_x', e),
                 self.get_numeric('size_y', e)
             )
@@ -79,10 +91,11 @@ class DaysOfWeek(Stage):
         for e in self.elements:
             rect_path = pyx.path.rect(
                 self.get_numeric('center_x', e) - 50/2,
-                500 - (self.get_numeric('center_y', e) - self.get_numeric('size_y', e)/2),
+                500 - (self.get_numeric('center_y', e) + self.get_numeric('size_y', e)/2),
                 50,
                 self.get_numeric('size_y', e)
             )
+
             canvas.fill(rect_path, [
                 pyx.deco.filled([self.get_color('color', e)])
             ])
@@ -90,6 +103,20 @@ class DaysOfWeek(Stage):
 
 class PartsOfDay(Stage):
     stage_code = 'parts_of_day'
+    elements = ['morning', 'afternoon', 'night']
+
+    def draw(self, canvas):
+        canvas.stroke(pyx.path.rect(0, 0, 800, 500))
+        for e in self.elements:
+            wedge_path = wedge(
+                400, 250, 200,
+                self.get_numeric('rotation', e) - self.get_numeric('size', e)/2,
+                self.get_numeric('rotation', e) + self.get_numeric('size', e)/2
+            )
+
+            canvas.fill(wedge_path, [
+                pyx.deco.filled([self.get_color('color', e), pyx.color.transparency(0.4)])
+            ])
 
 
 class Timeline(Stage):
