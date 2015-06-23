@@ -57,7 +57,7 @@ class PresentPastFuture(Stage):
                 500 - self.get_numeric('center_y', e),
                 self.get_numeric('radius', e)
             )
-            canvas.stroke(circle_path, [
+            canvas.draw(circle_path, [
                 pyx.style.linewidth(self.border_size),
                 pyx.deco.stroked([self.get_color('color', e)])
             ])
@@ -76,7 +76,7 @@ class SeasonsOfYear(Stage):
                 self.get_numeric('size_x', e),
                 self.get_numeric('size_y', e)
             )
-            canvas.stroke(rect_path, [
+            canvas.draw(rect_path, [
                 pyx.style.linewidth(self.border_size),
                 pyx.deco.stroked([self.get_color('color', e)])
             ])
@@ -96,7 +96,7 @@ class DaysOfWeek(Stage):
                 self.get_numeric('size_y', e)
             )
 
-            canvas.fill(rect_path, [
+            canvas.draw(rect_path, [
                 pyx.deco.filled([self.get_color('color', e)])
             ])
 
@@ -114,10 +114,14 @@ class PartsOfDay(Stage):
                 self.get_numeric('rotation', e) + self.get_numeric('size', e)/2
             )
 
-            canvas.fill(wedge_path, [
-                pyx.deco.filled([self.get_color('color', e), pyx.color.transparency(0.4)])
+            canvas.draw(wedge_path, [
+                pyx.deco.filled([self.get_color('color', e), pyx.color.transparency(0.35)])
             ])
 
 
 class Timeline(Stage):
     stage_code = 'timeline'
+
+    def draw(self, canvas):
+        canvas.stroke(pyx.path.rect(0, 0, 800, 500))
+        pass
