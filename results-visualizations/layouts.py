@@ -1,27 +1,43 @@
 import pyx
 
 
+def all_layouts():
+    return [CircularLayout, RectangularLayout]
+
+
+def available_names():
+    return [e.name for e in all_layouts()]
+
+
+def from_name(name):
+    mapping = {e.name: e for e in all_layouts()}
+    return mapping[name]
+
+
 class Layout:
     pass
 
 
 class CircularLayout(Layout):
-    pass
+    name = 'circular'
+
+    def draw(self, sampler, canvas):
+        pass
 
 
 class RectangularLayout(Layout):
-    def __init__(self, width, height):
+    name = 'rectangular'
+
+    def __init__(self, width):
         assert(width > 0)
-        assert(height > 0)
 
         self.width = width
-        self.height = height
 
-    def draw(self, clusters, canvas):
+    def draw(self, sampler, canvas):
         group = 0
-        for c in clusters.values():
+        for c in sampler.cluster_names():
             index = 0
-            for e in c:
+            for e in sampler.sample(c):
                 row = index // self.width
                 column = index % self.width
 

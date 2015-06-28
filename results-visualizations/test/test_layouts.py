@@ -1,6 +1,7 @@
 import unittest
 from nose.tools import assert_equals
 import layouts
+import samplers
 import data_loader
 import pyx
 
@@ -8,16 +9,18 @@ import pyx
 class LayoutTest(unittest.TestCase):
     def test_rectangular(self):
         clusters = data_loader.DataLoader("examples/tables", "examples/clusters").results
-        layoutObj = layouts.RectangularLayout(2, 2)
+        samplerObj = samplers.SimpleSampler(clusters['present_past_future'], 5)
+        layoutObj = layouts.RectangularLayout(2)
 
         canvas = pyx.canvas.canvas()
-        layoutObj.draw(clusters['present_past_future'], canvas)
+        layoutObj.draw(samplerObj, canvas)
         canvas.writePDFfile("output/rectangular_layout")
 
-    def test_rectangular2(self):
+    def test_circular(self):
         clusters = data_loader.DataLoader("input/tables", "input/clusters").results
-        layoutObj = layouts.RectangularLayout(20, 20)
+        samplerObj = samplers.SimpleSampler(clusters['present_past_future'], 5)
+        layoutObj = layouts.CircularLayout()
 
-        canvas = pyx.canvas.canvas()
-        layoutObj.draw(clusters['present_past_future'], canvas)
-        canvas.writePDFfile("output/rectangular_layout2")
+        #canvas = pyx.canvas.canvas()
+        #layoutObj.draw(samplerObj, canvas)
+        #canvas.writePDFfile("output/circular_layout")
