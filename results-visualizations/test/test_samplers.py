@@ -30,8 +30,7 @@ class SimpleSamplerTest(unittest.TestCase):
         assert_raises(ValueError, func, '2')
 
 
-#class StratifiedSamplerTest(unittest.TestCase):
-class Blah:
+class StratifiedSamplerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.output = data_loader.DataLoader("examples/tables", "examples/clusters")
@@ -42,6 +41,11 @@ class Blah:
         samplerObj = samplers.StratifiedSampler(self.clusters, 3)
         assert_equals(len(samplerObj.sample('1')), 2)
         assert_equals(len(samplerObj.sample('2')), 1)
+
+    def test_is_sorted_by_center_dist(self):
+        samplerObj = samplers.StratifiedSampler(self.clusters, 3)
+        center_dist_values = [x['center_dist'] for x in samplerObj.sample('1')]
+        assert_equals(center_dist_values[0] <= center_dist_values[1], True)
 
     def test_when_more_than_available(self):
         samplerObj = samplers.StratifiedSampler(self.clusters, 10)

@@ -30,8 +30,8 @@ def main(arguments):
         help='algorithm for selecting which items and in what order to show'
     )
     parser.add_argument(
-        '-n', dest='items_per_cluster', type=int, default=100,
-        help='number of items to show per cluster'
+        '-n', dest='total_items', type=int, default=200,
+        help='total number of items to show'
     )
 
     args = parser.parse_args(arguments[1:])
@@ -48,10 +48,9 @@ def main(arguments):
     sampler_class = samplers.from_name(args.sampler)
     clusters = data_loader.DataLoader("examples/tables", "examples/clusters").results
 
-    num_items = args.items_per_cluster // len(clusters)
     for k, v in clusters:
-        a_layout = layout_class(num_items)
-        a_sampler = sampler_class(v)
+        a_layout = layout_class()
+        a_sampler = sampler_class(v, args.total_items)
         canvas = pyx.canvas.canvas()
         a_layout.draw(a_sampler, canvas)
         canvas.writePDFfile("{}/{}".format(args.output_dir, k))

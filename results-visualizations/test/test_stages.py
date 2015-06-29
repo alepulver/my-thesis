@@ -6,6 +6,12 @@ import pyx
 
 
 class DataLoaderTest(unittest.TestCase):
+    def test_loads_float_value(self):
+        rows = data_loader.DataLoader.read_with_names('examples/tables/present_past_future.csv')
+        stage_objects = [stages.PresentPastFuture(row) for row in rows]
+
+        assert_equals(stage_objects[0].get_numeric('center_x', 'present'), 557.0)
+
     def test_generate_figures(self):
         for stage_class in stages.all_stages():
             stage_name = stage_class.stage_name()

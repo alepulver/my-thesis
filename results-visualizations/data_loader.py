@@ -22,7 +22,7 @@ class DataLoader:
                     stage_results[cluster_id] = []
 
                 stage = stage_objects[k]
-                value = {"stage": stage, "center_dist": cluster_item['center_dist']}
+                value = {"stage": stage, "center_dist": float(cluster_item['center_dist'])}
                 stage_results[cluster_id].append(value)
 
             self.results[stage_name] = stage_results

@@ -15,7 +15,8 @@ def from_name(name):
 
 
 class Layout:
-    pass
+    def draw(self, sampler, canvas):
+        raise NotImplementedError()
 
 
 class CircularLayout(Layout):
@@ -28,10 +29,8 @@ class CircularLayout(Layout):
 class RectangularLayout(Layout):
     name = 'rectangular'
 
-    def __init__(self, width):
-        assert(width > 0)
-
-        self.width = width
+    def __init__(self):
+        self.width = 10
 
     def draw(self, sampler, canvas):
         group = 0

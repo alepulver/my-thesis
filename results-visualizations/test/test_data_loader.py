@@ -12,6 +12,11 @@ class DataLoaderTest(unittest.TestCase):
     def test_loads_all_stages(self):
         assert_equals(len(self.output.results), 5)
 
+    def test_loads_center_dist(self):
+        clusters = self.output.results['present_past_future']
+        element = clusters['2'][0]
+        assert_equals(element['center_dist'], 2.84872231712825)
+
     def test_present_past_future(self):
         clusters = self.output.results['present_past_future']
         assert_equals(len(clusters), 3)

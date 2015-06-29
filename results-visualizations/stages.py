@@ -44,6 +44,9 @@ class Stage:
         color_name = self.row['{}_{}'.format(name, element)]
         return self.color_translation[color_name]
 
+    def draw(self, canvas):
+        raise NotImplementedError()
+
 
 class PresentPastFuture(Stage):
     stage_code = 'present_past_future'
