@@ -46,13 +46,17 @@ def main(arguments):
 
     layout_class = layouts.from_name(args.layout)
     sampler_class = samplers.from_name(args.sampler)
-    clusters = data_loader.DataLoader("examples/tables", "examples/clusters").results
+    clusters = data_loader.DataLoader(args.tables_dir, args.clusters_dir).results
 
-    for k, v in clusters:
+    for k, v in clusters.items():
         a_layout = layout_class()
         a_sampler = sampler_class(v, args.total_items)
+        figure = pyx.canvas.canvas()
+        a_layout.draw(a_sampler, figure)
+
         canvas = pyx.canvas.canvas()
-        a_layout.draw(a_sampler, canvas)
+        transform = pyx.trafo.scale(40, 40)
+        canvas.insert(figure, [transform])
         canvas.writePDFfile("{}/{}".format(args.output_dir, k))
 
     return 0

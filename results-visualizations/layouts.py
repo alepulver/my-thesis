@@ -1,4 +1,5 @@
 import pyx
+import math
 
 
 def all_layouts():
@@ -32,19 +33,46 @@ class RectangularLayout(Layout):
     def __init__(self):
         self.width = 10
 
+    @staticmethod
+    def item_size_for(width, height, n):
+        area = width*height / n
+        side = math.sqrt(area)
+
+        per_column = max(1, math.floor(height/side))
+        per_row = n / per_column
+
+        if per_row*side > width:
+            side -= (max(1, math.floor(per_row))*side - width) / math.ceil(per_row)
+        return side
+
     def draw(self, sampler, canvas):
-        group = 0
-        for c in sampler.cluster_names():
+        clusters = {name: sampler.sample(name) for name in sampler.cluster_names()}
+        total_items = sum(len(x) for x in clusters.values())
+        item_size = min(self.item_size_for(1, len(x)/total_items, len(x)) for x in clusters.values())
+
+        margin = 0.05 * item_size
+        item_size -= margin
+
+        start_y = 0
+        for k, v in clusters.items():
+            start_y += margin
+            height = (len(v)/total_items) + 2*margin
+            line = pyx.path.line(0, start_y + height, 1, start_y + height)
+            canvas.stroke(line, [pyx.style.linewidth(0.001)])
+
             index = 0
-            for e in sampler.sample(c):
-                row = index // self.width
-                column = index % self.width
+            for element in v:
+                per_column = max(1, math.floor((height - 2*margin) / item_size))
+                row = index % per_column
+                column = index // per_column
+
 
                 figure = pyx.canvas.canvas()
-                e['stage'].draw(figure)
-                transform = pyx.trafo.scale(0.01, 0.01)
-                transform = transform.translated(group * self.width * 12 + column * 10, row * 6.5)
+                element['stage'].draw(figure)
+                transform = pyx.trafo.scale(item_size * 1/800, item_size * 1/800)
+                transform = transform.translated(column * (item_size+margin), start_y + row*(item_size+margin))
                 canvas.insert(figure, [transform])
 
                 index += 1
-            group += 1
+
+            start_y += height

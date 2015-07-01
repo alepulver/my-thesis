@@ -12,8 +12,12 @@ class LayoutTest(unittest.TestCase):
         samplerObj = samplers.StratifiedSampler(clusters['present_past_future'], 5)
         layoutObj = layouts.RectangularLayout()
 
+        figure = pyx.canvas.canvas()
+        layoutObj.draw(samplerObj, figure)
+
         canvas = pyx.canvas.canvas()
-        layoutObj.draw(samplerObj, canvas)
+        transform = pyx.trafo.scale(20, 20)
+        canvas.insert(figure, [transform])
         canvas.writePDFfile("output/rectangular_layout")
 
     def test_circular(self):
@@ -21,6 +25,6 @@ class LayoutTest(unittest.TestCase):
         samplerObj = samplers.SimpleSampler(clusters['present_past_future'], 5)
         layoutObj = layouts.CircularLayout()
 
-        canvas = pyx.canvas.canvas()
-        layoutObj.draw(samplerObj, canvas)
-        canvas.writePDFfile("output/circular_layout")
+        #canvas = pyx.canvas.canvas()
+        #layoutObj.draw(samplerObj, canvas)
+        #canvas.writePDFfile("output/circular_layout")
