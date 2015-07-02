@@ -42,7 +42,7 @@ class RectangularLayout(Layout):
         per_row = n / per_column
 
         if per_row*side > width:
-            side -= (max(1, math.floor(per_row))*side - width) / math.ceil(per_row)
+            side -= (math.ceil(per_row)*side - width) / math.ceil(per_row)
         return side
 
     def draw(self, sampler, canvas):
@@ -50,19 +50,19 @@ class RectangularLayout(Layout):
         total_items = sum(len(x) for x in clusters.values())
         item_size = min(self.item_size_for(1, len(x)/total_items, len(x)) for x in clusters.values())
 
-        margin = 0.05 * item_size
+        margin = 0.1 * item_size
         item_size -= margin
 
         start_y = 0
         for k, v in clusters.items():
             start_y += margin
-            height = (len(v)/total_items) + 2*margin
+            height = (len(v)/total_items)
             line = pyx.path.line(0, start_y + height, 1, start_y + height)
             canvas.stroke(line, [pyx.style.linewidth(0.001)])
 
             index = 0
             for element in v:
-                per_column = max(1, math.floor((height - 2*margin) / item_size))
+                per_column = max(1, math.floor(height / (item_size+margin)))
                 row = index % per_column
                 column = index // per_column
 
@@ -75,4 +75,4 @@ class RectangularLayout(Layout):
 
                 index += 1
 
-            start_y += height
+            start_y += height + 2*margin

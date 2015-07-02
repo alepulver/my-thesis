@@ -124,7 +124,48 @@ class PartsOfDay(Stage):
 
 class Timeline(Stage):
     stage_code = 'timeline'
+    elements = [
+        'year_1900', 'wwii', 'the_beatles',
+        'my_birth', 'my_childhood', 'my_youth',
+        'today', 'my_third_age', 'year_2100'
+    ]
+
+    @classmethod
+    def get_color_for(cls, element):
+        colors = {
+            'year_1900': 'black',
+            'wwii': 'saddlebrown',
+            'the_beatles': 'grey',
+            'my_birth': 'yellow',
+            'my_childhood': 'green',
+            'my_youth': 'darkviolet',
+            'today': 'red',
+            'my_third_age': 'saddlebrown',
+            'year_2100': 'black'
+        }
+
+        return cls.color_translation[colors[element]]
 
     def draw(self, canvas):
+        line_length = float(self.row['line_length'])
+        line_rotation = float(self.row['line_rotation'])
+        normalization = 800/line_length
+
         canvas.stroke(pyx.path.rect(0, 0, 800, 500))
-        pass
+
+        figure = pyx.canvas.canvas()
+        line_path = pyx.path.line(0, 0, 1, 0)
+        figure.stroke(line_path, [pyx.style.linewidth(0.02*normalization)])
+
+        for e in self.elements:
+            position = self.get_numeric('position', e)
+            color = self.get_color_for(e)
+            line_path = pyx.path.line(position, 0.15*normalization, position, -0.15*normalization)
+            figure.stroke(line_path, [pyx.style.linewidth(0.02*normalization), color])
+
+        transform = pyx.trafo.trafo().\
+            translated(-0.5, 0).\
+            rotated(line_rotation).\
+            scaled(line_length*0.9, line_length*0.9).\
+            translated(400, 250)
+        canvas.insert(figure, [transform])
