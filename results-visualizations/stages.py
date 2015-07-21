@@ -47,6 +47,15 @@ class Stage:
     def draw(self, canvas):
         raise NotImplementedError()
 
+    def draw_color_reference(self, canvas):
+        position_x = 100
+        for e in self.elements:
+            circle_path = pyx.path.circle(position_x, 580, 30)
+            canvas.draw(circle_path, [
+                pyx.deco.filled([self.get_color('color', e)])
+            ])
+            position_x += 80
+
 
 class PresentPastFuture(Stage):
     stage_code = 'present_past_future'
@@ -54,6 +63,8 @@ class PresentPastFuture(Stage):
 
     def draw(self, canvas):
         canvas.stroke(pyx.path.rect(0, 0, 800, 500))
+        self.draw_color_reference(canvas)
+
         for e in self.elements:
             circle_path = pyx.path.circle(
                 self.get_numeric('center_x', e),
@@ -72,6 +83,8 @@ class SeasonsOfYear(Stage):
 
     def draw(self, canvas):
         canvas.stroke(pyx.path.rect(0, 0, 800, 500))
+        self.draw_color_reference(canvas)
+
         for e in self.elements:
             rect_path = pyx.path.rect(
                 self.get_numeric('center_x', e) - self.get_numeric('size_x', e)/2,
@@ -91,6 +104,8 @@ class DaysOfWeek(Stage):
 
     def draw(self, canvas):
         canvas.stroke(pyx.path.rect(0, 0, 800, 500))
+        self.draw_color_reference(canvas)
+
         for e in self.elements:
             rect_path = pyx.path.rect(
                 self.get_numeric('center_x', e) - 50/2,
@@ -110,6 +125,8 @@ class PartsOfDay(Stage):
 
     def draw(self, canvas):
         canvas.stroke(pyx.path.rect(0, 0, 800, 500))
+        self.draw_color_reference(canvas)
+
         for e in self.elements:
             wedge_path = wedge(
                 400, 250, 200,
