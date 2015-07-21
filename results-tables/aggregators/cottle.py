@@ -73,38 +73,46 @@ class Cottle:
                     relatedness += 2
         self._relatedness = relatedness
 
+        self._dominance = sum(x['dominance'] for x in results.values())
+
         self.results = results
 
     def relatedness_each(self):
         # atomistic, contiguous, integrated_projected
-        return valmap(lambda x: x['relatedness'], self.results)
+        norm_factor = 6 * (len(self.elements) - 1)
+        return valmap(lambda x: x['relatedness'] / norm_factor, self.results)
 
     def dominance_each(self):
         # 0 - abscence, 2 - secondary, 4 - dominance
-        return valmap(lambda x: x['dominance'], self.results)
+        norm_factor = 2 * (len(self.elements) - 1)
+        return valmap(lambda x: x['dominance'] / norm_factor, self.results)
 
     def relatedness_all(self):
-        return self._relatedness
+        norm_factor = 6 * len(self.elements) * (len(self.elements) - 1) / 2
+        return math.sqrt(self._relatedness / norm_factor)
 
     def dominance_all(self):
-        return sum(self.dominance_each().values())
+        norm_factor = 2 * len(self.elements) * (len(self.elements) - 1) / 2
+        return math.sqrt(self._dominance / norm_factor)
 
     def relatedness_group(self):
-        value = self.relatedness_all()
+        #value = self.relatedness_all()
+        value = self._relatedness / (6 * (len(self.elements) - 1))
 
-        if value < 2 * (len(self.elements) - 1):
+        if value < 1/3:
             return "atomistic"
-        elif value < 4 * (len(self.elements) - 1):
+        elif value < 2/3:
             return "contiguous"
         else:
             return "integrated_projected"
 
     def dominance_group(self):
-        value = self.dominance_all()
+        #value = self.dominance_all()
+        value = self._dominance / (2 * (len(self.elements) - 1))
 
-        if value == 0:
+        if value < 1/3:
             return "absence"
-        elif value < len(self.elements) * (len(self.elements)-1):
+        elif value < 2/3:
             return "secondary"
         else:
             return "dominance"
