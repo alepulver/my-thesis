@@ -107,12 +107,12 @@ class Cottle:
             return "integrated_projected"
 
     def dominance_group(self):
-        #value = self.dominance_all()
-        value = self._dominance / (2 * (len(self.elements) - 1))
+        value = self.dominance_all()
+        #value = self._dominance / (2 * (len(self.elements) - 1))
 
-        if value < 1/3:
+        if value < 0.001:
             return "absence"
-        elif value < 2/3:
+        elif value < 0.999:
             return "secondary"
         else:
             return "dominance"
