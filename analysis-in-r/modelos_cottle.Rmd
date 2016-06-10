@@ -1,0 +1,146 @@
+---
+title: "Modelos Cottle"
+author: "Alejandro Pulver"
+date: "12/28/2014"
+output:
+  pdf_document: 
+    keep_tex: yes
+    toc: yes
+  html_document:
+    toc: true
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results='asis')
+options(width=120)
+
+library(pander)
+panderOptions("table.split.table" , Inf) # avoid to split the tables
+```
+
+```{r import}
+library(ggplot2)
+library(GGally)
+library(Rmisc)
+library(lme4)
+library(lmerTest)
+library(MASS)
+source("scripts/utils.R")
+source("scripts/data_loading.R")
+source("scripts/rsquaredglmm.R")
+
+experiment_data = ExperimentData$new("../data/output/")
+experiments = experiment_data$flat_all()
+
+stages = list(
+  list(title = "Círculos", code = "present_past_future"),
+  list(title = "Estaciones del año", code = "seasons_of_year"),
+  list(title = "Días de la semana", code = "days_of_week"),
+  list(title = "Partes del día", code = "parts_of_day")
+)
+```
+
+# Por etapa
+
+```{r, results='asis'}
+out = NULL
+
+for (s in stages) {
+  # Generamos dinámicamente una sección por variable
+  stage_name = s$title
+  stage_code = s$code
+  out <- c(out, knit_child('template_cottle.Rmd', quiet=TRUE))
+}
+
+cat(paste(out, collapse = '\n'))
+```
+
+# Entre etapas
+
+```{r}
+variables = c(
+  "dominance_cottle", "relatedness_cottle",
+  "dominance_group", "relatedness_group"
+)
+my_df = my.combined_columns(experiment_data, variables)
+levels(my_df$stage) = laply(stages, function(x) { x$title })
+
+my_df$dominance_group = factor(my_df$dominance_group, levels = c("absence", "secondary", "dominance"))
+levels(my_df$dominance_group) = c("Ausencia", "Secundaria", "Absoluta")
+my_df$relatedness_group = factor(my_df$relatedness_group, levels = c("atomistic", "contiguous", "integrated_projected"))
+levels(my_df$relatedness_group) = c("Atomista", "Contiguo", "Integrado")
+
+sex_df = experiments %>% select(experiment_id = id, sex = questions_begining_sex)
+my_df = inner_join(my_df, sex_df)
+#levels(my_df$sex) = c("Mujeres", "Hombres")
+```
+
+## Dominance
+
+```{r}
+ggplot(my_df, aes(x = dominance_cottle)) +
+  geom_histogram(color="grey40", fill="#00aeff", alpha = 0.7) +
+  facet_wrap(~ stage) + xlim(0, 1.1) + labs(x = "Dominancia", y = "Cantidad")
+```
+
+Veamos si influyen la etapa y el sexo.
+
+```{r}
+fit = lmer(dominance_cottle ~ stage*sex + (1|experiment_id), data = my_df)
+```
+
+```{r, results='markup'}
+anova(fit, type=2)
+rsquared.glmm(fit)
+```
+
+## Relatedness
+
+``` {r}
+ggplot(my_df, aes(x = relatedness_cottle)) +
+  geom_histogram(color="grey40", fill="#00aeff", alpha = 0.7) +
+  facet_wrap(~ stage) + xlim(0, 1.1) + labs(x = "Relación", y = "Cantidad")
+```
+
+Veamos si influyen la etapa y el sexo.
+
+```{r}
+fit = lmer(relatedness_cottle ~ stage*sex + (1|experiment_id), data = my_df)
+```
+
+```{r, results='markup'}
+anova(fit, type=2)
+rsquared.glmm(fit)
+```
+
+# Por grupos
+
+```{r}
+common_plot_opts = function(p) {
+  p + 
+    aes(y = Freq, fill = sex) + facet_grid(~ stage) +
+    geom_bar(stat = "identity", position = "dodge", alpha = 0.7) +
+    theme(axis.text.x = element_text(angle = 90), legend.position="top") +
+    scale_fill_discrete(name = "Sexo", labels = c("Mujeres", "Hombres")) +
+    ylab("Proporción")
+}
+
+dominance_group_df = data.frame(prop.table(
+  xtabs(~ dominance_group + stage + sex, my_df), margin = c(2, 3)))
+(ggplot(dominance_group_df, aes(x = dominance_group)) + xlab("Dominancia")) %>% common_plot_opts()
+
+relatedness_group_df = data.frame(prop.table(
+  xtabs(~ relatedness_group + stage + sex, my_df), margin = c(2, 3)))
+(ggplot(relatedness_group_df, aes(x = relatedness_group)) + xlab("Relación")) %>% common_plot_opts()
+```
+
+```{r}
+freq_table = xtabs(~ dominance_group + relatedness_group + sex + stage, my_df)
+fit = glm(Freq ~ sex*relatedness_group*dominance_group*stage,
+  data.frame(freq_table), family = poisson)
+```
+
+```{r, results='markup'}
+anova(fit, test="Chisq")
+```

@@ -1,0 +1,180 @@
+---
+title: "Comparación con Cottle"
+author: "Alejandro Pulver"
+date: "12/28/2014"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results='asis')
+options(width=120)
+
+library(pander)
+panderOptions("table.split.table" , Inf) # avoid to split the tables
+```
+
+```{r import}
+library(ggplot2)
+library(GGally)
+source("scripts/utils.R")
+source("scripts/data_loading.R")
+
+experiment_data = ExperimentData$new("../data/output/")
+
+add_plot_options = function(x) {
+  x +
+    scale_fill_manual(name = "Experimento", values = c("#00aeff", "#90a800")) +
+    theme(axis.text.x = element_text(angle = 90), legend.position = "top")
+}
+```
+
+# Resultados
+
+Estos son los datos que reportó Cottle en el paper comparados con los equivalentes de este experimento.
+
+## Dominance
+
+```{r}
+mixed_df = experiment_data$mixed_cottle()$dominance
+mixed_df = mixed_df %>% experiment_data$translate_cottle()
+
+props_df = as.data.frame(
+  prop.table(xtabs(Freq ~ dominance+element+version, mixed_df), margin = c(3)))
+
+(ggplot(props_df,
+  aes(x = dominance, y = Freq, fill = version)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.6) +
+  facet_grid(~ element) + labs(x = "Dominancia", y = "Densidad")
+) %>% add_plot_options()
+```
+
+```{r}
+props_df = as.data.frame(
+  prop.table(xtabs(Freq ~ ., mixed_df), margin = c(2, 4)))
+
+(ggplot(props_df,
+  aes(x = dominance, y = Freq, fill = version)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.6) +
+  facet_grid(sex ~ element) + labs(x = "Dominancia", y = "Densidad")
+) %>% add_plot_options()
+```
+
+```{r}
+fit = glm(Freq ~ dominance*sex*element*version, mixed_df, family = poisson)
+```
+
+```{r, results='markup'}
+anova(fit, test="Chisq")
+```
+
+## Relatedness
+
+```{r, fig.width=4}
+mixed_df = experiment_data$mixed_cottle()$relatedness
+mixed_df = mixed_df %>% experiment_data$translate_cottle()
+
+props_df = as.data.frame(
+  prop.table(xtabs(Freq ~ relatedness+version, mixed_df), margin = c(2)))
+
+(ggplot(props_df,
+  aes(x = relatedness, y = Freq, fill = version)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.6) +
+  labs(x = "Relación", y = "Densidad")
+) %>% add_plot_options()
+```
+
+```{r}
+props_df = as.data.frame(
+  prop.table(xtabs(Freq ~ ., mixed_df), margin = c(2, 3)))
+
+(ggplot(props_df,
+  aes(x = relatedness, y = Freq, fill = version)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.6) +
+  facet_grid(~ sex) + labs(x = "Relación", y = "Densidad")
+) %>% add_plot_options()
+```
+
+```{r}
+fit = glm(Freq ~ relatedness*sex*version, mixed_df, family = poisson)
+```
+
+```{r, results='markup'}
+anova(fit, test="Chisq")
+```
+
+## Future dominance and relatedness
+
+```{r}
+mixed_df = experiment_data$mixed_cottle()$dominance_relatedness_future
+mixed_df = mixed_df %>% experiment_data$translate_cottle()
+
+props_df = as.data.frame(
+  prop.table(xtabs(Freq ~ dominance+relatedness+version, mixed_df), margin = c(3)))
+
+(ggplot(props_df,
+  aes(x = relatedness, y = Freq, fill = version)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.6) +
+  facet_grid(~ dominance) + labs(x = "Relación", y = "Densidad")
+) %>% add_plot_options()
+```
+
+```{r}
+props_df = as.data.frame(
+  prop.table(xtabs(Freq ~ ., mixed_df), margin = c(1, 4)))
+
+(ggplot(props_df,
+  aes(x = relatedness, y = Freq, fill = version)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.6) +
+  facet_grid(sex ~ dominance) + labs(x = "Relación", y = "Densidad")
+) %>% add_plot_options()
+```
+
+```{r}
+fit = glm(Freq ~ dominance*relatedness*sex*version, mixed_df, family = poisson)
+```
+
+```{r, results='markup'}
+anova(fit, test="Chisq")
+```
+
+## Present dominance and relatedness
+
+```{r}
+mixed_df = experiment_data$mixed_cottle()$dominance_relatedness_present
+mixed_df = mixed_df %>% experiment_data$translate_cottle()
+
+props_df = as.data.frame(
+  prop.table(xtabs(Freq ~ dominance+relatedness+version, mixed_df), margin = c(3)))
+
+(ggplot(props_df,
+  aes(x = relatedness, y = Freq, fill = version)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.6) +
+  facet_grid(~ dominance) + labs(x = "Relación", y = "Densidad")
+) %>% add_plot_options()
+```
+
+```{r}
+props_df = as.data.frame(
+  prop.table(xtabs(Freq ~ ., mixed_df), margin = c(1, 4)))
+
+(ggplot(props_df,
+  aes(x = relatedness, y = Freq, fill = version)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.6) +
+  facet_grid(sex ~ dominance) + labs(x = "Relación", y = "Densidad")
+) %>% add_plot_options()
+```
+
+```{r}
+fit = glm(Freq ~ dominance*relatedness*sex*version, mixed_df, family = poisson)
+#pander(data.frame(anova(fit, test="Chisq")) %>% arrange(desc(Deviance)))
+```
+
+```{r, results='markup'}
+anova(fit, test="Chisq")
+```

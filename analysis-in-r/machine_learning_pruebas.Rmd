@@ -1,0 +1,148 @@
+---
+title: "Machine Learning Pruebas"
+author: "Alejandro Pulver"
+date: "05/19/2015"
+output:
+  html_document:
+    toc: true
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results='asis')
+
+library(pander)
+panderOptions("table.split.table" , Inf) # avoid to split the tables
+```
+
+```{r import}
+library(ggplot2)
+library(gridExtra)
+library(mclust)
+library(clValid)
+library(Boruta)
+library(gplots)
+source("scripts/data_loading.R")
+source("scripts/machine_learning_utils.R")
+
+set.seed(123)
+theme_set(theme_grey(base_size = 12))
+
+blank_theme = theme(
+  axis.title = element_blank(),
+  axis.text = element_blank(),
+  axis.ticks = element_blank(),
+  axis.line = element_blank(),
+  legend.position = "none",
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  #panel.background = element_blank()
+  panel.background = element_rect(colour = "gray80")
+)
+```
+
+```{r}
+experiment_data = ExperimentData$new("../data/output/")
+experiments = experiment_data$flat_all()
+
+load("../../results.Rda")
+```
+
+# Comparación de métodos
+
+## Visualización del espacio
+
+Utilizaremos varios métodos, algunos lineales (**cmdscale**) y otros no lineales (**isomds** y **smacof**). Aquí los comparamos para las distintas etapas.
+
+```{r, fig.width=10, fig.height=8}
+output = extract_input_analysis(results$input_analysis)
+output_visualization = extract_input_analysis(results$input_analysis)
+stage_translation = experiment_data$schema()$stage_translation
+
+ggplot(output %>% filter(origin == "dist", categories == "standard+color+geometric"), aes(x=D1,y=D2)) +
+  facet_wrap(method ~ stage, scales = "free", ncol = 6) + geom_point(alpha = 0.3) + blank_theme
+
+#ggplot(output %>% filter(origin == "dist", categories == "standard+color+geometric"), aes(x=D3,y=D4)) +
+#  facet_wrap(method ~ stage, scales = "free", ncol = 6) + geom_point(alpha = 0.3) + blank_theme
+```
+
+## Clasificación
+
+Comparemos los clasificadores para el sexo.
+
+```{r}
+output = extract_classreg(results$classreg_comparison)
+levels(output$classification$stage) = as.character(stage_translation)
+
+ggplot(output$classification, aes(y = accuracy, x = method, group = 1)) +
+  geom_line() + geom_point(color="red") + facet_wrap(stage ~ categories) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x = "Método", y = "Precisión")
+```
+
+##  Regresión
+
+Comparemos los métodos de regresión para la edad.
+
+```{r}
+levels(output$regression$stage) = as.character(stage_translation)
+
+ggplot(output$regression, aes(y = rsquared, x = method, group = 1)) +
+  geom_line() + geom_point(color="red") + facet_wrap(stage ~ categories) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x = "Método", y = "R^2")
+```
+
+## Clustering
+
+### Algoritmos
+
+```{r}
+output = extract_clustering(results$clustering_comparison)
+
+all_plots = lapply(results$clustering_comparison, function(r) {
+  visual_df = visualization_for_stage(r$stage)
+  tmp_df = data.frame(experiment_id = r$result$experiment_id, clustering = as.factor(r$result$clustering))
+  visual_df = visual_df %>% inner_join(tmp_df)
+  
+  # XXX: ggplot only looks for variables in the global environment or in data, so we do this
+  .e = environment()
+  ggplot(visual_df, aes(x=D1, y=D2, color = clustering), environment = .e) +
+    geom_point(alpha = 0.7) + blank_theme + ggtitle(r$task)
+})
+```
+
+Para la etapa de los círculos.
+
+```{r, fig.width=8, fig.height=8}
+do.call(grid.arrange, c(all_plots[1:9], ncol=3))
+```
+
+Para todo el experimento.
+
+```{r, fig.width=8, fig.height=8}
+do.call(grid.arrange, c(all_plots[10:18], ncol=3))
+```
+
+### Cantidad (K)
+
+```{r, fig.width=12, fig.height=10}
+oldpar = par(mfcol=c(5,6))
+
+for (i in 1:6) {
+  ii = i*3-2
+  
+  plot(results$clustering_k_estimation[[ii+2]]$result, what = "BIC",
+     main = i, legendArgs=list(x="bottom",cex=.5))
+  hist(results$clustering_k_estimation[[ii]]$result$Best.nc[1,],
+     breaks = 0:10, xlab = "", main = i)
+  plot(results$clustering_k_estimation[[ii+1]]$result, measures = "Connectivity",
+     main = i, legend = F)
+  plot(results$clustering_k_estimation[[ii+1]]$result, measures = "Dunn",
+     main = i, legend = F)
+  plot(results$clustering_k_estimation[[ii+1]]$result, measures = "Silhouette",
+     main = i, legend = F)
+}
+
+par(oldpar)
+```

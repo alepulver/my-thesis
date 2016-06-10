@@ -1,0 +1,6 @@
+*_files
+*.html
+*.tex
+*.pdf
+.Rproj.user
+.Rhistory

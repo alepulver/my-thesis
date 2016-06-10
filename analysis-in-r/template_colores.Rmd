@@ -1,0 +1,18 @@
+## Colores
+
+Test G de independencia.
+
+```{r}
+a_table = table(long_stage$element, long_stage$color)
+results_builder$add_table(current_stage, 'color', a_table)
+
+result = tidy(likelihood.test(a_table))
+pander(result)
+```
+
+```{r, fig.width=8, fig.height=4}
+p1 = my.color_plot(experiment_data, current_stage)
+p2 = my.color_importance_plot(experiment_data, current_stage)
+
+grid.arrange(p1, p2, ncol=2)
+```

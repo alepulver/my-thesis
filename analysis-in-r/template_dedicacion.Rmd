@@ -1,0 +1,45 @@
+## Dedicación por elemento (tiempo)
+
+```{r}
+plotmeans(time_spent ~ element, long_stage)
+```
+
+Test ANOVA entre grupos.
+
+```{r}
+# XXX: sacamos el 5% porque hay muchos que dejaron el navegador abierto y siguieron al día siguiente
+my_data = my.cut_outliers2(wide_stage, c("time_duration"), c(0, 0.92))
+another_stage = inner_join(long_stage, my_data %>% select(experiment_id))
+
+fit <- lm(log1p(time_spent) ~ element, data=another_stage)
+fit_mm <- lmer(log1p(time_spent) ~ element + (1|experiment_id), data=another_stage)
+results_builder$add_mixed_model(current_stage, 'dedication_time', fit, fit_mm)
+
+pander(tidy(anova(fit)))
+pander(glance(fit))
+a_table = tidy(TukeyHSD(aov(fit))) %>% filter(adj.p.value < 0.05)
+if (dim(a_table)[1] > 0) {
+  pander(a_table)
+}
+```
+
+## Dedicación por elemento (eventos)
+
+```{r}
+plotmeans(total_events ~ element, long_stage)
+```
+
+Test ANOVA entre grupos.
+
+```{r}
+fit <- lm(log1p(total_events) ~ element, data=long_stage)
+fit_mm <- lmer(log1p(total_events) ~ element + (1|experiment_id), data=long_stage)
+results_builder$add_mixed_model(current_stage, 'dedication_events', fit, fit_mm)
+
+pander(tidy(anova(fit)))
+pander(glance(fit))
+a_table = tidy(TukeyHSD(aov(fit))) %>% filter(adj.p.value < 0.05)
+if (dim(a_table)[1] > 0) {
+  pander(a_table)
+}
+```

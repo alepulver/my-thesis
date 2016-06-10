@@ -1,0 +1,635 @@
+---
+title: "Exploratorio"
+author: "Alejandro Pulver"
+date: "12/13/2014"
+output:
+  html_document:
+    toc: true
+---
+  
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results='asis')
+#opts_chunk$set(warning=FALSE, message=FALSE, results='asis', cache=TRUE, echo=FALSE)
+
+library(pander)
+panderOptions("table.split.table" , Inf) # avoid to split the tables
+```
+
+```{r import}
+library(ggplot2)
+library(GGally)
+library(ca)
+library(vcd)
+source("scripts/utils.R")
+source("scripts/data_loading.R")
+
+experiment_data = ExperimentData$new("../data/output/")
+experiments = experiment_data$flat_all()
+complete_experiments = experiments[complete.cases(experiments),]
+incomplete_experiments  = experiments[!complete.cases(experiments),]
+
+all_stages = c('present_past_future', 'seasons_of_year', 'days_of_week', 'parts_of_day', 'timeline')
+```
+
+# Introducción
+
+Tenemos `r dim(complete_experiments)[1]` experimentos completos y `r dim(incomplete_experiments)[1]` incompletos.
+
+El canvas mide 800 pixels de ancho por 500 de alto, avanzando el eje X de izquierda a derecha y el Y de arriba hacio abajo. Las posiciones de las figuras indican su centro, y por separado se guarda el radio (si es un círculo) o el ancho ("size x") y alto ("size y"). Notar que el radio es la mitad del ancho/alto.
+
+El color por default es el negro.
+
+# Etapas del experimento
+
+Tenemos más datos de algunas etapas que de otras, veamos las cantidades.
+
+```{r}
+available_data = ldply(c(all_stages, 'questions_ending'), function(stage) {
+  wide_stage = experiment_data$flat(stage)
+  data.frame(stage = stage, count = dim(wide_stage)[1])
+})
+levels(available_data[,1]) = c("Círculos", "Estaciones", "Semana", "Partes del día", "Línea de tiempo", "Preguntas finales")
+
+pander(mutate(available_data,
+  percent = count / sum(count)
+))
+```
+
+```{r, fig.width=6, fig.height=3}
+ggplot(available_data, aes(x=stage, y=count)) +
+  geom_bar(stat="identity", fill="#00aeff") +
+  coord_flip() + theme_grey(base_size=15) +
+  ylab("Cantidad de sujetos") + xlab("Etapa")
+```
+
+## Preguntas iniciales
+
+Las preguntas iniciales incluyen el nombre, edad y sexo. El mail no está en esta tabla pero lo tenemos. Por fuera de TEDx también está si estudia y trabaja, pero hay menos datos de esos.
+
+```{r questions_begin, fig.width=5, fig.height=3}
+ggplot(experiments, aes(x = questions_begining_age)) +
+  geom_histogram(binwidth=1, color="grey") + xlim(18,80) +
+  xlab("Edad (años)") + ylab("Cantidad de personas")
+```
+
+```{r}
+pander(my.frequency_table(experiments$questions_begining_sex))
+```
+
+## Presente, pasado y futuro
+
+Consiste en ubicar tres círculos en la pantalla. Como datos tenemos el orden en que se insertaron, los colores elegidos, tamaño y posición.
+
+![present-past-future](imagenes/presente-pasado-futuro.png)
+
+```{r}
+long_stage = experiment_data$recursive('present_past_future')
+wide_stage = experiment_data$flat('present_past_future')
+one_stage = NA
+```
+
+### Ubicación del centro
+
+```{r present_past_future_center, fig.height=6}
+ggplot(long_stage, aes(x = center_x, y = center_y)) +
+  geom_hex(bins = c(30, 15)) +
+  scale_y_reverse() + coord_equal() +
+  scale_fill_gradientn(colours = c('white', 'red')) +
+  facet_grid(element ~ .)
+```
+
+Si estimamos y dibujamos las densidades, queda el siguiente gráfico.
+
+```{r present_past_future_density, fig.height=3}
+ggplot(long_stage, aes(x = center_x, y = center_y, color = element)) + geom_density2d() + scale_y_reverse() + coord_equal()
+```
+
+### Tamaño de las figuras
+
+El radio por default es 70. En la siguiente tabla se muestra el porcentaje de sujetos que dejaron cada elemento de esa manera.
+
+```{r}
+my_table = summarize(group_by(long_stage, element), counts = sum(default_size == "yes"), percentage = counts / n() * 100)
+
+pander(my_table)
+```
+
+Al remover esos sujetos (que podríamos decir no tomaron una decisión), hay diferencias en los histogramas.
+
+```{r present_past_future_radius, fig.width=6, fig.height=6}
+one_stage = long_stage %>% inner_join(select(wide_stage, experiment_id, default_size_total = default_size))
+another_stage = filter(one_stage, default_size_total < 1)
+
+#ggplot(one_stage, aes(x = radius)) + geom_histogram() + facet_grid(element ~ .)
+ggplot(another_stage, aes(x = radius, fill = element)) + geom_histogram(alpha = 0.5, position = 'identity')
+```
+
+Según la ubicación, los radios se distribuyen de la siguiente manera.
+
+```{r present_past_future_radius_by_xy, fig.width=6, fig.height=6}
+my_data = mutate(another_stage, relative_radius =
+  radius / min(min(center_x, 800-center_x), min(center_y, 500-center_y))
+)
+ggplot(my_data, aes(x = center_x, y = center_y, z = relative_radius)) + stat_summary_hex(bins = c(40, 20)) + scale_y_reverse() + coord_equal() + facet_grid(element ~ .) + scale_fill_gradientn(colours = c("black", "red", "yellow"))
+```
+
+### Distribución de colores
+
+```{r}
+ggplot(one_stage, aes(x = factor(""), fill=color)) + geom_histogram(position="dodge") + facet_wrap(~ element) + scale_fill_manual(values = levels(one_stage$color), guide = "none") + xlab("Colores")
+```
+
+Ahora veamos las frecuencias combinadas.
+
+```{r}
+assoc(table(one_stage[,c('element', 'color')]))
+```
+
+### Orden de ubicación en el espacio
+
+Horizontal.
+
+```{r}
+pander(my.frequency_table(experiments$present_past_future_order_x))
+```
+
+Vertical.
+
+```{r}
+pander(my.frequency_table(experiments$present_past_future_order_y))
+```
+
+Cruzado.
+
+```{r}
+my_replace = function(x) {
+  my.multi_replace(list(
+    c("past", "1"),
+    c("present", "2"),
+    c("future", "3")
+  ),x)
+}
+
+my_data = experiments[,c("present_past_future_order_x", "present_past_future_order_y")]
+levels(my_data[,1]) = my_replace(levels(my_data[,1]))
+levels(my_data[,2]) = my_replace(levels(my_data[,2]))
+ggally_ratio(my_data)
+```
+
+### Orden de selección
+
+Se mostraron.
+
+```{r}
+pander(my.frequency_table(experiments$present_past_future_show_order))
+```
+
+Los eligió el sujeto.
+
+```{r}
+pander(my.frequency_table(experiments$present_past_future_select_order))
+```
+
+Veamos las combinaciones.
+
+```{r}
+my_replace = function(x) {
+  my.multi_replace(list(
+    c("past", "1"),
+    c("present", "2"),
+    c("future", "3")
+  ),x)
+}
+
+my_data = experiments[,c("present_past_future_show_order", "present_past_future_select_order")]
+levels(my_data[,1]) = my_replace(levels(my_data[,1]))
+levels(my_data[,2]) = my_replace(levels(my_data[,2]))
+ggally_ratio(my_data)
+```
+
+### Selección y ubicación
+
+Esta es la relación entre el orden en que se eligieron y se ubicaron.
+
+```{r}
+my_data = experiments[,c("present_past_future_select_order", "present_past_future_order_x")]
+levels(my_data[,1]) = my_replace(levels(my_data[,1]))
+levels(my_data[,2]) = my_replace(levels(my_data[,2]))
+ggally_ratio(my_data)
+```
+
+### Dirección del tiempo
+
+Veamos la dirección entre el pasado y el futuro, quitando quienes no dejaron el presente en el medio de los anteriores, y controlando las distancias.
+
+```{r}
+my_selection = filter(wide_stage,
+  abs(timeflow_vector_angle_past) > 90,
+  abs(timeflow_vector_angle_future) > 90,
+  relatedness_group != "integrated_projected"
+)
+
+dim(my_selection)
+
+my_df = mutate(my_selection,
+  present_separation = (timeflow_length_past + timeflow_length_present) / 2,
+  distance_ratio = my.relative_difference(timeflow_length_future, present_separation),
+  past_future_angle = ((180/pi) * atan2(- (center_y_future - center_y_past), center_x_future - center_x_past)) %% 360
+)
+```
+
+El cero indica un triángulo, negativos el presente está muy alejado del segmento pasado-futuro y positivos más cerca.
+
+```{r}
+qplot(distance_ratio, data = my_df)
+
+ggplot(my_df, aes(x = past_future_angle)) + geom_histogram(fill = "white", colour = "black") + coord_polar(theta = "x", start = -pi/2, direction = -1) + scale_x_continuous(breaks=seq(0, 360, by=30), expand=c(0,0), lim=c(0, 360))
+```
+
+## Estaciones del año
+
+Es similar al caso anterior. El alto y ancho por default es 100.
+
+Variables adicionales: igual al anterior.
+
+![estaciones](imagenes/estaciones.png)
+
+```{r}
+long_stage = experiment_data$recursive('seasons_of_year')
+wide_stage = experiment_data$flat('seasons_of_year')
+one_stage = NA
+```
+
+### Ubicación del centro
+
+```{r, fig.width=8}
+ggplot(long_stage, aes(x = center_x, y = center_y)) +
+  geom_hex(bins = c(30, 15)) +
+  scale_y_reverse() + coord_equal() +
+  scale_fill_gradientn(colours = c('white', 'red')) +
+  facet_wrap(~ element)
+```
+
+### Tamaño de las figuras
+
+El alto y ancho por default es 100. Veamos cuántos las dejaron exactamente así.
+
+```{r}
+my_table = summarize(group_by(long_stage, element), counts = sum(default_size == "yes"), percentage = counts / n() * 100)
+
+pander(my_table)
+```
+
+Al remover esos sujetos (que podríamos decir no tomaron una decisión), nos queda lo siguiente.
+
+```{r, fig.width=6, fig.height=4}
+my_selection = wide_stage %>% filter(default_size < 1) %>% select(experiment_id)
+another_stage = inner_join(long_stage, my_selection)
+
+ggplot(another_stage, aes(x = size_x, y = size_y)) + geom_hex(bins = c(30, 15)) + scale_fill_gradientn(colours = c('white', 'red')) + coord_equal() + facet_wrap(~ element)
+
+ggplot(another_stage, aes(x = size_x, y = size_y)) + geom_hex(bins = c(30, 15)) + scale_fill_gradientn(colours = c('white', 'red')) + coord_equal()
+```
+
+Esta es la única etapa donde no había restricciones sobre el alto y ancho de las figuras, así que veamos un histograma de relaciones entre los mismos.
+
+```{r}
+my_data = mutate(another_stage, size_ratio = (size_x - size_y) / (size_x + size_y))
+ggplot(my_data, aes(x = size_ratio)) + geom_histogram() + facet_wrap(~ element)
+```
+
+### Distribución de colores
+
+```{r, fig.width=5, fig.height=5}
+ggplot(long_stage, aes(x = factor(""), fill=color)) +
+  geom_histogram(position="dodge") +
+  facet_wrap(~ element) +
+  scale_fill_manual(values = levels(long_stage$color), guide = "none") +
+  xlab("Colores")
+```
+
+Ahora veamos las frecuencias combinadas.
+
+```{r}
+assoc(table(long_stage[,c('element', 'color')]))
+```
+
+### Orden de selección
+
+Los eligió el sujeto.
+
+```{r}
+pander(my.frequency_table(experiments$seasons_of_year_select_order) %>% arrange(desc(Porcentaje)) %>% head(6))
+```
+
+## Días de la semana
+
+La diferencia con los anteriores es que el ancho es fijo (sólo el alto se puede ajustar), las figuras están rellenas y no pueden superponerse. El ancho es siempre 50, y el alto varía pero por default es 100.
+
+![dias](imagenes/dias-de-la-semana.png)
+
+```{r}
+long_stage = experiment_data$recursive('days_of_week')
+wide_stage = experiment_data$flat('days_of_week')
+one_stage = long_stage
+```
+
+### Ubicación del centro
+
+```{r, fig.height=5, fig.width=8}
+ggplot(long_stage, aes(x = center_x, y = center_y)) + geom_hex(bins = c(30, 15)) +
+  scale_y_reverse() + scale_fill_gradientn(colours = c('white', 'red')) +
+  coord_equal() + facet_wrap(~ element)
+```
+
+### Tamaño de las figuras
+
+El alto por default es 100. Veamos cuántos las dejaron exactamente así.
+
+```{r}
+my_table = summarize(
+  group_by(long_stage, element),
+  counts = sum(default_size == "yes"),
+  percentage = counts / n() * 100
+)
+
+pander(my_table)
+```
+
+Al remover esos sujetos (que podríamos decir no tomaron una decisión), nos queda lo siguiente.
+
+```{r, fig.width=6, fig.height=5}
+one_stage = long_stage %>% inner_join(select(wide_stage, experiment_id, default_size_total = default_size))
+another_stage = filter(one_stage, default_size_total < 1)
+
+ggplot(another_stage, aes(x = size_y)) + geom_histogram() + facet_wrap(~ element)
+ggplot(another_stage, aes(y = size_y, x = element)) + geom_violin()
+```
+
+### Distribución de colores
+
+```{r, fig.width=7, fig.height=7}
+ggplot(one_stage, aes(x = factor(""), fill=color)) + geom_histogram(position="dodge") + facet_wrap(~ element) + scale_fill_manual(values = levels(one_stage$color), guide = "none") + xlab("Colores")
+```
+
+Ahora veamos las frecuencias combinadas.
+
+```{r, fig.width=8, fig.height=8}
+assoc(table(one_stage[,c('element', 'color')]))
+```
+
+### Orden de ubicación en el espacio
+
+```{r, fig.width=3, fig.height=4}
+qplot(days_of_week_order_x, data = complete_experiments) + labs(x = "Orden según el eje X") + theme(axis.text.x = element_text(angle = 90))
+```
+
+### Orden de selección
+
+Se mostraron.
+
+```{r}
+pander(my.frequency_table(experiments$days_of_week_show_order))
+```
+
+Los eligió el sujeto.
+
+```{r}
+pander(my.frequency_table(experiments$days_of_week_select_order))
+```
+
+## Partes del día
+
+Es un gráfico de torta, donde para cada parte del día se puede ajustar el área, posición y color.
+
+Se guarda el centro de la porción de círculo en grados (de 0 a 360) y por separado el ancho que abarca (también en grados). Los grados aumentan en sentido horario.
+
+![partes-del-dia](imagenes/partes-del-dia.png)
+
+### Ubicación en el espacio
+
+```{r, fig.width=8, fig.height=3}
+one_stage = experiment_data$recursive('parts_of_day')
+
+common_plot = ggplot(one_stage) + facet_grid(~ element) + geom_histogram(fill = "white", colour = "black") + coord_polar(theta = "x", start = -pi/2, direction = -1) + scale_x_continuous(breaks=seq(0, 360, by=30), expand=c(0,0), lim=c(0, 360))
+
+common_plot + aes(x = rotation)
+
+#common_plot + aes(x = rotation, weight = size)
+```
+
+Aquí están todos los histogramas comunes juntos para comparar parte a parte por sector.
+
+```{r}
+ggplot(one_stage, aes(x = rotation, fill = element)) + geom_histogram(position = "dodge") + coord_polar(theta = "x", start = -pi/2, direction = -1) + scale_x_continuous(breaks=seq(0, 360, by=30), expand=c(0,0), lim=c(0, 360))
+```
+
+### Ubicación de a grupos
+
+```{r}
+rotation_group_fun = function(rotation) {
+  #result[rotation < 90 | rotation >= 330] = "right"
+  result = rep("right", length(rotation))
+  result[rotation >= 90 & rotation < 210] = "left"
+  result[rotation >= 210 & rotation < 330] = "down"
+  result
+}
+
+another_stage = mutate(one_stage, rotation_group = rotation_group_fun(rotation))
+other_table = another_stage %>% filter(element == "morning") %>% select(experiment_id, rotation_group)
+another_stage = inner_join(another_stage, other_table, by = c("experiment_id"))
+```
+
+Vamos a hacer tres grupos, según la ubicación de la mañana.
+
+```{r, fig.width=8, fig.height=8}
+ggplot(another_stage, aes(x = rotation, fill = element)) +
+  geom_histogram(position = "dodge") +
+  coord_polar(theta = "x", start = -pi/2, direction = -1) +
+  scale_x_continuous(breaks=seq(0, 360, by=30), expand=c(0,0), lim=c(0, 360)) +
+  facet_wrap(~ rotation_group.y, ncol = 2)
+```
+
+Veamos si los grupos afectan la orientación.
+
+```{r}
+my_data = inner_join(experiments, other_table, by = c("id" = "experiment_id"))
+pander(with(my_data, table(parts_of_day_order, rotation_group)))
+```
+
+```{r, fig.width=8, fig.height=5}
+my_data = inner_join(another_stage, select(experiments, parts_of_day_order, experiment_id = id))
+ggplot(my_data, aes(x = rotation, fill = element)) +
+  geom_histogram(position = "dodge") +
+  coord_polar(theta = "x", start = -pi/2, direction = -1) +
+  scale_x_continuous(breaks=seq(0, 360, by=30), expand=c(0,0), lim=c(0, 360)) +
+  facet_wrap(~ parts_of_day_order, ncol = 2)
+```
+
+### Tamaño de la figuras
+
+```{r, fig.width=4, fig.height=4}
+ggplot(one_stage, aes(y = size, x = element)) + geom_violin()
+```
+
+### Distribución de colores
+
+```{r, fig.width=7, fig.height=5}
+ggplot(one_stage, aes(x = factor(""), fill=color)) + geom_histogram(position="dodge") + facet_wrap(~ element) + scale_fill_manual(values = levels(one_stage$color), guide = "none") + xlab("Colores")
+```
+
+Ahora veamos las frecuencias combinadas.
+
+```{r}
+assoc(table(one_stage[,c('element', 'color')]))
+```
+
+### Orden de ubicación en el espacio
+
+```{r, fig.width=3, fig.height=3}
+qplot(parts_of_day_order, data = complete_experiments) + labs(x = "Orden")
+```
+
+### Orden de selección
+
+Se mostraron.
+
+```{r}
+pander(my.frequency_table(experiments$parts_of_day_show_order))
+```
+
+Los eligió el sujeto.
+
+```{r}
+pander(my.frequency_table(experiments$parts_of_day_select_order))
+```
+
+Veamos las combinaciones.
+
+```{r}
+my_replace = function(x) {
+  my.multi_replace(list(
+    c("morning", "1"),
+    c("afternoon", "2"),
+    c("night", "3")
+  ),x)
+}
+
+my_data = experiments[,c("parts_of_day_show_order", "parts_of_day_select_order")]
+levels(my_data[,1]) = my_replace(levels(my_data[,1]))
+levels(my_data[,2]) = my_replace(levels(my_data[,2]))
+ggally_ratio(my_data)
+```
+
+## Línea de tiempo
+
+Los eventos pueden elegirse en cualquier orden, pero hay dos formas fijas en las que pueden aparecer los botones. Podemos ver si eso influye en el desempeño de los sujetos.
+
+![linea](imagenes/linea.png)
+
+### Ubicación de la línea
+
+El default de rotación de 0 grados y longitud de 200.
+
+```{r, fig.width=6, fig.height=4}
+df = experiments
+variables = gen_vars('timeline', c('line_rotation', 'line_length'))
+
+my.multiplot(df[,variables], my.smartplot)
+```
+
+### Ubicación de los eventos
+
+```{r, fig.width=8, fig.height=6}
+one_stage = experiment_data$recursive('timeline')
+ggplot(one_stage, aes(y = position, x = element)) + geom_jitter(alpha = 0.4) + coord_flip()
+```
+
+### Dirección de la línea
+
+Comparación entre izquierda a derecha y derecha a izquierda.
+
+```{r, fig.width=3, fig.height=4}
+items = na.exclude(experiments$timeline_order)
+qplot(items)
+```
+
+Veamos en un histograma circular, sacando quienes dejaron la inclinación por default y quienes tienen poca (menos de 85%) similitud con el order "correcto".
+
+```{r}
+my_data = filter(experiments, timeline_line_rotation != 0, timeline_order_match > 0.85)
+ggplot(my_data, aes(x = timeline_line_rotation)) +
+  geom_histogram(fill = "white", colour = "black") +
+  coord_polar(theta = "x", start = -pi/2, direction = -1) +
+  scale_x_continuous(breaks=seq(0, 360, by=30), expand=c(0,0), lim=c(0, 360))
+```
+
+### Correctitud del orden de los eventos
+
+La dirección de la línea se toma de 1900 a 2100 (según como haya ubicado estos eventos el sujeto), y las posiciones de los eventos son relativas a esta dirección. Otras variables como la rotación y el orden horizontal contienen el resto de la información.
+
+```{r}
+qplot(timeline_order_match, data = complete_experiments)
+```
+
+## Preguntas finales
+
+```{r}
+df = experiments
+variables = gen_vars('questions_ending', c('represents_time', 'cronotype'))
+my.multiplot(df[,variables], my.smartplot)
+```
+
+Y las preguntas de qué tan forzada le pareció cada elección de atributos.
+
+```{r}
+one_stage = experiment_data$flat('questions_ending')
+my_data = melt(one_stage, id.vars = 'experiment_id', measure.vars = c("forced_size", 'forced_color', 'forced_position'))
+ggplot(my_data, aes(x = as.factor(value), fill = variable)) + geom_histogram(position = 'dodge', width = .8) + xlab('Qué tan forzado le pareció')
+```
+
+# Comparación entre etapas
+
+## Importancia de los colores
+
+Veamos cuánto contribuye cada color a la varianza total en cada caso.
+
+```{r, fig.width=7, fig.height=7}
+all_stages_with_color = c('present_past_future', 'seasons_of_year', 'days_of_week', 'parts_of_day')
+
+ps = lapply(all_stages_with_color, function(x) { my.color_importance_plot(experiment_data, x) })
+
+do.call(grid.arrange, c(ps, list(ncol=2)))
+```
+
+## Similitud entre el orden mostrado y elegido
+
+Histograma de la similitud entre el orden en que se mostraron y se eligieron los botones.
+
+```{r, fig.width=7, fig.height=7}
+p1 = qplot(experiments$present_past_future_show_select_match) + xlab("Similitud") + ggtitle("Círculos")
+p2 = qplot(experiments$seasons_of_year_show_select_match) + xlab("Similitud") + ggtitle("Estaciones")
+p3 = qplot(experiments$days_of_week_show_select_match) + xlab("Similitud") + ggtitle("Semana")
+p4 = qplot(experiments$parts_of_day_show_select_match) + xlab("Similitud") + ggtitle("Día")
+grid.arrange(p1, p2, p3, p4, ncol=2)
+```
+
+Los días de la semana y las partes del día podrían tener un orden secuencial (unidimensional, como en la lectura) más fuerte que las referencias temporales y las estaciones del año. Pero es más probable que esto ocurra solamente por la cantidad de figuras a ubicar (es menos costoso elegir los días de la semana en orden que reubicarlos luego, solamente porque son muchos).
+
+## Tamaños no elegidos
+
+Además, veamos las intersecciones (es decir, cuántos dejaron en el tamaño de default algunos pero no todos).
+
+```{r, fig.width=7, fig.height=7}
+p1 = ggplot(experiments, aes(x = present_past_future_default_size)) +
+  geom_histogram() + xlab("Default (%)") + ggtitle("Círculos")
+p2 = ggplot(experiments, aes(x = seasons_of_year_default_size)) +
+  geom_histogram() + xlab("Default (%)") + ggtitle("Estaciones")
+p3 = ggplot(experiments, aes(x = days_of_week_default_size)) +
+  geom_histogram() + xlab("Default (%)") + ggtitle("Semana")
+
+grid.arrange(p1, p2, p3, ncol=2)
+```
+
+Aquí es consistente entre las etapas, y sigue una distribución similar a una binomial inversa. Siendo más fácil que alguien elija todos o ninguno, a algunos sí y otros no.

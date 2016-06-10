@@ -1,0 +1,46 @@
+## Ubicación del centro
+
+```{r}
+my.bidim_means_plot(long_stage, "center_x", "center_y") +
+  scale_y_reverse(limits = c(500,0)) + coord_equal() + xlim(c(0,800)) +
+  labs(x = "Posición X", y = "Posición Y") +
+  scale_color_discrete(name = "Figura", labels = experiment_data$schema()$element_translation[[current_stage]])
+```
+
+Test MANOVA entre grupos.
+
+```{r}
+fit <- lm(cbind(center_x, center_y) ~ element, data=long_stage)
+result = tidy(manova(fit))
+results_builder$add_manova(current_stage, 'position_xy', fit)
+
+pander(result)
+```
+
+Test ANOVA entre grupos.
+
+Para X (horizontal).
+
+```{r}
+fit_mm = lmer(center_x ~ element + (1|experiment_id), data=long_stage)
+results_builder$add_mixed_model(current_stage, 'position_x', fit_mm)
+```
+
+```{r, results='markup'}
+#summary(fit_mm)
+anova(fit_mm)
+glht(fit_mm, linfct=mcp(element="Tukey")) %>% summary()
+```
+
+Para Y (vertical)
+
+```{r}
+fit_mm = lmer(center_y ~ element + (1|experiment_id), data=long_stage)
+results_builder$add_mixed_model(current_stage, 'position_y', fit_mm)
+```
+
+```{r, results='markup'}
+#summary(fit_mm)
+anova(fit_mm)
+glht(fit_mm, linfct=mcp(element="Tukey")) %>% summary()
+```

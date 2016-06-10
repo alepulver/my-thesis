@@ -1,0 +1,77 @@
+## `r stage_name`
+
+```{r}
+long_stage = experiment_data$recursive(stage_code)
+
+sex_df = experiments %>% select(experiment_id = id, sex = questions_begining_sex)
+levels(sex_df$sex) = c("Mujeres", "Hombres")
+
+long_stage = inner_join(long_stage, sex_df)
+long_stage$dominance_cottle = long_stage$dominance_cottle %>% round(digits = 2)
+long_stage$relatedness_cottle = long_stage$relatedness_cottle %>% round(digits = 2)
+```
+
+### Dominancia
+
+```{r}
+ggplot(long_stage, aes(x = as.factor(dominance_cottle), fill = element)) +
+  geom_bar(position = 'dodge', alpha = 0.7) + facet_grid(~ sex) +
+  labs(x = "Dominancia", y = "Cantidad") +
+  scale_fill_discrete(name = "Figura", labels = experiment_data$schema()$element_translation[[stage_code]])
+```
+
+Ahora un ANOVA a ver si afecta el elemento y el sexo.
+
+```{r}
+fit = lmer(dominance_cottle ~ element*sex + (1|experiment_id), data = long_stage)
+```
+
+```{r, results='markup'}
+anova(fit, type=2)
+rsquared.glmm(fit)
+```
+
+### Relación
+
+```{r, fig.width=8}
+ggplot(long_stage, aes(x = as.factor(relatedness_cottle), fill = element)) +
+  geom_bar(position = 'dodge', alpha = 0.7) + facet_grid(~ sex) +
+  labs(x = "Relación", y = "Cantidad") +
+  scale_fill_discrete(name = "Figura", labels = experiment_data$schema()$element_translation[[stage_code]])
+```
+
+Ahora un ANOVA a ver si afecta el elemento y el sexo.
+
+```{r}
+fit = lmer(relatedness_cottle ~ element*sex + (1|experiment_id), data = long_stage)
+```
+
+```{r, results='markup'}
+anova(fit, type=2)
+rsquared.glmm(fit)
+```
+
+### Por elemento y sexo
+
+```{r}
+a_table = summarize(long_stage %>% group_by(element, sex),
+  dominance_cottle = mean(dominance_cottle, na.rm = T),
+  relatedness_cottle = mean(relatedness_cottle, na.rm = T)
+)
+
+common_plot_opts = function(p) {
+  p + 
+    aes(x = element, fill = sex) +
+    geom_bar(stat = "identity", position = "dodge", alpha = 0.7) +
+    theme(axis.text.x = element_text(angle = 90)) +
+    theme(legend.position="top") + xlab("") +
+    scale_fill_discrete(name = "Sexo", labels = c("Mujeres", "Hombres")) +
+    scale_x_discrete(labels = experiment_data$schema()$element_translation[[stage_code]])
+}
+
+dominance_plot = ggplot(a_table, aes(y = dominance_cottle)) %>%
+  common_plot_opts() + ylab("Dominancia")
+relatedness_plot = ggplot(a_table, aes(y = relatedness_cottle)) %>%
+  common_plot_opts() + ylab("Relación")
+multiplot(dominance_plot, relatedness_plot, cols = 2)
+```

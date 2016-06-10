@@ -1,0 +1,379 @@
+## Plot summary
+
+```{r, fig.width=10, fig.height=8, cache=TRUE}
+#pander(summary(experiments[,questions_begin]))
+df = experiments
+variables = gen_vars('present_past_future', present_past_future)
+
+my.multiplot(df[,variables], my.smartplot)
+```
+
+## Distribución de colores
+
+```{r}
+plot(ca(table(one_stage$element, one_stage$color)))
+my.contingency_plot(select(one_stage, element, color))
+```
+
+## Orden de selección
+
+Se mostraron.
+
+```{r}
+items = experiments$seasons_of_year_show_order
+items = items[!is.na(items)]
+qplot(items) + coord_flip() + xlab('Forma de ordenar los botones')
+```
+
+## Orden en que se muestran y fueron seleccionados
+
+```{r}
+hist(experiments$present_past_future_select_show_order)
+hist(experiments$seasons_of_year_select_show_order)
+hist(experiments$days_of_week_select_show_order)
+hist(experiments$parts_of_day_select_show_order)
+hist(experiments$timeline_select_show_order)
+```
+
+## Variación de los eventos por cada elemento
+
+```{r}
+one_stage = read.csv('../data/output/individual_stages_long/present_past_future.csv')
+one_stage$element = ordered(one_stage$element, levels = c ("past", "present", "future"))
+one_stage_molten = melt(one_stage, id.vars = c('experiment_id', 'element'), measure.vars = c('num_selects', 'num_moves', 'num_resizes', 'num_color_changes'))
+ggplot(one_stage_molten, aes(x = value, fill = element)) + geom_bar() + facet_grid(variable ~ element, scales = "free_y")
+ggplot(one_stage, aes(x = time_spent, fill = element)) + geom_histogram() + facet_grid(. ~ element)
+```
+
+## Tiempo dedicado a cada elemento
+
+```{r}
+ggplot(one_stage, aes(x = time_spent, fill = element)) + geom_density() + facet_grid(. ~ element)
+```
+
+## Tamaño de las figuras
+
+```{r}
+#ggplot(one_stage, aes(x = radius)) + geom_histogram() + facet_grid(element ~ .)
+ggplot(another_stage, aes(x = size_x, fill = element)) + geom_histogram(position = 'dodge')
+ggplot(another_stage, aes(x = size_y, fill = element)) + geom_histogram(position = 'dodge')
+ggplot(another_stage, aes(y = size_x, x = element)) + geom_boxplot()
+ggplot(another_stage, aes(y = size_y, x = element)) + geom_boxplot()
+```
+
+## Rotación vs tamaño
+
+```{r, fig.width=8, fig.height=6}
+one_stage = experiment_data$recursive('parts_of_day')
+
+ggplot(one_stage, aes(x = rotation, y = size)) + geom_hex(bins = 15) + scale_fill_gradientn(colours = c('white', 'red')) + facet_wrap(~ element)
+```
+
+## Sacar participantes que no cambiaron ningún tamaño
+
+```{r}
+if ("default_size" %in% names(wide_stage)) {
+  another_df = wide_stage %>% select(default_size, experiment_id)
+  my_df = inner_join(long_stage, another_df, by = "experiment_id")
+  my_df = my_df %>% filter(default_size.y < 1)
+} else {
+  my_df = long_stage
+}
+```
+
+## Tamaños por default
+
+```{r}
+default_count = dim(filter(wide_stage, default_size == 1))[1]
+```
+
+Hay `r default_count` sujetos (`r default_count / dim(wide_stage)[1] * 100`%) que no cambiaron los tamaños y fueron excluídos. Quedan `r dim(wide_stage)[1] - default_count` sujetos.
+
+```{r}
+another_df = wide_stage %>% select(default_size, experiment_id)
+my_df = inner_join(long_stage, another_df, by = "experiment_id")
+my_df = my_df %>% filter(default_size.y < 1)
+
+my_table = my_df %>% group_by(element) %>% summarize(
+  counts = sum(default_size.x == "yes"),
+  percentage = counts / n() * 100
+)
+
+pander(my_table)
+```
+
+## Otros
+
+```{r, results='hide'}
+with(long_stage, granovagg.1w(radius, element))
+```
+
+```{r}
+ggparallel(list('element', 'color'), data = long_stage, method = "parset", text.angle = 0, alpha = 0.4)
+```
+
+```{r, fig.width=8, fig.height=8}
+fit <- lm(size_y ~ element, data=one_stage)
+
+#par(mfrow=c(2,2))
+layout(matrix(c(1,2,3,4),2,2))
+plot(fit)
+#dev.off()
+```
+
+``` {r}
+relatedness_cottle_df = dcast(my_df,
+  formula = experiment_id + sex ~ stage, value.var = "relatedness_cottle")
+my.multiplot(relatedness_cottle_df[,-1], function(df, var) {
+  ggplot(df, aes_string(x=var, fill="sex")) +
+    geom_histogram(position = "dodge") + guides(fill=FALSE)
+}, varExcludeSet = c("sex"))
+```
+
+```{r}
+# hcrcde, kde2d, etc
+#ggplot(ci2d(tmp$center_x, tmp$center_y, show = "none")$contours[["0.5"]]) + geom_path(aes(x = x, y = y))
+#HPDregionplot(mcmc(data.matrix(filter(long_stage, element == "spring")[,c("center_x", "center_y")])), prob=0.6)
+# http://stackoverflow.com/questions/19329318/how-to-correctly-interpret-ggplots-stat-density2d
+
+#plot(lme(center_x ~ element, random = ~ element|experiment_id, data = long_stage))
+#plot(lme(center_x ~ element, random = ~ element|experiment_id, data = long_stage), resid(., type = "p") ~ fitted(.) | element)
+```
+
+```{r}
+common_plot_opts = function(p) {
+  p +
+    aes(color = stage, shape = test) +
+    geom_point(size = 4.5) + scale_x_log10() + scale_y_log10()
+    xlim(with(results_df, c(min(p_value) - .05, max(p_value) + .05)))
+}
+
+ggplot(results_df, aes(x = p_value, y = r_squared)) %>% common_plot_opts()
+ggplot(results_df, aes(x = p_value, y = mm_r_squared)) %>% common_plot_opts()
+```
+
+```{r}
+paircomp(obj=long_stage$dominance_cottle, grouping = interaction(long_stage$element,  long_stage$sex), compress=F)
+
+
+# XXX: usar summarySE y agregar barras de error
+my_table = summarySE(long_stage, "dominance_cottle", c("element", "sex"))
+my_table2 = summarySEwithin(long_stage, "dominance_cottle", "sex", "element", "experiment_id")
+#pander(my_table2)
+```
+
+## Quantile regression
+
+Líneas de regresión por cuantiles.
+
+```{r}
+q10 <- seq(0.05, 0.95, by=0.05)
+ggplot(my_data, aes(x = MEQscore, y = morning_night)) +
+  stat_quantile(aes(colour = ..quantile..), quantiles = q10)
+```
+
+No podemos detectar una diferencia, pero algunos cuantiles muestran esa tendencia.
+
+### Dirección de flujo del tiempo
+
+```{r}
+sorted_df = arrange(long_stage, experiment_id, element)
+ggplot(sorted_df[300:420,], aes(x = center_x, y = center_y, group = experiment_id, color = experiment_id)) + geom_path(show_guide = F, arrow = arrow())
+```
+
+## Clasificación
+
+### Preferencias diurnas
+
+```{r, results='markup'}
+my_data = inner_join(wide_stage, other_data[complete.cases(other_data),])
+trainIndex = createDataPartition(my_data$day_preferences, p = 0.8, list = FALSE, times = 1)
+fitRF = train(my_data[trainIndex,vars_for_clust], my_data$day_preferences[trainIndex], method = "gbm")
+resultsPred = predict(fitRF, my_data[-trainIndex,vars_for_clust])
+resultsMat = confusionMatrix(resultsPred, my_data$day_preferences[-trainIndex])
+resultsMat
+```
+
+### Cronotipo
+
+```{r, results='markup'}
+cronotypes = read.csv('../data/cronotiposTEDx.csv', na.strings = 'NaN')
+cronotypes$ID = as.factor(cronotypes$ID)
+my_data = wide_stage %>%
+  inner_join(select(experiments, experiment_id = id, participant = introduction_participant)) %>%
+  inner_join(cronotypes %>% select(participant = ID, MEQscore, MSFsc))
+my_data = my_data[complete.cases(my_data),]
+
+trainIndex = createDataPartition(my_data$MEQscore, p = 0.8, list = FALSE, times = 1)
+fitRF = train(my_data[trainIndex,vars_for_clust], my_data$MEQscore[trainIndex], method = "gbm")
+resultsPred = predict(fitRF, my_data[-trainIndex,vars_for_clust])
+resultsStats = postResample(resultsPred, my_data$MEQscore[-trainIndex])
+resultsStats
+```
+
+```{r, results='markup'}
+trainIndex = createDataPartition(my_data$MSFsc, p = 0.8, list = FALSE, times = 1)
+fitRF = train(my_data[trainIndex,vars_for_clust], my_data$MSFsc[trainIndex], method = "gbm")
+resultsPred = predict(fitRF, my_data[-trainIndex,vars_for_clust])
+resultsStats = postResample(resultsPred, my_data$MSFsc[-trainIndex])
+resultsStats
+```
+
+### De variables
+
+```{r, fig.width=6, fig.height=6}
+fitVC = varclus(data.matrix(wide_stage[,vars_for_clust]), trans = "none")
+plot(fitVC); rect.hclust(fitVC$hclust, k=3, border="red")
+```
+
+# Plots
+
+```{r}
+ggplot(days_of_week_long, aes(x = element, fill = color)) + geom_bar() +
+  scale_fill_manual(values = levels(days_of_week_long$color), guide = "none") +
+  scale_x_discrete(labels=c("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")) +
+  xlab("") + ylab("Cantidad") + coord_flip()
+
+ggplot(circles_long %>% filter(element == "future"), aes(x = factor(""), fill = color)) + geom_bar() + scale_fill_manual(values = levels(circles_long$color), guide = "none") + xlab("") + ylab("Futuro") + coord_polar(theta = "y") + theme(panel.grid=element_blank()) + theme(axis.text=element_blank()) + theme(axis.ticks=element_blank())
+
+ggplot(long_stage, aes(x = center_x, y = center_y, color = element)) + geom_density2d() + scale_y_reverse() + coord_equal() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  xlab("") + ylab("") + scale_color_discrete(name="", labels=c("Pasado", "Presente", "Futuro"))
+```
+
+# ...
+
+Veamos qué ocurre por grupos de edad.
+
+```{r}
+my_data = mutate(my_data, age_group = cut(questions_begining_age, seq(from = 15, to = 100, by = 10)))
+pander(my_data %>% group_by(age_group) %>% summarize(mean = mean(size_age_metric, na.rm = T), sd = sd(size_age_metric, na.rm = T)))
+```
+
+# Distorsión del tiempo
+
+Ahora con distintos valores fijos para la vejez.
+
+```{r, fig.width=10, fig.height=8}
+my_plots = lapply(c(60, 70, 80, 90), function(age) {
+  ggplot(my.get_time_ratios(experiments, age) %>% my.get_derivative_time(), aes(y = value, x = variable)) +
+    geom_boxplot() + ggtitle(sprintf("Vejez a los %s", age))
+})
+do.call(grid.arrange, c(my_plots, ncol=2))
+```
+
+Veamos de a uno con la tercera edad estimada del pasado vivido.
+
+```{r, fig.width=10, fig.height=8}
+my_data = my.get_time_ratios3(experiments)
+p1 = ggplot(my_data, aes(y = subjective_own_past, x = real_own_past, color = questions_begining_sex)) +
+  geom_point(alpha=0.6) + geom_smooth(method=lm) + guides(color=FALSE)
+p2 = ggplot(my_data, aes(y = subjective_own_future, x = real_own_future, color = questions_begining_sex)) +
+  geom_point(alpha = 0.6) + geom_smooth(method=lm) + guides(color=FALSE)
+p3 = ggplot(my_data, aes(y = subjective_other_past, x = real_other_past, color = questions_begining_sex)) +
+  geom_point(alpha = 0.6) + geom_smooth(method=lm) + guides(color=FALSE)
+p4 = ggplot(my_data, aes(y = subjective_other_future, x = real_other_future, color = questions_begining_sex)) +
+  geom_point(alpha = 0.6) + geom_smooth(method=lm) + guides(color=FALSE)
+grid.arrange(p1, p2, p3, p4, ncol=2)
+```
+
+Por último, un plot de líneas de todos los sujetos centrados en el hoy.
+
+```{r, fig.width=10, fig.height=10}
+my_data = ddply(my.get_time_ratios3(experiments), .(id), function(row) {
+  with(row, data.frame(
+    x = c(- real_other_past - real_own_past, -real_own_past, real_own_future, real_own_future + real_other_future),
+    y = c(- subjective_other_past - subjective_own_past, -subjective_own_past, subjective_own_future, subjective_own_future + subjective_other_future),
+    kind = c("other_past", "own_past", "own_future", "other_future")
+  ))
+}) %>% mutate(y_dx = my.relative_difference(y, x))
+
+p1 = ggplot(my_data, aes(x = x, y = y, group = id)) +
+  geom_path(show_guide = F, alpha = 0.08) + coord_equal()
+p2 = ggplot(my_data, aes(x = x, y = y, group = id, color = kind)) + coord_equal() +
+  geom_path(alpha = 0.05, show_guide = F) + geom_point(alpha = 0.2, show_guide = F)
+
+my_data2 = mutate(my_data, y = abs(y))
+p3 = ggplot(my_data2, aes(x = x, y = y, group = id)) +
+  geom_path(show_guide = F, alpha = 0.08) + coord_equal()
+p4 = ggplot(my_data2, aes(x = x, y = y, group = id, color = kind)) + coord_equal() +
+  geom_path(alpha = 0.05, show_guide = F) + geom_point(alpha = 0.3, show_guide = F)
+
+grid.arrange(p1, p2, p3, p4, ncol = 2)
+```
+
+Gráfico de densidades y medias.
+
+```{r}
+plot(density.circular(long_stage$rotation[long_stage$element == 'morning'], bw = 200),
+     shrink = 1.15, offset = 1, col = 2, main = "", xlab = "", ylab = "")
+par(new=T)
+plot(density.circular(long_stage$rotation[long_stage$element == 'afternoon'], bw = 200),
+     shrink = 1.15, offset = 1, col = 3, main = "", xlab = "", ylab = "", axes = F, ticks = F, zero.line = F)
+par(new=T)
+plot(density.circular(long_stage$rotation[long_stage$element == 'night'], bw = 200),
+     shrink = 1.15, offset = 1, col = 4, main = "", xlab = "", ylab = "", axes = F, ticks = F, zero.line = F)
+
+arrows.circular(circular(fit_df$Mu, units = "degrees"), col = c(2,3,4))
+legend("topleft", c('Mañana', 'Tarde', 'Noche'), lty=c(1,1,1), lwd=c(2.5, 2.5, 2.5), col=c(2,3,4))
+```
+
+Gráfico de desviación en ANOVA para GLM
+
+```{r}
+results = data.frame(anova(fit, test="Chisq"))
+null_deviance = results$Resid..Dev[1]
+results = results[-1,]
+results[["term"]] = as.factor(rownames(results))
+results[["term"]] = factor(results[["term"]], levels = results[["term"]][order(results$Deviance, decreasing=F)])
+results = mutate(results, ratio = Deviance / null_deviance)
+ggplot(results, aes(y = (1+Deviance), x = term)) + geom_bar(stat="identity") + coord_flip() + scale_y_log10()
+```
+
+Si bien parece así, no resulta igual si comparamos cuántos eventos de cada uno hubo contra si hubo o no.
+
+```{r, fig.width=6, fig.height=6}
+oldpar = par(mfcol=c(2,2))
+plotmeans(num_color_changes > 0 ~ sex, my_data)
+plotmeans(num_selects > 0 ~ sex, my_data)
+plotmeans(num_color_changes ~ sex, my_data)
+plotmeans(num_selects ~ sex, my_data)
+#par(oldpar)
+```
+
+```{r, fig.width=6, fig.height=6}
+#oldpar = par(mfcol=c(2,2))
+plotmeans(num_moves > 0 ~ sex, my_data)
+plotmeans(num_resizes > 0 ~ sex, my_data)
+plotmeans(num_moves ~ sex, my_data)
+plotmeans(num_resizes ~ sex, my_data)
+par(oldpar)
+```
+
+Comparación de clusterings:
+
+```{r}
+explore_clusterings_for = function(stage_index) {
+  all_plots = lapply(clusterings, function(r) {
+    current_exp = Filter(function(x) x$stage == r$stage, results$experiment_ids_assignment)[[1]]
+    common_rows = current_exp$result %in% results$experiment_ids_assignment[[stage_index]]$result
+    inv_common_rows = results$experiment_ids_assignment[[stage_index]]$result %in% current_exp$result
+    
+    visual_df = visualization_for_stage(r$stage)[common_rows,]
+    clustering = as.factor(clusterings[[stage_index]]$result$clustering)[inv_common_rows]
+    
+    # XXX: ggplot only looks for variables in the global environment or in data, so we do this
+    .e = environment()
+    ggplot(visual_df, aes(x=D1, y=D2, color = clustering), environment = .e) +
+      geom_point(alpha = 0.9) + blank_theme + ggtitle(r$stage)
+  })
+  
+  do.call(grid.arrange, c(all_plots, ncol=3))
+}
+
+```
+
+```{r, fig.width=10, fig.height=6}
+#explore_clusterings_for(1)
+#explore_clusterings_for(6)
+```

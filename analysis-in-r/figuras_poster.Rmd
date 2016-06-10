@@ -1,0 +1,243 @@
+---
+title: "Figuras póster"
+author: "Alejandro Pulver"
+date: "05/24/2015"
+output:
+  pdf_document:
+    keep_tex: yes
+  html_document: default
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(warning=FALSE, message=FALSE, echo=FALSE, results='asis')
+opts_knit$set(global.par=TRUE)
+
+library(pander)
+# avoid to split the tables
+panderOptions("table.split.table", Inf)
+```
+
+```{r}
+library(gridExtra)
+library(plyr)
+library(dplyr)
+library(magrittr)
+library(gplots)
+library(broom)
+source("scripts/utils.R")
+source("scripts/data_loading.R")
+
+experiment_data = ExperimentData$new("../data/output/")
+experiments = experiment_data$flat_all()
+all_stages_with_color = c('present_past_future', 'seasons_of_year', 'days_of_week', 'parts_of_day')
+all_stages = c(all_stages_with_color, 'timeline')
+
+shared_plot_color = scale_fill_manual(name = "Experimento", values = c("#00aeff", "#90a800"))
+
+theme_set(theme_grey(base_size = 16))
+par(cex.lab = 1.3, font.lab = 3, cex.axis = 1.15, font.axis = 2, cex.main = 1.4)
+```
+
+## Población
+
+```{r}
+sex_counts = table(experiments$questions_begining_sex)
+age_data = experiments$questions_begining_age
+
+ggplot(experiments, aes(x = questions_begining_age)) +
+  geom_histogram(binwidth=1, color="grey40", fill="#00aeff") + xlim(18,80) +
+  xlab("Edad (años)") + ylab("Número de participantes")
+```
+
+Tenemos `r sex_counts[["female"]]` mujeres y `r sex_counts[["male"]]` hombres.
+
+La edad media es `r mean(age_data)` y la desviación `r sd(age_data)`.
+
+La cantidad de etapas completas no es la misma que la de sujetos.
+
+```{r, fig.width=6, fig.height=3}
+available_data = ldply(c(all_stages, 'questions_ending'), function(stage) {
+  wide_stage = experiment_data$flat(stage)
+  data.frame(stage = stage, count = dim(wide_stage)[1])
+})
+
+levels(available_data[,1]) = c("Círculos", "Estaciones", "Semana", "Partes del día", "Línea de tiempo", "Preguntas finales")
+available_data[,1] = factor(available_data[,1], levels = rev(levels(available_data[,1])))
+
+ggplot(available_data, aes(x=stage, y=count)) +
+  geom_bar(stat="identity", fill="#00aeff", alpha=0.6) +
+  coord_flip() + theme_grey(base_size=15) +
+  ylab("Cantidad de sujetos") + xlab("Tarea")
+```
+
+# Métodos
+
+```{r}
+available_data = ldply(all_stages, function(stage) {
+  wide_stage = experiment_data$flat(stage)
+  data.frame(stage = stage, count = dim(wide_stage)[1])
+})
+
+pander(mutate(available_data,
+  percent = count / sum(count)
+))
+```
+
+screenshot de todas las etapas
+
+# Resultados
+
+## Cottle
+
+```{r}
+mixed_df = experiment_data$mixed_cottle()$dominance
+levels(mixed_df$dominance) = c("Ausencia", "Secundaria", "Total")
+levels(mixed_df$element) = c("Pasado", "Presente", "Futuro")
+
+props_df = as.data.frame(
+  prop.table(xtabs(Freq ~ dominance + element + version, mixed_df), margin = 3))
+levels(props_df$version) = c("Original (de Cottle)", "Reproducción (actual)")
+
+x_axis_theme = element_text(angle = 90, face="bold")
+ggplot(props_df,
+  aes(x = dominance, y = Freq, fill = version)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_grid( ~ element) + theme(axis.text.x = x_axis_theme, legend.position = "top") +
+  shared_plot_color + xlab("Dominancia") + ylab("Proporción")
+```
+
+```{r, fig.width=6}
+mixed_df = experiment_data$mixed_cottle()$relatedness
+levels(mixed_df$relatedness) = c("Atomista", "Contiguo", "Integrado")
+
+props_df = as.data.frame(
+  prop.table(xtabs(Freq ~ relatedness + version, mixed_df), margin = 2))
+levels(props_df$version) = c("Original (de Cottle)", "Reproducción (actual)")
+
+ggplot(props_df,
+  aes(x = relatedness, y = Freq, fill = version)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme(axis.text.x = element_text(angle = 90, face="bold"), legend.position = "top") +
+  shared_plot_color + xlab("Relación") + ylab("Proporción")
+```
+
+## Geometría
+
+Centro de los círculos.
+
+```{r, fig.width=8}
+long_stage = experiment_data$recursive('present_past_future')
+levels(long_stage$element) = c("Pasado", "Presente", "Futuro")
+
+legend_theme = theme(legend.title = element_text(face="plain")) +
+  theme(legend.text = element_text(face="bold"))
+
+ggplot(long_stage, aes(x = center_x, y = center_y, color = element)) +
+  geom_density2d() + scale_y_reverse() + coord_equal() +
+  xlab("Posición horizontal (X)") + ylab("Posición vertical (Y)") +
+  ggtitle("Ubicación del centro") + scale_color_discrete(name = "Figura") +
+  legend_theme
+```
+
+Tamaño de las estaciones del año.
+
+```{r}
+long_stage = experiment_data$recursive('seasons_of_year')
+long_stage %<>% mutate(area_sqrt = sqrt(size_x * size_y))
+levels(long_stage$element) = c("Verano", "Otoño", "Invierno", "Primavera")
+
+plotmeans(area_sqrt ~ element, long_stage, n.label = F, xlab="Estación", ylab="Raíz cuadrada del área")
+```
+
+Tamaño de los días de la semana.
+
+```{r, fig.width=9}
+long_stage = experiment_data$recursive('days_of_week')
+levels(long_stage$element) = c("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
+
+plotmeans(size_y ~ element, long_stage, n.label = F, xlab="Día de la semana", ylab="Altura de la figura")
+```
+
+Tamaño de la mañana y noche con respecto a las preferencias diurnas.
+
+```{r, fig.width=8}
+my_data = mutate(experiments, morning_night =
+  my.relative_difference_exp(parts_of_day_size_morning, parts_of_day_size_night))
+levels(my_data$questions_ending_cronotype) = c("Muy matutina", "Matutina", "Neutral", "Nocturna", "Muy nocturna")
+
+plotmeans(morning_night ~ questions_ending_cronotype, my_data,
+          xlab = "Preferencias diarias subjetivas", ylab = "Mañana vs Noche")
+```
+
+Corrimiento de el de vejez en la línea.
+
+[usar gráfico de tedx]
+
+Distorsión del tiempo: hombres subestiman menos el pasado ajeno, y mujeres más (al revés el propio).
+
+Removimos el 5% de los datos de cada lado, para ver los efectos principales.
+
+```{r}
+my_data = my.get_time_ratios2(experiments, diff = my.relative_difference_exp)
+my_data_diff = my.get_derivative_time2(my_data)
+levels(my_data_diff$variable) = c("Pasado ajeno", "Pasado propio", "Futuro propio", "Futuro ajeno")
+levels(my_data_diff$sex) = c("Mujeres", "Hombres")
+
+ggplot(my_data_diff, aes(y = value, x = variable)) +
+  geom_boxplot(outlier.size = NA) + xlab("") + ylab("Años reales vs subjetivos") +
+  theme(axis.text.x = element_text(face="bold"))
+
+ggplot(my_data_diff, aes(y = value, x = variable, color = sex)) +
+  geom_boxplot(outlier.size = NA) + xlab("") + ylab("Años reales vs subjetivos") +
+  theme(axis.text.x = element_text(face="bold"), legend.position = "top") +
+  scale_color_discrete(name = "Sexo")
+```
+
+```{r}
+fit = lm(value ~ variable, my_data_diff)
+
+pander(glance(fit))
+pander(tidy(anova(fit)))
+pander(tidy(TukeyHSD(aov(fit))))
+```
+
+```{r, fig.width=8}
+oldpar = par(mfcol=c(1,2))
+
+other_past_df = filter(my_data_diff, variable == "Pasado ajeno")
+plotmeans(value ~ sex, other_past_df, n.label = F,
+          xlab = "", ylab = "Años reales vs subjetivos", main = "Pasado ajeno")
+
+own_past_df = filter(my_data_diff, variable == "Pasado propio")
+plotmeans(value ~ sex, own_past_df, n.label = F,
+          xlab = "", ylab = "Años reales vs subjetivos", main = "Pasado propio")
+
+par(oldpar)
+```
+
+Pasado ajeno.
+
+```{r}
+fit = lm(value ~ sex, other_past_df)
+
+pander(glance(fit))
+pander(tidy(anova(fit)))
+```
+
+Pasado propio.
+
+```{r}
+fit = lm(value ~ sex, own_past_df)
+
+pander(glance(fit))
+pander(tidy(anova(fit)))
+```
+
+## Colores
+
+```{r, fig.width=8, fig.height=6}
+my_plots = lapply(all_stages_with_color, function(x) { my.color_plot(experiment_data, x) })
+
+do.call(grid.arrange, c(my_plots, list(ncol=2)))
+```

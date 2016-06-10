@@ -1,0 +1,223 @@
+---
+title: "Machine Learning Análisis"
+author: "Alejandro Pulver"
+date: "05/19/2015"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results='asis')
+
+library(pander)
+panderOptions("table.split.table" , Inf) # avoid to split the tables
+```
+
+```{r import}
+library(ggplot2)
+library(gridExtra)
+library(mclust)
+library(clValid)
+library(Boruta)
+library(NbClust)
+library(fpc)
+library(gplots)
+library(e1071)
+library(dendextend)
+source("scripts/data_loading.R")
+source("scripts/utils.R")
+source("scripts/machine_learning_utils.R")
+
+set.seed(123)
+theme_set(theme_grey(base_size = 12))
+
+blank_theme = theme(
+  axis.title = element_blank(),
+  axis.text = element_blank(),
+  axis.ticks = element_blank(),
+  axis.line = element_blank(),
+  legend.position = "none",
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  #panel.background = element_blank()
+  panel.background = element_rect(colour = "gray80")
+)
+```
+
+```{r}
+experiment_data = ExperimentData$new("../data/output/")
+experiments = experiment_data$flat_all()
+
+load("../../results.Rda")
+```
+
+# Aplicación de métodos
+
+## Visualización del espacio
+
+```{r, fig.width=10, fig.height=6}
+output_visualization = extract_input_analysis(results$input_analysis)
+stage_translation = experiment_data$schema()$stage_translation
+
+output = extract_input_analysis(results$input_analysis)
+output_selection = output %>%
+  filter(origin == "dist", method == "smacof", categories == "standard+color+geometric")
+levels(output_selection$stage) = as.character(stage_translation)
+
+ggplot(output_selection, aes(x=D1, y=D2)) +
+  facet_wrap(~ stage, scales = "free", ncol = 3) +
+  geom_point(alpha = 0.3) +
+  blank_theme
+```
+
+## Clasificación
+
+```{r}
+output = extract_classreg(results$classreg_analysis)
+
+ggplot(filter(output$classification), aes(y = kappa, x = stage, group=1)) +
+  geom_errorbar(aes(ymin=kappa-kappa_sd, ymax=kappa+kappa_sd), width=.1, alpha=0.6) +
+#ggplot(filter(output$classification), aes(y = accuracy, x = stage, group=1)) +
+#  geom_errorbar(aes(ymin=accuracy-accuracy_sd, ymax=accuracy+accuracy_sd), width=.1, alpha=0.6) +
+  geom_line() + geom_point(color="red") +
+  facet_grid(var_name ~ categories, scales = "free_y") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+Veamos la importancia de los features para el sexo.
+
+```{r}
+elements = extract_classreg_features(results$classreg_features, "sex")
+
+blah = ldply(elements, function(e) {
+  categories = paste(substr(e$category_list, 1, 1), collapse="+")
+  cbind(categories = categories, feature_results(e$result))
+})
+blah %>% pander()
+```
+
+Veamos la importancia de los features para las preferencias.
+
+```{r}
+elements = extract_classreg_features(results$classreg_features, "daynight_preferences")
+
+blah = ldply(elements, function(e) {
+  categories = paste(substr(e$category_list, 1, 1), collapse="+")
+  cbind(categories = categories, feature_results(e$result))
+})
+blah %>% pander()
+```
+
+## Regresión
+
+```{r, fig.height=6}
+ggplot(filter(output$regression), aes(y = rmse, x = stage, group=1)) +
+  geom_errorbar(aes(ymin=rmse-rmse_sd, ymax=rmse+rmse_sd), width=.1, alpha=0.6) +
+  geom_line() + geom_point(color="red") +
+  facet_grid(var_name ~ categories, scales = "free_y") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+Veamos la importancia de los features para la edad.
+
+```{r}
+elements = extract_classreg_features(results$classreg_features, "age")
+
+blah = ldply(elements, function(e) {
+  categories = paste(substr(e$category_list, 1, 1), collapse="+")
+  cbind(categories = categories, feature_results(e$result))
+})
+blah %>% pander()
+```
+
+**Conclusión**: vemos que lo único que aporta predicción a la edad es la línea de tiempo. Si bien hay una pequeña mejora al agregar eventos y tiempos, se debe a que las personas de mayor edad tardan un poco más en realizar el experimento en general.
+
+```{r, fig.width=6, fig.height=6}
+all_plots = lapply(c("year_1900", "the_beatles", "wwii", "my_birth"), function(var) {
+  ggplot(experiments, aes_string(x = "questions_begining_age", y = paste("timeline_position_", var, sep=""))) +
+    geom_jitter(alpha = 0.25) + geom_smooth(method=lm) + xlab("Edad") + ylab(var)
+})
+do.call(grid.arrange, c(all_plots, ncol=2))
+```
+
+## Clustering
+
+```{r}
+clusterings = Filter(function(x) {
+  paste(x$category_list, collapse="+") == "standard+color+geometric"
+}, results$clustering_analysis)
+
+all_plots = lapply(clusterings, function(r) {
+  visual_df = visualization_for_stage(r$stage)
+  tmp_df = data.frame(experiment_id = r$result$experiment_id, clustering = as.factor(r$result$clustering))
+  visual_df = visual_df %>% inner_join(tmp_df)
+
+  # XXX: ggplot only looks for variables in the global environment or in data, so we do this
+  .e = environment()
+  ggplot(visual_df, aes(x=D1, y=D2, color = clustering), environment = .e) +
+    geom_point(alpha = 0.5) + blank_theme + ggtitle(stage_translation[[r$stage]])
+})
+```
+
+```{r, fig.width=10, fig.height=6}
+do.call(grid.arrange, c(all_plots, ncol=3))
+```
+
+```{r}
+oldpar = par(mfrow=c(2,3))
+
+for (e in results$clustering_analysis) {
+  plot(e$result$stability, main = stage_translation[[e$stage]])
+}
+
+par(oldpar)
+```
+
+Los clusters sólo se podrían parecer entre las 3 primeras etapas, veamos.
+
+```{r}
+dist_matrix = custom.dist(clusterings, function(a,b) {
+  shared_ids = intersect(a$result$experiment_id, b$result$experiment_id)
+  get_data = function(x) { x$result$clustering[x$result$experiment_id %in% shared_ids] }
+  
+  metrics = classAgreement(table(get_data(a), get_data(b)))
+  1 - metrics$kappa
+})
+cl = hclust(dist_matrix, method = "ward.D2")
+#plot(hc, ylab = 'Distancia (normalizada de 0 a 1)',
+#     ann = F, labels = experiment_data$schema()$stage_translation)
+
+dg = as.dendrogram(cl)
+#labels(dg) = as.character(experiment_data$schema()$stage_translation)[as.numeric(labels(dg))]
+labels(dg) = c('Círculos', 'Estaciones', 'Semana', 'Día', 'Línea', 'TODAS')[as.numeric(labels(dg))]
+plot(dg, horiz = T, nodePar = list(lab.cex = 0.7, pch = NA), xlab = 'Distancia normalizada (de 0 a 1)')
+
+fitMDS = cmdscale(dist_matrix, k=2)
+plot(fitMDS, asp = 1)
+```
+
+Tampoco hay patrones visibles con respecto a edad y sexo.
+
+Veamos los features más importantes para esto:
+
+```{r, fig.width=10, fig.height=12}
+oldpar = par(mfrow=c(3,2))
+
+for (e in results$clustering_features) {
+  plot(e$result, las=2, xlab="", cex.axis=.7, main = stage_translation[[e$stage]])
+}
+
+par(oldpar)
+```
+
+```{r}
+elements = results$clustering_features
+
+blah = ldply(elements, function(e) { cbind(stage = e$stage, feature_results(e$result)) })
+blah %>% pander()
+```
