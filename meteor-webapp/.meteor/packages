@@ -14,3 +14,5 @@ mizzao:bootstrap-3
 iron:router
 
 mrt:reactive-store
+standard-minifier-css
+standard-minifier-js
