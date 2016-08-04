@@ -25,7 +25,7 @@ library(GGally)
 source("scripts/utils.R")
 source("scripts/data_loading.R")
 
-experiment_data = ExperimentData$new("../data/output/")
+experiment_data = ExperimentData$new("data/output/")
 
 add_plot_options = function(x) {
   x +

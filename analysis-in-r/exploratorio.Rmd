@@ -24,7 +24,7 @@ library(vcd)
 source("scripts/utils.R")
 source("scripts/data_loading.R")
 
-experiment_data = ExperimentData$new("../data/output/")
+experiment_data = ExperimentData$new("data/output/")
 experiments = experiment_data$flat_all()
 complete_experiments = experiments[complete.cases(experiments),]
 incomplete_experiments  = experiments[!complete.cases(experiments),]
@@ -137,7 +137,7 @@ ggplot(my_data, aes(x = center_x, y = center_y, z = relative_radius)) + stat_sum
 ### Distribución de colores
 
 ```{r}
-ggplot(one_stage, aes(x = factor(""), fill=color)) + geom_histogram(position="dodge") + facet_wrap(~ element) + scale_fill_manual(values = levels(one_stage$color), guide = "none") + xlab("Colores")
+ggplot(one_stage, aes(x = factor(""), fill=color)) + geom_bar(position="dodge") + facet_wrap(~ element) + scale_fill_manual(values = levels(one_stage$color), guide = "none") + xlab("Colores")
 ```
 
 Ahora veamos las frecuencias combinadas.
@@ -303,7 +303,7 @@ ggplot(my_data, aes(x = size_ratio)) + geom_histogram() + facet_wrap(~ element)
 
 ```{r, fig.width=5, fig.height=5}
 ggplot(long_stage, aes(x = factor(""), fill=color)) +
-  geom_histogram(position="dodge") +
+  geom_bar(position="dodge") +
   facet_wrap(~ element) +
   scale_fill_manual(values = levels(long_stage$color), guide = "none") +
   xlab("Colores")
@@ -370,7 +370,7 @@ ggplot(another_stage, aes(y = size_y, x = element)) + geom_violin()
 ### Distribución de colores
 
 ```{r, fig.width=7, fig.height=7}
-ggplot(one_stage, aes(x = factor(""), fill=color)) + geom_histogram(position="dodge") + facet_wrap(~ element) + scale_fill_manual(values = levels(one_stage$color), guide = "none") + xlab("Colores")
+ggplot(one_stage, aes(x = factor(""), fill=color)) + geom_bar(position="dodge") + facet_wrap(~ element) + scale_fill_manual(values = levels(one_stage$color), guide = "none") + xlab("Colores")
 ```
 
 Ahora veamos las frecuencias combinadas.
@@ -476,7 +476,7 @@ ggplot(one_stage, aes(y = size, x = element)) + geom_violin()
 ### Distribución de colores
 
 ```{r, fig.width=7, fig.height=5}
-ggplot(one_stage, aes(x = factor(""), fill=color)) + geom_histogram(position="dodge") + facet_wrap(~ element) + scale_fill_manual(values = levels(one_stage$color), guide = "none") + xlab("Colores")
+ggplot(one_stage, aes(x = factor(""), fill=color)) + geom_bar(position="dodge") + facet_wrap(~ element) + scale_fill_manual(values = levels(one_stage$color), guide = "none") + xlab("Colores")
 ```
 
 Ahora veamos las frecuencias combinadas.
@@ -586,7 +586,7 @@ Y las preguntas de qué tan forzada le pareció cada elección de atributos.
 ```{r}
 one_stage = experiment_data$flat('questions_ending')
 my_data = melt(one_stage, id.vars = 'experiment_id', measure.vars = c("forced_size", 'forced_color', 'forced_position'))
-ggplot(my_data, aes(x = as.factor(value), fill = variable)) + geom_histogram(position = 'dodge', width = .8) + xlab('Qué tan forzado le pareció')
+ggplot(my_data, aes(x = as.factor(value), fill = variable)) + geom_bar(position = 'dodge', width = .8) + xlab('Qué tan forzado le pareció')
 ```
 
 # Comparación entre etapas

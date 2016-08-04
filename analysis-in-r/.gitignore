@@ -4,3 +4,5 @@
 *.pdf
 .Rproj.user
 .Rhistory
+packrat/lib*/
+packrat/src/

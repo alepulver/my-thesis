@@ -43,7 +43,7 @@ source("scripts/results_builder.R")
 
 par(font.lab = 3, cex.lab = 1.1)
 
-experiment_data = ExperimentData$new("../data/output/")
+experiment_data = ExperimentData$new("data/output/")
 experiments = experiment_data$flat_all()
 results_builder = ResultsBuilder$new()
 ```

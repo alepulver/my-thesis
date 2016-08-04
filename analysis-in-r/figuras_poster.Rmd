@@ -28,7 +28,7 @@ library(broom)
 source("scripts/utils.R")
 source("scripts/data_loading.R")
 
-experiment_data = ExperimentData$new("../data/output/")
+experiment_data = ExperimentData$new("data/output/")
 experiments = experiment_data$flat_all()
 all_stages_with_color = c('present_past_future', 'seasons_of_year', 'days_of_week', 'parts_of_day')
 all_stages = c(all_stages_with_color, 'timeline')

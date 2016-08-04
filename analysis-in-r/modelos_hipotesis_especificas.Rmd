@@ -38,7 +38,7 @@ source("scripts/rsquaredglmm.R")
 
 par(font.lab = 3, cex.lab = 1.1)
 
-experiment_data = ExperimentData$new("../data/output/")
+experiment_data = ExperimentData$new("data/output/")
 experiments = experiment_data$flat_all()
 ```
 
@@ -174,7 +174,7 @@ my_data = inner_join(long_stage, my_selection) %>%
 levels(my_data$element) = experiment_data$schema()$element_translation[[current_stage]]
 
 ggplot(my_data, aes(x = dominance_cottle)) +
-  geom_histogram() + facet_grid(~ element) +
+  geom_bar() + facet_grid(~ element) +
   labs(x = "Dominancia", y = "Cantidad")
 
 #ggally_ratio(select(my_data, element, dominance_cottle))
@@ -264,7 +264,7 @@ my_data = experiments[!is.na(experiments$days_of_week_order_x),]
 levels(my_data$days_of_week_order_x) = c("Lunes a Domingo", "Otro", "Domingo a Sábado")
 
 ggplot(my_data, aes(x = days_of_week_order_x)) +
-  geom_histogram(color="grey40", fill="#00aeff", alpha = 0.7) +
+  geom_bar(color="grey40", fill="#00aeff", alpha = 0.7) +
   labs(x = "Orden", y = "Cantidad") + coord_flip()
 ```
 

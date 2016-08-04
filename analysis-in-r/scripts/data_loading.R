@@ -113,20 +113,20 @@ ExperimentData = setRefClass("ExperimentData",
     original_cottle = function() {
       dominance_levels = c("absence", "secondary", "dominance")
       
-      dominance = read.csv('../data/cottle/dominance_scores.csv')
+      dominance = read.csv(paste(path, "../cottle/dominance_scores.csv", sep = "/"))
       dominance = melt(dominance)
       names(dominance)[3] = "element"
       names(dominance)[4] = "Freq"
       dominance$dominance = factor(dominance$dominance,
         levels = dominance_levels)
       
-      relatedness = read.csv('../data/cottle/temporal_relatedness.csv')
+      relatedness = read.csv(paste(path, "../cottle/temporal_relatedness.csv", sep = "/"))
       names(relatedness)[3] = "Freq"
       
-      dominance_relatedness_future = read.csv('../data/cottle/dominance_relatedness_future.csv')
+      dominance_relatedness_future = read.csv(paste(path, "../cottle/dominance_relatedness_future.csv", sep = "/"))
       names(dominance_relatedness_future)[4] = "Freq"
       
-      dominance_relatedness_present = read.csv('../data/cottle/dominance_relatedness_present.csv')
+      dominance_relatedness_present = read.csv(paste(path, "../cottle/dominance_relatedness_present.csv", sep = "/"))
       names(dominance_relatedness_present)[4] = "Freq"
       
       data = list(

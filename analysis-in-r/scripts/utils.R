@@ -9,6 +9,8 @@ library(Rmisc)
 library(ca)
 source("scripts/s_dplyr.R")
 
+Sys.setlocale(category = "LC_ALL", locale = "en_US.UTF-8")
+
 enable_parallel = function() {
   nodes <- detectCores()
   cl <- makeCluster(nodes)
@@ -444,7 +446,7 @@ my.color_plot = function(experiment_data, stage_name) {
   )
   
   ggplot(long_stage, aes(x = element, fill=color), environment = .e) +
-    geom_histogram(position="stack") +
+    geom_bar(position="stack") +
     theme(axis.text.x = text_theme, axis.text.y = text_theme) + blank_bg_theme +
     scale_fill_manual(values = levels(long_stage$color), guide = "none") +
     xlab("Figura") + ylab("Cantidad por color") + coord_flip()
